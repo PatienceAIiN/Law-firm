@@ -15,6 +15,9 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
 
   if (!courtCase) notFound()
 
+  const documents = courtCase.documents ?? []
+  const payments = courtCase.payments ?? []
+
   return (
     <CaseDetailClient
       caseData={{
@@ -40,11 +43,11 @@ export default async function CaseDetailPage({ params }: { params: Promise<{ id:
         photoUrl: courtCase.photoUrl,
         createdAt: courtCase.createdAt.toISOString(),
         updatedAt: courtCase.updatedAt.toISOString(),
-        documents: courtCase.documents.map(d => ({
+        documents: documents.map(d => ({
           ...d,
           uploadedAt: d.uploadedAt.toISOString(),
         })),
-        payments: courtCase.payments.map(p => ({
+        payments: payments.map(p => ({
           ...p,
           paymentDate: p.paymentDate.toISOString(),
           createdAt: p.createdAt.toISOString(),

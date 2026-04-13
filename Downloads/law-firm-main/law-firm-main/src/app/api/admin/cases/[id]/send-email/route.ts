@@ -23,7 +23,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
     const type = sendType || courtCase.emailControl
     if (type === 'NONE') return NextResponse.json({ message: 'Email control set to NONE - nothing sent' })
 
-    const totalPaid = courtCase.payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
+    const payments = courtCase.payments ?? []
+    const totalPaid = payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
     const firmName = process.env.FIRM_NAME || 'Legal Excellence Law Firm'
     const advocateName = courtCase.advocate?.name || 'Senior Advocate'
 
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
       })
     }
 
-    if (includeBill && courtCase.payments.length > 0) {
+    if (includeBill && payments.length > 0) {
       const billPdf = await generateCasePdf({
         courtCase: courtCase as any,
         firmName,

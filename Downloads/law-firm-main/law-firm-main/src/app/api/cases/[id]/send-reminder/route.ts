@@ -42,7 +42,8 @@ export async function POST(
     const recipientName = courtCase.advocate?.name || courtCase.clientName
     const firmName = process.env.FIRM_NAME || 'Legal Excellence Law Firm'
     const advocateName = courtCase.advocate?.name || 'Senior Advocate'
-    const totalPaid = courtCase.payments.reduce((sum, payment) => sum + payment.amount, 0)
+    const payments = courtCase.payments ?? []
+    const totalPaid = payments.reduce((sum, payment) => sum + payment.amount, 0)
     const hearingDate = courtCase.courtAppearanceDate || courtCase.nextHearingDate
     const hearingLabel = hearingDate
       ? new Date(hearingDate).toLocaleDateString('en-IN', {
@@ -65,7 +66,7 @@ export async function POST(
       },
     ]
 
-    if (courtCase.payments.length > 0) {
+    if (payments.length > 0) {
       attachments.push({
         name: `payment_receipt_${courtCase.caseNumber}.pdf`,
         content: await generateCasePdf({

@@ -38,11 +38,13 @@ export default async function LawyerDashboardPage() {
     redirect('/lawyer/login')
   }
 
+  const cases = advocate.cases ?? []
+
   // Calculate statistics
-  const activeCases = advocate.cases.filter((c) => c.status === 'ACTIVE').length
-  const upcomingHearings = advocate.cases.filter((c) => c.nextHearingDate && new Date(c.nextHearingDate) > new Date()).length
-  const totalDocuments = advocate.cases.reduce((sum, c) => sum + c.documents.length, 0)
-  const totalFeePaid = advocate.cases.reduce((sum, c) => sum + c.payments.reduce((s, p) => s + p.amount, 0), 0)
+  const activeCases = cases.filter((c) => c.status === 'ACTIVE').length
+  const upcomingHearings = cases.filter((c) => c.nextHearingDate && new Date(c.nextHearingDate) > new Date()).length
+  const totalDocuments = cases.reduce((sum, c) => sum + (c.documents?.length || 0), 0)
+  const totalFeePaid = cases.reduce((sum, c) => sum + (c.payments ?? []).reduce((s, p) => s + p.amount, 0), 0)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -94,12 +96,12 @@ export default async function LawyerDashboardPage() {
               </Link>
             </div>
             <div className="divide-y max-h-96 overflow-y-auto">
-              {advocate.cases.length === 0 ? (
+              {cases.length === 0 ? (
                 <div className="px-6 py-8 text-center text-gray-500">
                   <p>No cases assigned yet</p>
                 </div>
               ) : (
-                advocate.cases.slice(0, 5).map((caseItem) => (
+                cases.slice(0, 5).map((caseItem) => (
                   <Link
                     key={caseItem.id}
                     href={`/lawyer/cases/${caseItem.id}`}

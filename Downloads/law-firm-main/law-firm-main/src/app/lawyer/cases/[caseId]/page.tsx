@@ -47,7 +47,10 @@ export default async function CaseDetailPage({ params }: Props) {
     redirect('/lawyer/cases')
   }
 
-  const totalFeePaid = courtCase.payments.reduce((sum, p) => sum + p.amount, 0)
+  const documents = courtCase.documents ?? []
+  const payments = courtCase.payments ?? []
+  const notes = courtCase.notes ?? []
+  const totalFeePaid = payments.reduce((sum, p) => sum + p.amount, 0)
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -136,14 +139,14 @@ export default async function CaseDetailPage({ params }: Props) {
         </div>
 
         {/* Documents */}
-        {courtCase.documents.length > 0 && (
+        {documents.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <FileText className="w-5 h-5" />
-              Documents ({courtCase.documents.length})
+              Documents ({documents.length})
             </h2>
             <div className="space-y-2">
-              {courtCase.documents.map((doc) => (
+              {documents.map((doc) => (
                 <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded">
                   <div>
                     <div className="font-semibold text-gray-900">{doc.name}</div>
@@ -166,14 +169,14 @@ export default async function CaseDetailPage({ params }: Props) {
         )}
 
         {/* Payments */}
-        {courtCase.payments.length > 0 && (
+        {payments.length > 0 && (
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <DollarSign className="w-5 h-5" />
-              Payments ({courtCase.payments.length})
+              Payments ({payments.length})
             </h2>
             <div className="space-y-3">
-              {courtCase.payments.map((payment) => (
+              {payments.map((payment) => (
                 <div key={payment.id} className="flex justify-between items-center p-3 border border-gray-200 rounded">
                   <div>
                     <div className="font-semibold text-gray-900">₹{payment.amount.toLocaleString('en-IN')}</div>
@@ -197,15 +200,15 @@ export default async function CaseDetailPage({ params }: Props) {
 
         {/* Case Notes */}
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <MessageSquare className="w-5 h-5" />
-            Case Notes ({courtCase.notes.length})
-          </h2>
-          {courtCase.notes.length === 0 ? (
+            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+              <MessageSquare className="w-5 h-5" />
+              Case Notes ({notes.length})
+            </h2>
+          {notes.length === 0 ? (
             <p className="text-gray-500">No notes yet</p>
           ) : (
             <div className="space-y-4">
-              {courtCase.notes.map((note) => (
+              {notes.map((note) => (
                 <div key={note.id} className={`p-4 rounded-lg ${note.isPrivate ? 'bg-yellow-50 border border-yellow-200' : 'bg-gray-50 border border-gray-200'}`}>
                   <div className="flex justify-between items-start mb-2">
                     <div>

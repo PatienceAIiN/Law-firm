@@ -16,7 +16,7 @@ interface CasePdfInput {
     filingDate?: Date | null
     nextHearingDate?: Date | null
     description?: string | null
-    payments: Array<{
+    payments?: Array<{
       id: string
       amount: number
       mode: string
@@ -41,6 +41,7 @@ function fmtCurrency(n: number): string {
 
 export async function generateCasePdf(input: CasePdfInput): Promise<string> {
   const { courtCase, firmName, advocateName, includePayments } = input
+  const payments = courtCase.payments ?? []
 
   const pdfDoc = await PDFDocument.create()
   const page = pdfDoc.addPage([595, 842]) // A4
@@ -143,7 +144,7 @@ export async function generateCasePdf(input: CasePdfInput): Promise<string> {
   }
 
   // Payments section
-  if (includePayments && courtCase.payments.length > 0) {
+  if (includePayments && payments.length > 0) {
     sectionHeader('PAYMENT RECORDS')
 
     // Table header
@@ -156,7 +157,7 @@ export async function generateCasePdf(input: CasePdfInput): Promise<string> {
     y -= 18
 
     let total = 0
-    for (const p of courtCase.payments) {
+    for (const p of payments) {
       total += p.amount
       page.drawText(fmtDate(p.paymentDate), { x: 44, y, size: 8, font: fontReg, color: dark })
       page.drawText(p.mode, { x: 140, y, size: 8, font: fontReg, color: dark })

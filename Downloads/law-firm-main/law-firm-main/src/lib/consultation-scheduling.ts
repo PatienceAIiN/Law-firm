@@ -123,8 +123,8 @@ export async function getAvailabilityForDate(dateKey: string, meetingMode?: Meet
     date: dateKey,
     slots,
     totalSlots: slots.length,
-    availableSlots: slots.reduce((sum, slot) => sum + slot.availableCount, 0),
-    bookedSlots: slots.reduce((sum, slot) => sum + slot.bookedCount, 0),
+    availableSlots: slots.reduce((sum, slot) => sum + (slot.availableCount || 0), 0),
+    bookedSlots: slots.reduce((sum, slot) => sum + (slot.bookedCount || 0), 0),
   }
 }
 
@@ -154,8 +154,8 @@ export async function listAvailabilityForMonth(monthKey: string, meetingMode?: M
       date: istDateKey(day.date),
       slots: slots.map(serializeSlot),
       totalSlots: slots.length,
-      availableSlots: slots.reduce((sum, slot) => sum + Math.max(slot.capacity - slot.bookedCount, 0), 0),
-      bookedSlots: slots.reduce((sum, slot) => sum + slot.bookedCount, 0),
+      availableSlots: slots.reduce((sum, slot) => sum + Math.max((slot.capacity || 0) - (slot.bookedCount || 0), 0), 0),
+      bookedSlots: slots.reduce((sum, slot) => sum + (slot.bookedCount || 0), 0),
     }
   })
 }

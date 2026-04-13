@@ -67,9 +67,14 @@ function fmtCur(n: number) {
 }
 
 export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) {
-  const [caseData, setCaseData] = useState<CaseData>(initial)
+  const normalizedInitial = {
+    ...initial,
+    documents: initial.documents ?? [],
+    payments: initial.payments ?? [],
+  }
+  const [caseData, setCaseData] = useState<CaseData>(normalizedInitial)
   const [editing, setEditing] = useState(false)
-  const [editForm, setEditForm] = useState({ ...initial })
+  const [editForm, setEditForm] = useState({ ...normalizedInitial })
   const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [toast, setToast] = useState('')
@@ -237,7 +242,9 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
     }
   }
 
-  const totalPaid = caseData.payments.reduce((s, p) => s + p.amount, 0)
+  const documents = caseData.documents ?? []
+  const payments = caseData.payments ?? []
+  const totalPaid = payments.reduce((s, p) => s + p.amount, 0)
   const eField = (k: keyof typeof editForm) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
     setEditForm(f => ({ ...f, [k]: e.target.value }))
 
@@ -407,7 +414,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
           </Card>
 
           {/* Documents */}
-          <Card title={`Documents (${caseData.documents.length})`}>
+          <Card title={`Documents (${documents.length})`}>
             <div className="flex gap-3 mb-4">
               <input
                 value={docName}
@@ -422,10 +429,10 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               </label>
             </div>
             <div className="space-y-2">
-              {caseData.documents.length === 0 && (
+              {documents.length === 0 && (
                 <p className="text-sm text-gray-400 text-center py-4">No documents uploaded yet.</p>
               )}
-              {caseData.documents.map(doc => (
+              {documents.map(doc => (
                 <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#f0ece4] bg-[#faf8f5]">
                   <FileText className="w-4 h-4 text-[#8c7355] flex-shrink-0" />
                   <span className="flex-1 text-sm text-[#1a1208] truncate">{doc.name}</span>
@@ -497,10 +504,10 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               )}
             </div>
             <div className="space-y-2">
-              {caseData.payments.length === 0 && (
+              {payments.length === 0 && (
                 <p className="text-sm text-gray-400 text-center py-4">No payments recorded yet.</p>
               )}
-              {caseData.payments.map(p => (
+              {payments.map(p => (
                 <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#f0ece4] bg-[#faf8f5]">
                   <IndianRupee className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
@@ -546,7 +553,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
             <dl className="space-y-3">
               <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Client</dt><dd className="text-sm font-bold text-[#1a1208] mt-0.5">{caseData.clientName}</dd></div>
               <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Paid</dt><dd className="text-lg font-black text-emerald-600 mt-0.5">{fmtCur(totalPaid)}</dd></div>
-              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Documents</dt><dd className="text-sm font-bold text-[#1a1208] mt-0.5">{caseData.documents.length} files</dd></div>
+              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Documents</dt><dd className="text-sm font-bold text-[#1a1208] mt-0.5">{documents.length} files</dd></div>
               <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Next Hearing</dt>
                 <dd className={`text-sm font-bold mt-0.5 ${caseData.nextHearingDate ? 'text-[#d4a853]' : 'text-gray-400'}`}>
                   {fmtDate(caseData.nextHearingDate)}

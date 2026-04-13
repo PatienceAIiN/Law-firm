@@ -45,6 +45,11 @@ export default async function LawyerCasesPage({
     },
     orderBy: { nextHearingDate: 'asc' },
   })
+  const safeCases = cases.map((item) => ({
+    ...item,
+    documents: item.documents ?? [],
+    payments: item.payments ?? [],
+  }))
 
   const statusColors: Record<string, string> = {
     ACTIVE: 'bg-green-100 text-green-800',
@@ -102,14 +107,14 @@ export default async function LawyerCasesPage({
 
       {/* Cases List */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {cases.length === 0 ? (
+        {safeCases.length === 0 ? (
           <div className="bg-white rounded-lg shadow p-12 text-center">
             <FileText className="w-12 h-12 text-gray-300 mx-auto mb-4" />
             <p className="text-gray-600">No cases found</p>
           </div>
         ) : (
           <div className="space-y-4">
-            {cases.map((caseItem) => {
+            {safeCases.map((caseItem) => {
               const totalPaid = caseItem.payments.reduce((sum, p) => sum + p.amount, 0)
               const isUrgent = caseItem.nextHearingDate && new Date(caseItem.nextHearingDate) <= new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
 

@@ -32,6 +32,14 @@ type CourtCase = {
   payments: Array<{ id: string; amount: number; mode?: string; paymentDate?: string }>
 }
 
+function normalizeCase(item: CourtCase): CourtCase {
+  return {
+    ...item,
+    documents: item.documents ?? [],
+    payments: item.payments ?? [],
+  }
+}
+
 type FormState = {
   caseNumber: string
   title: string
@@ -122,7 +130,7 @@ export function CaseManager() {
         const advocateData = await advocateRes.json()
         if (!caseRes.ok) throw new Error(caseData.error || 'Failed to load cases')
         if (!advocateRes.ok) throw new Error(advocateData.error || 'Failed to load advocates')
-        setCases(caseData.cases || [])
+        setCases((caseData.cases || []).map(normalizeCase))
         setAdvocates(advocateData || [])
       } catch (err: any) {
         setError(err.message || 'Failed to load case management data')
@@ -216,7 +224,7 @@ export function CaseManager() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to save case')
-      setCases((current) => editorMode === 'create' ? [data, ...current] : current.map((item) => (item.id === data.id ? { ...item, ...data } : item)))
+        setCases((current) => editorMode === 'create' ? [normalizeCase(data), ...current] : current.map((item) => (item.id === data.id ? normalizeCase({ ...item, ...data }) : item)))
       setEditorOpen(false)
     } catch (err: any) {
       setError(err.message || 'Failed to save case')
@@ -309,7 +317,7 @@ export function CaseManager() {
         ) : filtered.length === 0 ? (
           <div className="rounded-[28px] border border-dashed border-slate-200 bg-white p-12 text-center text-sm text-slate-500">No cases found for the selected filter.</div>
         ) : filtered.map((item) => {
-          const paid = item.payments.reduce((sum, payment) => sum + payment.amount, 0)
+          const paid = (item.payments ?? []).reduce((sum, payment) => sum + payment.amount, 0)
           return (
             <div key={item.id} className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -388,8 +396,8 @@ export function CaseManager() {
                 <Info label="Client Email" value={preview.clientEmail} />
                 <Info label="Next Hearing" value={fmtDate(preview.nextHearingDate)} />
                 <Info label="Appearance Date" value={fmtDate(preview.courtAppearanceDate)} />
-                <Info label="Documents" value={`${preview.documents.length} files`} />
-                <Info label="Payments" value={`INR ${preview.payments.reduce((sum, payment) => sum + payment.amount, 0).toLocaleString('en-IN')}`} />
+                <Info label="Documents" value={`${(preview.documents ?? []).length} files`} />
+                <Info label="Payments" value={`INR ${(preview.payments ?? []).reduce((sum, payment) => sum + payment.amount, 0).toLocaleString('en-IN')}`} />
               </div>
             </div>
             <div className="grid gap-3 md:grid-cols-3">
