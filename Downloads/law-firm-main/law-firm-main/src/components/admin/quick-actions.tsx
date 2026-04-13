@@ -1,8 +1,15 @@
 import Link from 'next/link'
-import { Plus, FileText, Calendar, Mail, Settings, Users, MonitorPlay } from 'lucide-react'
+import { Plus, FileText, Calendar, Mail, Settings, Users, MonitorPlay, Scale } from 'lucide-react'
 
 export function QuickActions() {
   const actions = [
+    {
+      title: 'Case Management',
+      description: 'Open court files and reminders',
+      icon: Scale,
+      href: '/admin/cases',
+      color: 'bg-amber-100 text-amber-700 hover:bg-amber-200'
+    },
     {
       title: 'New Blog Post',
       description: 'Create a new blog post',

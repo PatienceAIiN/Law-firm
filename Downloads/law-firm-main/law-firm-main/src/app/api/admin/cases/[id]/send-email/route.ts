@@ -11,35 +11,60 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const courtCase = await prisma.courtCase.findUnique({
       where: { id },
-      include: { payments: { orderBy: { paymentDate: 'desc' } }, documents: true },
+      include: {
+        advocate: { select: { name: true, email: true } },
+        payments: { orderBy: { paymentDate: 'desc' } },
+        documents: true,
+      },
     })
+
     if (!courtCase) return NextResponse.json({ error: 'Case not found' }, { status: 404 })
 
     const type = sendType || courtCase.emailControl
-    if (type === 'NONE') return NextResponse.json({ message: 'Email control set to NONE — nothing sent' })
+    if (type === 'NONE') return NextResponse.json({ message: 'Email control set to NONE - nothing sent' })
 
-    const totalPaid = courtCase.payments.reduce((s: number, p: any) => s + p.amount, 0)
+    const totalPaid = courtCase.payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
     const firmName = process.env.FIRM_NAME || 'Legal Excellence Law Firm'
-    const advocateName = courtCase.advocateId || 'Senior Advocate'
-
-    // Build email subject and content
-    let subject = `Case Update — ${courtCase.caseNumber}`
-    let pdfBuffers: { name: string; content: string }[] = []
+    const advocateName = courtCase.advocate?.name || 'Senior Advocate'
 
     const includeDetails = type === 'DETAILS_ONLY' || type === 'BOTH'
     const includeBill = type === 'BILL_ONLY' || type === 'BOTH'
 
+    const attachments: { name: string; content: string }[] = []
+
     if (includeDetails) {
-      const detailsPdf = await generateCasePdf({ courtCase, firmName, advocateName, includePayments: false })
-      pdfBuffers.push({ name: `case_details_${courtCase.caseNumber}.pdf`, content: detailsPdf })
+      const detailsPdf = await generateCasePdf({
+        courtCase: courtCase as any,
+        firmName,
+        advocateName,
+        includePayments: false,
+      })
+      attachments.push({
+        name: `case_details_${courtCase.caseNumber}.pdf`,
+        content: detailsPdf,
+      })
     }
+
     if (includeBill && courtCase.payments.length > 0) {
-      const billPdf = await generateCasePdf({ courtCase, firmName, advocateName, includePayments: true })
-      pdfBuffers.push({ name: `payment_receipt_${courtCase.caseNumber}.pdf`, content: billPdf })
+      const billPdf = await generateCasePdf({
+        courtCase: courtCase as any,
+        firmName,
+        advocateName,
+        includePayments: true,
+      })
+      attachments.push({
+        name: `payment_receipt_${courtCase.caseNumber}.pdf`,
+        content: billPdf,
+      })
     }
 
     const hearingDate = courtCase.nextHearingDate
-      ? new Date(courtCase.nextHearingDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' })
+      ? new Date(courtCase.nextHearingDate).toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric',
+          timeZone: 'Asia/Kolkata',
+        })
       : 'To be announced'
 
     const htmlContent = buildEmailHtml({
@@ -58,9 +83,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const result = await sendEmail({
       to: courtCase.clientEmail,
-      subject,
+      subject: `Case Update - ${courtCase.caseNumber}`,
       htmlContent,
       textContent: `Dear ${courtCase.clientName},\n\nPlease find your case update for ${courtCase.caseNumber}.\n\nNext Hearing: ${hearingDate}\nCourt: ${courtCase.court}\n\nRegards,\n${advocateName}\n${firmName}`,
+      attachments,
     })
 
     if (!result.success) {
@@ -111,7 +137,7 @@ function buildEmailHtml(d: {
         </table>
       </div>
 
-      ${d.includeDetails || d.includeBill ? `<p style="font-size:13px;color:#555;margin:0 0 24px;">Detailed documents are attached to this email for your records.</p>` : ''}
+      ${d.includeDetails || d.includeBill ? `<p style="font-size:13px;color:#555;margin:0 0 24px;">The requested PDF documents are attached to this email for your records.</p>` : ''}
 
       <p style="font-size:13px;color:#555;">If you have any questions, please contact our office directly.</p>
       <p style="font-size:13px;color:#555;margin-top:24px;">Warm regards,<br/><strong>${d.advocateName}</strong><br/>${d.firmName}</p>

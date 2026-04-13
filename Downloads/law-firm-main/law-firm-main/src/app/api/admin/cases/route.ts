@@ -43,8 +43,8 @@ export async function POST(req: NextRequest) {
     const {
       caseNumber, title, caseType, status, court, judge,
       clientName, clientEmail, clientPhone, opposingParty,
-      advocateId, filingDate, nextHearingDate,
-      description, emailControl,
+      advocateId, filingDate, nextHearingDate, courtAppearanceDate,
+      description, emailControl, sendReminder,
     } = body
 
     if (!caseNumber || !title || !clientName || !clientEmail || !court || !caseType) {
@@ -66,8 +66,10 @@ export async function POST(req: NextRequest) {
         advocateId: advocateId || null,
         filingDate: filingDate ? new Date(filingDate) : null,
         nextHearingDate: nextHearingDate ? new Date(nextHearingDate) : null,
+        courtAppearanceDate: courtAppearanceDate ? new Date(courtAppearanceDate) : null,
         description: description || null,
         emailControl: emailControl || 'NONE',
+        sendReminder: sendReminder !== false,
       },
     })
 

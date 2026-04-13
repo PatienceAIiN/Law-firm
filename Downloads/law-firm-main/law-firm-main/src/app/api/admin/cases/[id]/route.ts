@@ -27,13 +27,15 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     const fields = [
       'caseNumber', 'title', 'caseType', 'status', 'court', 'judge',
       'clientName', 'clientEmail', 'clientPhone', 'opposingParty',
-      'advocate', 'advocateEmail', 'description', 'emailControl', 'photoUrl',
+      'advocateId', 'description', 'emailControl', 'photoUrl', 'sendReminder',
     ]
     for (const f of fields) {
       if (body[f] !== undefined) data[f] = body[f] || null
     }
     if (body.filingDate !== undefined) data.filingDate = body.filingDate ? new Date(body.filingDate) : null
     if (body.nextHearingDate !== undefined) data.nextHearingDate = body.nextHearingDate ? new Date(body.nextHearingDate) : null
+    if (body.courtAppearanceDate !== undefined) data.courtAppearanceDate = body.courtAppearanceDate ? new Date(body.courtAppearanceDate) : null
+    if (body.sendReminder !== undefined) data.sendReminder = Boolean(body.sendReminder)
 
     const updated = await prisma.courtCase.update({ where: { id }, data })
     return NextResponse.json(updated)

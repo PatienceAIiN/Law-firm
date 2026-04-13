@@ -10,6 +10,10 @@ export interface EmailData {
   subject: string
   htmlContent: string
   textContent?: string
+  attachments?: Array<{
+    name: string
+    content: string
+  }>
 }
 
 export type ClientEmailTemplateType = 'booking_confirmation' | 'consultation_reminder' | 'follow_up'
@@ -34,6 +38,14 @@ export async function sendEmail(data: EmailData) {
         subject: data.subject,
         htmlContent: data.htmlContent,
         textContent: data.textContent,
+        ...(data.attachments?.length
+          ? {
+              attachment: data.attachments.map((attachment) => ({
+                name: attachment.name,
+                content: attachment.content,
+              })),
+            }
+          : {}),
       }),
     })
 

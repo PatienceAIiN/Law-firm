@@ -325,6 +325,18 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 <EField label="Next Hearing Date">
                   <input type="date" value={editForm.nextHearingDate?.slice(0, 10) || ''} onChange={eField('nextHearingDate')} className={inp} />
                 </EField>
+                <EField label="Court Appearance Date">
+                  <input type="date" value={editForm.courtAppearanceDate?.slice(0, 10) || ''} onChange={eField('courtAppearanceDate')} className={inp} />
+                </EField>
+                <label className="flex items-center gap-3 rounded-xl border border-[#e8e3dc] bg-white px-4 py-3 text-sm font-semibold text-[#1a1208]">
+                  <input
+                    type="checkbox"
+                    checked={Boolean(editForm.sendReminder)}
+                    onChange={(e) => setEditForm((f) => ({ ...f, sendReminder: e.target.checked }))}
+                    className="h-4 w-4 rounded border-gray-300"
+                  />
+                  Enable appearance reminder
+                </label>
                 <EField label="Description / Notes" className="sm:col-span-2">
                   <textarea value={editForm.description || ''} onChange={eField('description')} rows={4} className={inp + ' resize-none'} />
                 </EField>
@@ -338,12 +350,19 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                   ['Opposing Party', caseData.opposingParty],
                   ['Filing Date', fmtDate(caseData.filingDate)],
                   ['Next Hearing', fmtDate(caseData.nextHearingDate)],
+                  ['Appearance Date', fmtDate(caseData.courtAppearanceDate || null)],
                 ].map(([l, v]) => v && (
                   <div key={String(l)}>
                     <dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">{l}</dt>
                     <dd className={`text-sm font-semibold mt-0.5 ${l === 'Next Hearing' ? 'text-[#d4a853]' : 'text-[#1a1208]'}`}>{v}</dd>
                   </div>
                 ))}
+                <div>
+                  <dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Reminder</dt>
+                  <dd className={`text-sm font-semibold mt-0.5 ${caseData.sendReminder ? 'text-emerald-600' : 'text-gray-400'}`}>
+                    {caseData.sendReminder ? 'Enabled' : 'Disabled'}
+                  </dd>
+                </div>
                 {caseData.description && (
                   <div className="sm:col-span-2">
                     <dt className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Summary / Notes</dt>

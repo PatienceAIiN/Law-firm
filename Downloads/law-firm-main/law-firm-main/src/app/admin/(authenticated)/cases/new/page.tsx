@@ -34,8 +34,10 @@ export default function NewCasePage() {
     advocateEmail: '',
     filingDate: '',
     nextHearingDate: '',
+    courtAppearanceDate: '',
     description: '',
     emailControl: 'NONE',
+    sendReminder: true,
   })
 
   const set = (k: string) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
@@ -111,6 +113,9 @@ export default function NewCasePage() {
             <Field label="Next Hearing Date">
               <input type="date" name="nextHearingDate" value={form.nextHearingDate} onChange={set('nextHearingDate')} className={input} />
             </Field>
+            <Field label="Court Appearance Date">
+              <input type="date" name="courtAppearanceDate" value={form.courtAppearanceDate} onChange={set('courtAppearanceDate')} className={input} />
+            </Field>
           </Grid2>
           <Field label="Case Summary / Notes" className="mt-4">
             <textarea name="description" value={form.description} onChange={set('description')} rows={4}
@@ -153,6 +158,16 @@ export default function NewCasePage() {
               {EMAIL_CONTROLS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
           </Field>
+          <label className="flex items-center gap-3 rounded-2xl border border-[#e8e3dc] bg-white px-4 py-3 text-sm font-semibold text-[#1a1208]">
+            <input
+              type="checkbox"
+              name="sendReminder"
+              checked={form.sendReminder}
+              onChange={(e) => setForm((f) => ({ ...f, sendReminder: e.target.checked }))}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            Enable appearance reminder for assigned advocate
+          </label>
           <p className="text-xs text-gray-400 mt-2">This controls what PDF attachments are sent when you trigger an email from the case detail page.</p>
         </Section>
 

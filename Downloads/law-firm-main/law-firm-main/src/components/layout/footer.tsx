@@ -76,22 +76,28 @@ export function Footer({ brand, navigation, practiceAreas: sitePracticeAreas, fo
           <div className="space-y-3">
             <p className="text-[11px] font-black uppercase tracking-[0.24em] text-[#0a192f]">Contact</p>
             <div className="space-y-3 text-sm text-slate-600">
-              <div className="flex items-start gap-3">
-                <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#0a192f]" />
-                <div className="leading-6">{officeDetails?.address || '123 Legal District, Mumbai'}</div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="h-4 w-4 flex-shrink-0 text-[#0a192f]" />
-                <a href={`tel:${officeDetails?.phone || '+919876543210'}`} className="transition-colors hover:text-[#0a192f]">
-                  {officeDetails?.phone || '+91 98765 43210'}
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 flex-shrink-0 text-[#0a192f]" />
-                <a href={`mailto:${officeDetails?.email || 'contact@lawfirm.com'}`} className="truncate transition-colors hover:text-[#0a192f]">
-                  {officeDetails?.email || 'contact@lawfirm.com'}
-                </a>
-              </div>
+              {officeDetails?.address && (
+                <div className="flex items-start gap-3">
+                  <MapPin className="mt-0.5 h-4 w-4 flex-shrink-0 text-[#0a192f]" />
+                  <div className="leading-6">{officeDetails.address}</div>
+                </div>
+              )}
+              {officeDetails?.phone && (
+                <div className="flex items-center gap-3">
+                  <Phone className="h-4 w-4 flex-shrink-0 text-[#0a192f]" />
+                  <a href={`tel:${officeDetails.phone}`} className="transition-colors hover:text-[#0a192f]">
+                    {officeDetails.phone}
+                  </a>
+                </div>
+              )}
+              {officeDetails?.email && (
+                <div className="flex items-center gap-3">
+                  <Mail className="h-4 w-4 flex-shrink-0 text-[#0a192f]" />
+                  <a href={`mailto:${officeDetails.email}`} className="truncate transition-colors hover:text-[#0a192f]">
+                    {officeDetails.email}
+                  </a>
+                </div>
+              )}
               {officeDetails?.mapLink && (
                 <a
                   href={officeDetails.mapLink}
