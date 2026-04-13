@@ -6,8 +6,6 @@
  * Usage: node scripts/test-apis.js [baseUrl] [adminEmail] [adminPassword]
  */
 
-const fetcher = require('node-fetch')
-
 const BASE_URL = process.argv[2] || 'http://localhost:3000'
 const ADMIN_EMAIL = process.argv[3] || 'admin@lawfirm.com'
 const ADMIN_PASSWORD = process.argv[4] || 'admin123'
@@ -24,8 +22,8 @@ let adminToken = null
 let testCaseId = null
 let advocateId = null
 
-async function fetch(url, options = {}) {
-  const response = await fetcher(url, options)
+async function fetchApi(url, options = {}) {
+  const response = await fetch(url, options)
   const data = await response.json()
   return { status: response.status, data }
 }
@@ -46,7 +44,7 @@ async function testAdminLogin() {
   log('Testing Admin Login...', 'test')
 
   try {
-    const { status, data } = await fetch(`${BASE_URL}/api/auth/signin`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/auth/signin`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -83,7 +81,7 @@ async function testCreateCase() {
       description: 'Test case for API validation'
     }
 
-    const { status, data } = await fetch(`${BASE_URL}/api/cases`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/cases`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -110,7 +108,7 @@ async function testListCases() {
   log('Testing List Cases...', 'test')
 
   try {
-    const { status, data } = await fetch(`${BASE_URL}/api/cases?limit=10&offset=0`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/cases?limit=10&offset=0`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${adminToken}`
@@ -139,7 +137,7 @@ async function testGetCaseDetails() {
   log('Testing Get Case Details...', 'test')
 
   try {
-    const { status, data } = await fetch(`${BASE_URL}/api/cases/${testCaseId}`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/cases/${testCaseId}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${adminToken}`
@@ -171,7 +169,7 @@ async function testCreateAdvocate() {
       expertise: 'Civil Law'
     }
 
-    const { status, data } = await fetch(`${BASE_URL}/api/advocates`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/advocates`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -198,7 +196,7 @@ async function testListAdvocates() {
   log('Testing List Advocates...', 'test')
 
   try {
-    const { status, data } = await fetch(`${BASE_URL}/api/advocates`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/advocates`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${adminToken}`
@@ -235,7 +233,7 @@ async function testAddPayment() {
       paymentDate: new Date().toISOString().split('T')[0]
     }
 
-    const { status, data } = await fetch(`${BASE_URL}/api/cases/${testCaseId}/payments`, {
+    const { status, data } = await fetchApi(`${BASE_URL}/api/cases/${testCaseId}/payments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
