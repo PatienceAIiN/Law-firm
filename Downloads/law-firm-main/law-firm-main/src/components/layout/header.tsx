@@ -30,13 +30,15 @@ export function Header({
   const [scrolled, setScrolled] = useState(false)
   const [practiceOpen, setPracticeOpen] = useState(false)
 
-  const navigation = (dbNavigation || [
+  const fallbackNavigation = [
     { name: 'Home', href: '/' },
     { name: 'About', href: '/about' },
     { name: 'Practice Areas', href: '/practice-areas' },
     { name: 'Consultation', href: '/consultation' },
     { name: 'Contact', href: '/contact' },
-  ]).map((item) => {
+  ]
+
+  const navigation = (dbNavigation?.length ? dbNavigation : fallbackNavigation).map((item) => {
     const href = item.name === 'Practice Areas' ? '/practice-areas' : item.href
     return { ...item, href }
   })
