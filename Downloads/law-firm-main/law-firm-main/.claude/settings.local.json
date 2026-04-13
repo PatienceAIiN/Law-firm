@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(pkill -f \"next start\")",
+      "Bash(cmd:*)",
+      "Bash(mkdir -p \"C:\\\\Users\\\\harsh\\\\Downloads\\\\law-firm-main\\\\law-firm-main\\\\src\\\\app\\\\admin\\\\\\(authenticated\\)\\\\cases\\\\[id]\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\harsh\\\\Downloads\\\\law-firm-main\\\\law-firm-main\\\\src\\\\app\\\\api\\\\admin\\\\cases\\\\[id]\\\\documents\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\harsh\\\\Downloads\\\\law-firm-main\\\\law-firm-main\\\\src\\\\app\\\\api\\\\admin\\\\cases\\\\[id]\\\\payments\")",
+      "Bash(mkdir -p \"C:\\\\Users\\\\harsh\\\\Downloads\\\\law-firm-main\\\\law-firm-main\\\\src\\\\app\\\\api\\\\admin\\\\cases\\\\[id]\\\\send-email\")"
+    ]
+  }
+}

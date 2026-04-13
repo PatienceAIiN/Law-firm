@@ -1,15 +1,15 @@
 services:
   - type: web
     name: ai-email-saas
-    runtime: node
+    runtime: python
     plan: free
     rootDir: .
-    buildCommand: npm install && cd frontend && npm install && npm run build && cd .. && npx prisma generate && npx prisma migrate deploy
-    startCommand: node src/server.js
+    buildCommand: pip install -r requirements.txt && cd frontend && npm install && npm run build
+    startCommand: uvicorn py_api.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
-      - key: NODE_VERSION
-        value: "20"
+      - key: PYTHON_VERSION
+        value: "3.12.8"
       - key: DATABASE_URL
         sync: false
       - key: GROQ_API_KEY

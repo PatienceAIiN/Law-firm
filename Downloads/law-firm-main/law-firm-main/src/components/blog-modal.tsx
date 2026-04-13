@@ -1,0 +1,160 @@
+'use client'
+
+import { useEffect, useRef, useState } from 'react'
+import { X, Calendar, Clock, Share2, Check, ArrowLeft } from 'lucide-react'
+
+interface BlogPost {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string | null
+  content: string
+  coverImage?: string | null
+  publishedAt?: Date | string | null
+}
+
+interface BlogModalProps {
+  post: BlogPost | null
+  onClose: () => void
+}
+
+function formatDate(date: Date | string | null): string {
+  if (!date) return ''
+  return new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }).format(new Date(date))
+}
+
+export function BlogModal({ post, onClose }: BlogModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null)
+  const [copied, setCopied] = useState(false)
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    if (post) document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [post, onClose])
+
+  useEffect(() => {
+    if (post) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [post])
+
+  if (!post) return null
+
+  const handleShare = async () => {
+    const url = `${window.location.origin}/blog/${post.slug}`
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: post.title, text: post.excerpt || post.title, url })
+      } catch { /* user cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2500)
+    }
+  }
+
+  return (
+    <div
+      ref={overlayRef}
+      className="fixed inset-0 z-[100] flex items-start justify-center overflow-y-auto"
+      onClick={(e) => { if (e.target === overlayRef.current) onClose() }}
+    >
+      {/* Backdrop */}
+      <div className="fixed inset-0 bg-black/70 backdrop-blur-sm" />
+
+      {/* Modal content */}
+      <div className="relative z-10 w-full max-w-3xl mx-auto my-8 px-4 pb-8">
+        {/* Top bar */}
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={onClose}
+            className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Insights
+          </button>
+          <button
+            onClick={onClose}
+            className="w-9 h-9 bg-white/10 hover:bg-white/20 rounded-full flex items-center justify-center text-white transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* Article */}
+        <article className="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl">
+          {/* Cover image - small */}
+          {post.coverImage && (
+            <div className="aspect-[21/8] overflow-hidden">
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+          {!post.coverImage && (
+            <div className="aspect-[21/6] bg-gradient-to-br from-[#0a192f] to-[#112240] flex items-center justify-center">
+              <span className="text-[#c5a059] font-black text-5xl opacity-20">AW</span>
+            </div>
+          )}
+
+          <div className="p-8 sm:p-12">
+            {/* Meta */}
+            <div className="flex items-center gap-5 text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">
+              {post.publishedAt && (
+                <span className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-[#c5a059]" />
+                  {formatDate(post.publishedAt)}
+                </span>
+              )}
+              <span className="flex items-center gap-1.5">
+                <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
+                8 Min Read
+              </span>
+            </div>
+
+            {/* Title */}
+            <h1 className="text-2xl sm:text-4xl font-black text-[#0a192f] uppercase tracking-tighter leading-tight mb-6">
+              {post.title}
+            </h1>
+
+            {/* Content */}
+            <div
+              className="prose prose-sm sm:prose-base prose-navy max-w-none prose-headings:font-black prose-headings:uppercase prose-headings:tracking-tighter prose-p:leading-relaxed prose-p:text-gray-600 prose-strong:text-[#0a192f]"
+              dangerouslySetInnerHTML={{ __html: post.content }}
+            />
+
+            {/* Footer */}
+            <div className="mt-10 pt-8 border-t border-gray-100 flex items-center justify-between flex-wrap gap-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 bg-[#0a192f] rounded-full flex items-center justify-center text-[#c5a059] font-black text-sm">
+                  SA
+                </div>
+                <div>
+                  <div className="text-sm font-black text-[#0a192f] uppercase tracking-wider">Senior Advocate</div>
+                  <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Editorial Team</div>
+                </div>
+              </div>
+
+              <button
+                onClick={handleShare}
+                className="flex items-center gap-2 px-5 py-2.5 bg-[#f8fafc] border border-gray-200 rounded-full text-[#0a192f] font-bold text-xs hover:bg-[#c5a059] hover:text-white hover:border-[#c5a059] transition-all"
+              >
+                {copied ? (
+                  <><Check className="w-4 h-4 text-green-500" /> Link Copied!</>
+                ) : (
+                  <><Share2 className="w-4 h-4" /> Share Insight</>
+                )}
+              </button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </div>
+  )
+}

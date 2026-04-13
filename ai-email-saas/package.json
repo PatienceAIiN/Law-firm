@@ -4,12 +4,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "dev:api": "node --watch src/server.js",
+    "start": "python -m uvicorn py_api.main:app --host 0.0.0.0 --port 3001",
+    "dev:api": "python -m uvicorn py_api.main:app --host 0.0.0.0 --port 3001 --reload",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:push": "prisma db push",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "build": "cd frontend && npm install && npm run build && cd .. && npx prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.8.2",
