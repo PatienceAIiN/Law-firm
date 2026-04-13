@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { deleteStoredFile } from '@/lib/storage'
+import { revalidatePath } from 'next/cache'
 
 // GET /api/cases/[id] - Get case details
 export async function GET(
@@ -120,10 +122,22 @@ export async function DELETE(
     }
 
     const { id } = await params
-    // Delete related documents and payments first (cascade handled by Prisma)
+    const courtCase = await prisma.courtCase.findUnique({
+      where: { id },
+      include: { documents: true },
+    })
+    if (!courtCase) {
+      return NextResponse.json({ error: 'Case not found' }, { status: 404 })
+    }
+    await Promise.all([
+      ...(courtCase.documents || []).map((doc) => deleteStoredFile(doc.fileUrl)),
+      deleteStoredFile(courtCase.photoUrl),
+    ])
     await prisma.courtCase.delete({
       where: { id },
     })
+    revalidatePath('/admin/cases')
+    revalidatePath('/lawyer/cases')
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

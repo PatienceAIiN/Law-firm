@@ -155,7 +155,7 @@ export default async function CaseDetailPage({ params }: Props) {
                     </div>
                   </div>
                   <a
-                    href={doc.fileUrl && doc.fileUrl.startsWith('http') ? doc.fileUrl : `/uploads/cases/${doc.fileUrl}`}
+                    href={doc.fileUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-blue-600 hover:text-blue-700 font-medium"

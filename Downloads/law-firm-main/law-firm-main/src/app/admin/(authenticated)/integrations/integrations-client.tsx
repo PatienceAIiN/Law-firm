@@ -206,7 +206,7 @@ export function IntegrationsClient({
           <h3 className="font-black uppercase tracking-widest text-sm">Auto Meeting Link Generation</h3>
         </div>
         <p className="text-sm text-white/70 font-medium leading-relaxed">
-          When a client books a consultation and selects Google Meet or Zoom, the system automatically
+          When a client books a consultation and selects Jitsi Meet or Zoom, the system automatically
           creates a real meeting link via the connected account. The link is emailed to both the
           client and the firm instantly. Authentication is stored permanently in the database —
           even after logout — until you explicitly delink it.
@@ -226,15 +226,15 @@ export function IntegrationsClient({
       </div>
 
       <ProviderCard
-        name="Google Meet"
+        name="Jitsi Meet"
         icon={<Video className="w-6 h-6 text-white" />}
         accentColor="bg-[#1a73e8]"
         status={googleStatus}
         configured={googleConfigured}
         connectHref="/api/auth/google-meet/connect"
         disconnectEndpoint="/api/auth/google-meet/disconnect"
-        description="Auto-create Google Meet links via Google Calendar API"
-        setupNote="Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to your .env.local file. Set the OAuth callback URL to: {NEXTAUTH_URL}/api/auth/google-meet/callback"
+        description="Open-source meeting links via Jitsi Meet"
+        setupNote="No OAuth credentials required. The connect button simply enables Jitsi-based meeting links."
       />
 
       <ProviderCard
@@ -254,13 +254,11 @@ export function IntegrationsClient({
         <h3 className="font-black uppercase tracking-widest text-sm text-[#0a192f]">Setup Guide</h3>
         <div className="space-y-4 text-sm">
           <div>
-            <div className="font-black text-[#0a192f] mb-1">Google Meet Setup</div>
+            <div className="font-black text-[#0a192f] mb-1">Jitsi Meet Setup</div>
             <ol className="list-decimal ml-4 space-y-1 text-gray-600 font-medium">
-              <li>Go to Google Cloud Console → APIs &amp; Services → Credentials</li>
-              <li>Create an OAuth 2.0 Client ID (Web application)</li>
-              <li>Add <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">{'{NEXTAUTH_URL}'}/api/auth/google-meet/callback</code> as an authorized redirect URI</li>
-              <li>Enable the Google Calendar API in your project</li>
-              <li>Copy Client ID + Secret to <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs">.env.local</code></li>
+              <li>No OAuth setup is required for Jitsi.</li>
+              <li>The connect button simply stores Jitsi as the active meeting provider.</li>
+              <li>Use the booking flow to generate public Jitsi room links automatically.</li>
             </ol>
           </div>
           <div>

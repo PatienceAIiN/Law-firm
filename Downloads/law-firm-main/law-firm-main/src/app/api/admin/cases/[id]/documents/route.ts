@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { writeFile, mkdir } from 'fs/promises'
-import path from 'path'
+import { deleteStoredFile, uploadFile } from '@/lib/storage'
+import { revalidatePath } from 'next/cache'
 
 export async function POST(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -12,27 +12,37 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     if (!file) return NextResponse.json({ error: 'No file provided' }, { status: 400 })
 
-    const bytes = await file.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', 'cases', id)
-    await mkdir(uploadDir, { recursive: true })
-
-    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_')
-    const filePath = path.join(uploadDir, `${Date.now()}_${safeName}`)
-    await writeFile(filePath, buffer)
-
-    const relativePath = `/uploads/cases/${id}/${Date.now()}_${safeName}`
+    const uploaded = await uploadFile({
+      file,
+      prefix: `uploads/cases/${id}`,
+      localDirectory: `public/uploads/cases/${id}`,
+      publicUrlPrefix: `/uploads/cases/${id}`,
+      allowedTypes: [
+        'application/pdf',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'image/gif',
+        'image/svg+xml',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      ],
+    })
 
     const doc = await prisma.caseDocument.create({
       data: {
         caseId: id,
         name: name || file.name,
-        fileUrl: `/uploads/cases/${id}/${path.basename(filePath)}`,
+        fileUrl: uploaded.url,
         fileType: file.type || 'application/pdf',
         fileSize: file.size,
       },
     })
+
+    revalidatePath(`/admin/cases/${id}`)
+    revalidatePath('/admin/cases')
+    revalidatePath(`/lawyer/cases/${id}`)
+    revalidatePath('/lawyer/cases')
 
     return NextResponse.json(doc, { status: 201 })
   } catch (error: any) {
@@ -46,7 +56,21 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     const { searchParams } = new URL(req.url)
     const docId = searchParams.get('docId')
     if (!docId) return NextResponse.json({ error: 'docId required' }, { status: 400 })
+    const doc = await prisma.caseDocument.findUnique({ where: { id: docId } })
+    if (!doc) return NextResponse.json({ error: 'Document not found' }, { status: 404 })
+
+    await deleteStoredFile(doc.fileUrl)
     await prisma.caseDocument.delete({ where: { id: docId } })
+    if (doc.caseId) {
+      const caseData = await prisma.courtCase.findUnique({ where: { id: doc.caseId }, select: { photoUrl: true } })
+      if (caseData?.photoUrl && caseData.photoUrl === doc.fileUrl) {
+        await prisma.courtCase.update({ where: { id: doc.caseId }, data: { photoUrl: null } })
+      }
+      revalidatePath(`/admin/cases/${doc.caseId}`)
+      revalidatePath('/admin/cases')
+      revalidatePath(`/lawyer/cases/${doc.caseId}`)
+      revalidatePath('/lawyer/cases')
+    }
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete document' }, { status: 500 })

@@ -59,14 +59,14 @@ export function ManualScheduler({ scheduleAction }: ManualSchedulerProps) {
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Meeting Mode *</label>
             <select name="meetingMode" required className="w-full px-3 py-2.5 rounded-xl bg-white border border-[#e8e3dc] text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#1a1208]/10">
-              <option value="GOOGLE_MEET">Google Meet</option>
+              <option value="GOOGLE_MEET">Jitsi Meet</option>
               <option value="ZOOM">Zoom</option>
               <option value="PHYSICAL">In-Person</option>
             </select>
           </div>
           <div>
             <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Meeting Link / Address</label>
-            <input name="meetingLink" placeholder="https://meet.google.com/... or office address" className="w-full px-3 py-2.5 rounded-xl bg-white border border-[#e8e3dc] text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#1a1208]/10" />
+            <input name="meetingLink" placeholder="https://meet.jit.si/... or office address" className="w-full px-3 py-2.5 rounded-xl bg-white border border-[#e8e3dc] text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#1a1208]/10" />
           </div>
         </div>
 

@@ -1,5 +1,4 @@
 import { prisma } from './prisma'
-import { createGoogleMeetEvent, createZoomMeeting } from './meeting-providers'
 
 export const IST_TIME_ZONE = 'Asia/Kolkata'
 
@@ -52,7 +51,7 @@ export function istDateKey(date: Date) {
     timeZone: IST_TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
-    day: '2-digit'
+    day: '2-digit',
   }).formatToParts(date)
 
   const year = parts.find((p) => p.type === 'year')?.value || '1970'
@@ -112,9 +111,9 @@ export async function getAvailabilityForDate(dateKey: string, meetingMode?: Meet
     where: { date },
     include: {
       slots: {
-        orderBy: { startTime: 'asc' }
-      }
-    }
+        orderBy: { startTime: 'asc' },
+      },
+    },
   })
 
   const slots = filterSlotsByMode(day?.slots || [], meetingMode).map(serializeSlot)
@@ -137,14 +136,14 @@ export async function listAvailabilityForMonth(monthKey: string, meetingMode?: M
       date: {
         gte: monthStart,
         lt: monthEnd,
-      }
+      },
     },
     include: {
       slots: {
-        orderBy: { startTime: 'asc' }
-      }
+        orderBy: { startTime: 'asc' },
+      },
     },
-    orderBy: { date: 'asc' }
+    orderBy: { date: 'asc' },
   })
 
   return days.map((day) => {
@@ -169,7 +168,7 @@ async function findOrCreateDay(dateKey: string) {
     data: {
       date,
       isActive: true,
-    }
+    },
   })
 }
 
@@ -193,7 +192,7 @@ export async function createAvailabilitySlot(input: {
       manualMeetingLink: input.manualMeetingLink || null,
       physicalAddress: input.physicalAddress || null,
       isActive: true,
-    }
+    },
   })
 
   return serializeSlot(slot)
@@ -210,11 +209,11 @@ export async function updateAvailabilitySlot(
     manualMeetingLink: string | null
     physicalAddress: string | null
     isActive: boolean
-  }>
+  }>,
 ) {
   const current = await prisma.availabilitySlot.findUnique({
     where: { id: slotId },
-    include: { day: true }
+    include: { day: true },
   })
 
   if (!current) {
@@ -241,7 +240,7 @@ export async function updateAvailabilitySlot(
       ...(input.manualMeetingLink !== undefined ? { manualMeetingLink: input.manualMeetingLink } : {}),
       ...(input.physicalAddress !== undefined ? { physicalAddress: input.physicalAddress } : {}),
       ...(typeof input.isActive === 'boolean' ? { isActive: input.isActive } : {}),
-    }
+    },
   })
 
   return serializeSlot(updated)
@@ -254,124 +253,10 @@ export async function deleteAvailabilitySlot(slotId: string) {
 export function generateMeetingLink(mode: MeetingMode, bookingId: string, slotId: string) {
   const code = `${bookingId.slice(0, 8)}-${slotId.slice(0, 8)}`
   if (mode === 'GOOGLE_MEET') {
-    return `https://meet.google.com/${code}`
+    return `https://meet.jit.si/${code}`
   }
   if (mode === 'ZOOM') {
     return `https://zoom.us/j/${code}`
   }
   return ''
-}
-
-export async function createConsultationBooking(input: {
-  name: string
-  email: string
-  phone: string
-  subject: string
-  notes?: string
-  meetingMode: MeetingMode
-  slotId: string
-}) {
-  const slot = await prisma.availabilitySlot.findUnique({
-    where: { id: input.slotId },
-    include: { day: true }
-  })
-
-  if (!slot || !slot.isActive) {
-    throw new Error('Selected slot is unavailable')
-  }
-
-  const allowedModes = parseAllowedModes(slot.allowedModes)
-  if (!allowedModes.includes(input.meetingMode)) {
-    throw new Error('Selected meeting mode is not available for this slot')
-  }
-
-  if (slot.bookedCount >= slot.capacity) {
-    throw new Error('Selected slot is fully booked')
-  }
-
-  // Resolve meeting link — try real OAuth APIs first, fallback to generated link
-  let resolvedMeetingLink = ''
-  if (input.meetingMode === 'PHYSICAL') {
-    resolvedMeetingLink = slot.physicalAddress || ''
-  } else if (slot.manualMeetingLink) {
-    resolvedMeetingLink = slot.manualMeetingLink
-  } else {
-    // Build time strings for API calls (ISO 8601 in IST)
-    const dateKey = istDateKey(slot.day.date)
-    const startISO = `${dateKey}T${formatIstTimeValue(slot.startTime)}:00+05:30`
-    const endISO = `${dateKey}T${formatIstTimeValue(slot.endTime)}:00+05:30`
-    const durationMs = slot.endTime.getTime() - slot.startTime.getTime()
-    const durationMinutes = Math.round(durationMs / 60_000) || 60
-
-    if (input.meetingMode === 'GOOGLE_MEET') {
-      const link = await createGoogleMeetEvent({
-        summary: `Legal Consultation — ${input.name}`,
-        description: input.subject,
-        startISO,
-        endISO,
-        attendeeEmails: [input.email],
-      }).catch(() => null)
-      resolvedMeetingLink = link || generateMeetingLink(input.meetingMode, 'pending', slot.id)
-    } else if (input.meetingMode === 'ZOOM') {
-      const link = await createZoomMeeting({
-        topic: `Legal Consultation — ${input.name}`,
-        startISO,
-        durationMinutes,
-        agenda: input.subject,
-      }).catch(() => null)
-      resolvedMeetingLink = link || generateMeetingLink(input.meetingMode, 'pending', slot.id)
-    }
-  }
-
-  const booking = await prisma.$transaction(async (tx) => {
-    const created = await tx.consultationBooking.create({
-      data: {
-        slotId: slot.id,
-        name: input.name,
-        email: input.email,
-        phone: input.phone,
-        subject: input.subject,
-        notes: input.notes || null,
-        meetingMode: input.meetingMode,
-        meetingLink: resolvedMeetingLink,
-        status: 'CONFIRMED',
-      }
-    })
-
-    await tx.availabilitySlot.update({
-      where: { id: slot.id },
-      data: {
-        bookedCount: { increment: 1 }
-      }
-    })
-
-    return tx.consultationBooking.findUnique({
-      where: { id: created.id },
-      include: {
-        slot: {
-          include: {
-            day: true
-          }
-        }
-      }
-    })
-  })
-
-  if (!booking) throw new Error('Failed to create booking record')
-
-  return {
-    booking,
-    slot: {
-      id: slot.id,
-      date: istDateKey(slot.day.date),
-      startTime: formatIstTime(slot.startTime),
-      endTime: formatIstTime(slot.endTime),
-      capacity: slot.capacity,
-      bookedCount: slot.bookedCount + 1,
-      availableCount: Math.max(slot.capacity - slot.bookedCount - 1, 0),
-      allowedModes: parseAllowedModes(slot.allowedModes),
-      manualMeetingLink: slot.manualMeetingLink,
-      physicalAddress: slot.physicalAddress,
-    }
-  }
 }

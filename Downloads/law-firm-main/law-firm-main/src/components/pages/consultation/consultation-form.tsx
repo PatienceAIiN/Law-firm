@@ -565,7 +565,9 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                   className="peer sr-only"
                 />
                 <div className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition-all peer-checked:bg-[#0a192f] peer-checked:text-white">
-                  <span className="text-[8px] font-black uppercase tracking-widest">{mode.replace(/_/g, ' ')}</span>
+                  <span className="text-[8px] font-black uppercase tracking-widest">
+                    {mode === 'GOOGLE_MEET' ? 'JITSI MEET' : mode.replace(/_/g, ' ')}
+                  </span>
                 </div>
               </label>
             ))}
@@ -737,7 +739,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
           <div className="grid gap-3 sm:gap-4">
             {[
-              { Icon: Video, title: 'Virtual Meeting', desc: 'Secure Google Meet or Zoom sessions.' },
+              { Icon: Video, title: 'Virtual Meeting', desc: 'Secure Jitsi Meet or Zoom sessions.' },
               { Icon: MapPin, title: 'In-Person', desc: 'Visit our chambers for a face-to-face brief.' },
               { Icon: Calendar, title: 'Flexible Timing', desc: 'Available Mon-Fri, 10:00 AM - 6:00 PM.' },
             ].map(({ Icon, title, desc }) => (

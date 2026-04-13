@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { deleteStoredFile } from '@/lib/storage'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -47,7 +49,18 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params
+    const courtCase = await prisma.courtCase.findUnique({
+      where: { id },
+      include: { documents: true },
+    })
+    if (!courtCase) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    await Promise.all([
+      ...(courtCase.documents || []).map((doc) => deleteStoredFile(doc.fileUrl)),
+      deleteStoredFile(courtCase.photoUrl),
+    ])
     await prisma.courtCase.delete({ where: { id } })
+    revalidatePath('/admin/cases')
+    revalidatePath('/lawyer/cases')
     return NextResponse.json({ success: true })
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete case' }, { status: 500 })

@@ -13,7 +13,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const baseUrl = process.env.NEXTAUTH_URL || new URL(request.url).origin
+    const baseUrl = new URL(request.url).origin
     const tokens = await exchangeZoomCode(code, baseUrl)
 
     if (tokens.error) {

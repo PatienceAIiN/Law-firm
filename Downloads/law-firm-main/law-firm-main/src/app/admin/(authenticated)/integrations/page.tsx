@@ -4,9 +4,7 @@ import { IntegrationsClient } from './integrations-client'
 export default async function IntegrationsPage() {
   const status = await getMeetingIntegrationStatus()
 
-  const googleConfigured = !!(
-    process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
-  )
+  const googleConfigured = true
   const zoomConfigured = !!(
     process.env.ZOOM_CLIENT_ID && process.env.ZOOM_CLIENT_SECRET
   )
@@ -18,7 +16,7 @@ export default async function IntegrationsPage() {
           Meeting Integrations
         </h1>
         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mt-1">
-          Connect Google Meet or Zoom to auto-generate real meeting links when consultations are booked.
+          Connect Jitsi Meet or Zoom to auto-generate real meeting links when consultations are booked.
         </p>
       </div>
 

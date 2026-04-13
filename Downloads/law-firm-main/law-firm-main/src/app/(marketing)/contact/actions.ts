@@ -2,7 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
-import { createConsultationBooking } from '@/lib/consultation-scheduling'
+import { createConsultationBooking } from '@/lib/consultation-booking.server'
 import { sendEmail, generateBookingConfirmationEmail, generateBookingNotificationEmail, generateSlotFullAdminEmail } from '@/lib/email'
 
 export async function submitContact(formData: FormData) {

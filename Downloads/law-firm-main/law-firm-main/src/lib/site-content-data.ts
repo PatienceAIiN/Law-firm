@@ -160,7 +160,7 @@ export const DEFAULT_SITE_CONTENT = {
       subtitle: 'Expert legal guidance delivered via your preferred mode of communication.'
     },
     features: [
-      { title: 'Virtual Meeting', desc: 'Secure Google Meet or Zoom sessions.' },
+      { title: 'Virtual Meeting', desc: 'Secure Jitsi Meet or Zoom sessions.' },
       { title: 'In-Person', desc: 'Visit our chambers for a face-to-face brief.' },
       { title: 'Flexible Timing', desc: 'Available Mon-Fri, 10:00 AM - 6:00 PM.' }
     ],

@@ -1,12 +1,7 @@
 import { randomUUID } from 'crypto'
-import { mkdir, writeFile } from 'fs/promises'
-import { basename, extname, isAbsolute, join } from 'path'
 import { NextRequest, NextResponse } from 'next/server'
 import { appendMeetingRecording, getMeetingConfig } from '@/lib/meeting-workspace'
-
-function sanitizeFileName(name: string) {
-  return basename(name).replace(/[^a-zA-Z0-9._-]/g, '-')
-}
+import { uploadFile } from '@/lib/storage'
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
@@ -18,35 +13,24 @@ export async function POST(req: NextRequest) {
   }
 
   const config = await getMeetingConfig()
-  const targetDirectory = isAbsolute(config.localSavePath)
-    ? config.localSavePath
-    : join(process.cwd(), config.localSavePath)
+  const uploaded = await uploadFile({
+    file,
+    prefix: `meeting-recordings/${bookingId}`,
+    localDirectory: config.localSavePath,
+    publicUrlPrefix: '/meeting-recordings',
+    allowedTypes: ['video/webm', 'video/mp4', 'video/quicktime', 'application/octet-stream'],
+  })
 
-  await mkdir(targetDirectory, { recursive: true })
-
-  const safeName = sanitizeFileName(file.name || `recording${extname(file.name) || '.webm'}`)
-  const fileName = `${Date.now()}-${randomUUID().slice(0, 8)}-${safeName}`
-  const absolutePath = join(targetDirectory, fileName)
-  const bytes = Buffer.from(await file.arrayBuffer())
-
-  await writeFile(absolutePath, bytes)
-
-  const normalizedDirectory = targetDirectory.replace(/\\/g, '/')
-  const publicRoot = join(process.cwd(), 'public').replace(/\\/g, '/')
-  const normalizedPath = absolutePath.replace(/\\/g, '/')
-  const publicUrl = normalizedDirectory.startsWith(publicRoot)
-    ? normalizedPath.replace(publicRoot, '')
-    : null
-
-  const storage = config.storageMode === 'GOOGLE_DRIVE' ? 'google_drive_queue' : 'server'
+  const fileName = uploaded.url.split('/').pop() || file.name
+  const storage = config.storageMode === 'GOOGLE_DRIVE' ? 'google_drive_queue' : uploaded.storage
 
   await appendMeetingRecording({
     id: randomUUID(),
     bookingId,
     fileName,
-    filePath: absolutePath,
-    publicUrl,
-    size: bytes.byteLength,
+    filePath: uploaded.url,
+    publicUrl: uploaded.url,
+    size: uploaded.size,
     storage,
     status: 'completed',
     createdAt: new Date().toISOString(),
@@ -55,8 +39,8 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({
     success: true,
     fileName,
-    filePath: absolutePath,
-    publicUrl,
+    filePath: uploaded.url,
+    publicUrl: uploaded.url,
     storage,
   })
 }

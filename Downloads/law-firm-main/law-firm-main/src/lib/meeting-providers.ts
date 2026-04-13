@@ -1,11 +1,14 @@
+import { randomUUID } from 'crypto'
 import { prisma } from './prisma'
+import { sanitizeConfigValue } from './storage'
 
 // ─── Google Meet ────────────────────────────────────────────────────────────
 
 export function getGoogleOAuthUrl(baseUrl: string): string {
   const redirectUri = `${baseUrl}/api/auth/google-meet/callback`
+  const clientId = sanitizeConfigValue(process.env.GOOGLE_CLIENT_ID)
   const params = new URLSearchParams({
-    client_id: process.env.GOOGLE_CLIENT_ID || '',
+    client_id: clientId,
     redirect_uri: redirectUri,
     response_type: 'code',
     scope: [
@@ -20,13 +23,15 @@ export function getGoogleOAuthUrl(baseUrl: string): string {
 
 export async function exchangeGoogleCode(code: string, baseUrl: string) {
   const redirectUri = `${baseUrl}/api/auth/google-meet/callback`
+  const clientId = sanitizeConfigValue(process.env.GOOGLE_CLIENT_ID)
+  const clientSecret = sanitizeConfigValue(process.env.GOOGLE_CLIENT_SECRET)
   const response = await fetch('https://oauth2.googleapis.com/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       code,
-      client_id: process.env.GOOGLE_CLIENT_ID || '',
-      client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
+      client_id: clientId,
+      client_secret: clientSecret,
       redirect_uri: redirectUri,
       grant_type: 'authorization_code',
     }),
@@ -36,6 +41,8 @@ export async function exchangeGoogleCode(code: string, baseUrl: string) {
 
 export async function saveGoogleTokens(tokens: Record<string, any>) {
   const value = JSON.stringify({
+    provider: 'jitsi',
+    connected: true,
     ...tokens,
     expires_at: tokens.expires_at || new Date(Date.now() + (tokens.expires_in || 3600) * 1000).toISOString(),
     saved_at: new Date().toISOString(),
@@ -108,60 +115,22 @@ export async function createGoogleMeetEvent(data: {
   endISO: string
   attendeeEmails: string[]
 }): Promise<string | null> {
-  const accessToken = await getValidGoogleToken()
-  if (!accessToken) return null
-
-  try {
-    const response = await fetch(
-      'https://www.googleapis.com/calendar/v3/calendars/primary/events?conferenceDataVersion=1',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          summary: data.summary,
-          description: data.description || '',
-          start: { dateTime: data.startISO, timeZone: 'Asia/Kolkata' },
-          end: { dateTime: data.endISO, timeZone: 'Asia/Kolkata' },
-          attendees: data.attendeeEmails.map((email) => ({ email })),
-          conferenceData: {
-            createRequest: {
-              requestId: `lf-${Date.now()}`,
-              conferenceSolutionKey: { type: 'hangoutsMeet' },
-            },
-          },
-          reminders: {
-            useDefault: false,
-            overrides: [
-              { method: 'email', minutes: 60 },
-              { method: 'popup', minutes: 10 },
-            ],
-          },
-        }),
-      }
-    )
-
-    const event = await response.json()
-    if (event.error) {
-      console.error('Google Calendar API error:', event.error)
-      return null
-    }
-    return (
-      event.hangoutLink ||
-      event.conferenceData?.entryPoints?.[0]?.uri ||
-      null
-    )
-  } catch (err) {
-    console.error('Failed to create Google Meet event:', err)
-    return null
-  }
+  const room = data.summary
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '')
+  const seed = `${room || 'consultation'}-${new Date(data.startISO).getTime().toString(36)}-${randomUUID().slice(0, 8)}`
+  return `https://meet.jit.si/${seed}`
 }
 
 export async function getGoogleAccountInfo(): Promise<{ email?: string; name?: string } | null> {
   const accessToken = await getValidGoogleToken()
-  if (!accessToken) return null
+  if (!accessToken) {
+    const setting = await prisma.siteSetting.findUnique({ where: { key: 'google_meet_auth' } })
+    return setting ? { name: 'Jitsi Meet' } : null
+  }
   try {
     const r = await fetch('https://www.googleapis.com/oauth2/v2/userinfo', {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -177,9 +146,10 @@ export async function getGoogleAccountInfo(): Promise<{ email?: string; name?: s
 
 export function getZoomOAuthUrl(baseUrl: string): string {
   const redirectUri = `${baseUrl}/api/auth/zoom/callback`
+  const clientId = sanitizeConfigValue(process.env.ZOOM_CLIENT_ID)
   const params = new URLSearchParams({
     response_type: 'code',
-    client_id: process.env.ZOOM_CLIENT_ID || '',
+    client_id: clientId,
     redirect_uri: redirectUri,
   })
   return `https://zoom.us/oauth/authorize?${params}`
@@ -187,8 +157,10 @@ export function getZoomOAuthUrl(baseUrl: string): string {
 
 export async function exchangeZoomCode(code: string, baseUrl: string) {
   const redirectUri = `${baseUrl}/api/auth/zoom/callback`
+  const clientId = sanitizeConfigValue(process.env.ZOOM_CLIENT_ID)
+  const clientSecret = sanitizeConfigValue(process.env.ZOOM_CLIENT_SECRET)
   const credentials = Buffer.from(
-    `${process.env.ZOOM_CLIENT_ID}:${process.env.ZOOM_CLIENT_SECRET}`
+    `${clientId}:${clientSecret}`
   ).toString('base64')
   const response = await fetch('https://zoom.us/oauth/token', {
     method: 'POST',
@@ -344,7 +316,7 @@ export async function getMeetingIntegrationStatus() {
 
   return {
     google: {
-      connected: !!googleTokens?.access_token,
+      connected: !!googleTokens?.access_token || googleTokens?.provider === 'jitsi' || googleTokens?.connected === true,
       savedAt: googleTokens?.saved_at || null,
       expiresAt: googleTokens?.expires_at || null,
     },

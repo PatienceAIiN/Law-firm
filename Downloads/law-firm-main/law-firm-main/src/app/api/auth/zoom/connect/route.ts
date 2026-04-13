@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  const baseUrl = process.env.NEXTAUTH_URL || new URL(request.url).origin
+  const baseUrl = new URL(request.url).origin
   const url = getZoomOAuthUrl(baseUrl)
   return NextResponse.redirect(url)
 }
