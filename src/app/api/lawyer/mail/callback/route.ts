@@ -13,7 +13,7 @@ export async function GET(req: NextRequest) {
   if (!id || !code) return NextResponse.redirect(`${base}/lawyer/dashboard?mail=error`)
   try {
     await exchangeCodeAndStore(code, advocateMailKey(id), '/api/lawyer/mail/callback')
-    return NextResponse.redirect(`${base}/lawyer/dashboard?mail=connected`)
+    return NextResponse.redirect(`${base}/lawyer/mail?connected=true`)
   } catch (e: any) {
     return NextResponse.redirect(`${base}/lawyer/dashboard?mail=error`)
   }

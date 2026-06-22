@@ -16,7 +16,7 @@ export function VideoCover({ src, overlay = 'medium' }: { src: string; overlay?:
         loop
         muted
         playsInline
-        preload="metadata"
+        preload="auto"
       >
         <source src={src} type="video/mp4" />
       </video>
