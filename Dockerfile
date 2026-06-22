@@ -14,6 +14,12 @@ RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+
+# Pass DATABASE_URL from Render environment to the build process
+# so Prisma can initialize during Next.js static prerendering
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate
 # Skip type-check failures from breaking deploys; Render builds production output.
