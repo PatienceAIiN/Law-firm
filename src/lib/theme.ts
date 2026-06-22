@@ -29,13 +29,13 @@ export const DEFAULT_THEME: SiteTheme = {
 }
 
 async function loadSiteTheme(): Promise<SiteTheme> {
-  const setting = await (prisma as any).siteSetting?.findUnique({
-    where: { key: 'site_theme' }
-  })
-
-  if (!setting) return DEFAULT_THEME
-
   try {
+    const setting = await (prisma as any).siteSetting?.findUnique({
+      where: { key: 'site_theme' }
+    })
+
+    if (!setting) return DEFAULT_THEME
+
     const parsed = JSON.parse(setting.value)
     const merged = { ...DEFAULT_THEME, ...parsed }
 

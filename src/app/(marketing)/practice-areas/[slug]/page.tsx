@@ -27,9 +27,12 @@ function parseBlocks(content?: string | null) {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const area = await prisma.practiceArea.findUnique({
-    where: { slug },
-  })
+  let area = null
+  try {
+    area = await prisma.practiceArea.findUnique({
+      where: { slug },
+    })
+  } catch {}
   if (!area) return { title: 'Not Found' }
   return { title: area.title }
 }
@@ -38,9 +41,12 @@ export default async function PracticeAreaDetail({ params }: PageProps) {
   const content = await getSiteContent()
   const detailContent = content.practiceAreaDetail || {}
   const { slug } = await params
-  const area = await (prisma as any).practiceArea?.findUnique({
-    where: { slug },
-  })
+  let area = null
+  try {
+    area = await (prisma as any).practiceArea?.findUnique({
+      where: { slug },
+    })
+  } catch {}
 
   if (!area || !area.isActive) notFound()
 

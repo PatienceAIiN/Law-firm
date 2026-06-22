@@ -17,12 +17,15 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const [profile, metrics, testimonials, teamMembers] = await Promise.all([
-    (prisma as any).aboutProfile?.findUnique({ where: { id: 'default-profile' } }) || null,
-    (prisma as any).siteMetric?.findMany({ orderBy: { order: 'asc' } }) || [],
-    (prisma as any).testimonial?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }) || [],
-    (prisma as any).teamMember?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }) || [],
-  ])
+  let profile = null, metrics: any[] = [], testimonials: any[] = [], teamMembers: any[] = []
+  try {
+    ;[profile, metrics, testimonials, teamMembers] = await Promise.all([
+      (prisma as any).aboutProfile?.findUnique({ where: { id: 'default-profile' } }) || null,
+      (prisma as any).siteMetric?.findMany({ orderBy: { order: 'asc' } }) || [],
+      (prisma as any).testimonial?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }) || [],
+      (prisma as any).teamMember?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' } }) || [],
+    ])
+  } catch {}
   const content = await getSiteContent()
 
   return (

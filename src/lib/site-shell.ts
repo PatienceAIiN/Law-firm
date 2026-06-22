@@ -12,23 +12,26 @@ export type MarketingShellData = {
 }
 
 async function loadMarketingShellData(): Promise<MarketingShellData> {
-  const [settings, practiceAreas, profile, sitePages] = await Promise.all([
-    prisma.siteSetting.findMany({
-      where: {
-        key: {
-          in: ['brand_config', 'navigation_links', 'footer_config']
+  let settings: any[] = [], practiceAreas: any[] = [], profile: any = null, sitePages: any[] = []
+  try {
+    ;[settings, practiceAreas, profile, sitePages] = await Promise.all([
+      prisma.siteSetting.findMany({
+        where: {
+          key: {
+            in: ['brand_config', 'navigation_links', 'footer_config']
+          }
         }
-      }
-    }),
-    prisma.practiceArea.findMany({
-      where: { isActive: true },
-      orderBy: { order: 'asc' }
-    }),
-    prisma.aboutProfile.findUnique({
-      where: { id: 'default-profile' }
-    }),
-    getSitePages(),
-  ])
+      }),
+      prisma.practiceArea.findMany({
+        where: { isActive: true },
+        orderBy: { order: 'asc' }
+      }),
+      prisma.aboutProfile.findUnique({
+        where: { id: 'default-profile' }
+      }),
+      getSitePages(),
+    ])
+  } catch {}
 
   const safeParse = (value: string | null | undefined) => {
     if (!value) return null

@@ -54,11 +54,15 @@ function parsePages(value?: string | null): SitePage[] | null {
 }
 
 async function loadSitePages(): Promise<SitePage[]> {
-  const setting = await prisma.siteSetting.findUnique({
-    where: { key: 'site_pages' },
-  })
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: 'site_pages' },
+    })
 
-  return parsePages(setting?.value) || DEFAULT_SITE_PAGES
+    return parsePages(setting?.value) || DEFAULT_SITE_PAGES
+  } catch {
+    return DEFAULT_SITE_PAGES
+  }
 }
 
 export const getSitePages = unstable_cache(loadSitePages, ['site-pages'], {

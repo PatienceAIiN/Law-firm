@@ -23,13 +23,17 @@ function parseContent(value?: string | null): SiteContent | null {
 }
 
 async function loadSiteContent(): Promise<SiteContent> {
-  const setting = await prisma.siteSetting.findUnique({
-    where: { key: 'site_content' }
-  })
+  try {
+    const setting = await prisma.siteSetting.findUnique({
+      where: { key: 'site_content' }
+    })
 
-  return {
-    ...DEFAULT_SITE_CONTENT,
-    ...(parseContent(setting?.value) || {})
+    return {
+      ...DEFAULT_SITE_CONTENT,
+      ...(parseContent(setting?.value) || {})
+    }
+  } catch {
+    return DEFAULT_SITE_CONTENT
   }
 }
 

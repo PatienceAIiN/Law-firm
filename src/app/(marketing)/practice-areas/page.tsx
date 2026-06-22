@@ -11,10 +11,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PracticeAreasPage() {
-  const practiceAreas = await prisma.practiceArea.findMany({
-    where: { isActive: true },
-    orderBy: { order: 'asc' },
-  })
+  let practiceAreas: any[] = []
+  try {
+    practiceAreas = await prisma.practiceArea.findMany({
+      where: { isActive: true },
+      orderBy: { order: 'asc' },
+    })
+  } catch {}
   const content = await getSiteContent()
 
   return (
