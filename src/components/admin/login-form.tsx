@@ -116,11 +116,11 @@ export function LoginForm() {
         <div className="flex justify-center">
           <CheckCircle2 className="h-14 w-14 text-emerald-500" />
         </div>
-        <h3 className="text-lg font-bold text-[#1a1208]">Password Reset Successfully</h3>
+        <h3 className="text-lg font-bold text-[#14203E]">Password Reset Successfully</h3>
         <p className="text-sm text-gray-500">You can now sign in with your new password.</p>
         <Button
           onClick={backToLogin}
-          className="w-full bg-[#1a1208] hover:bg-[#2d1f0d] text-white rounded-xl font-bold"
+          className="w-full bg-[#14203E] hover:bg-[#1d2c52] text-white rounded-xl font-bold"
         >
           Go to Login
         </Button>
@@ -154,7 +154,7 @@ export function LoginForm() {
             value={otp}
             onChange={e => setOtp(e.target.value.replace(/\D/g, ''))}
             placeholder="Enter OTP"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-2xl font-black tracking-[0.5em] text-center text-[#1a1208] outline-none focus:ring-2 focus:ring-[#d4a853]/30"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-2xl font-black tracking-[0.5em] text-center text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/30"
           />
         </div>
 
@@ -168,7 +168,7 @@ export function LoginForm() {
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
               placeholder="Min. 8 characters"
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#d4a853]/30 pr-10"
+              className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/30 pr-10"
             />
             <button type="button" onClick={() => setShowNewPass(v => !v)}
               className="absolute inset-y-0 right-3 flex items-center text-gray-400">
@@ -185,14 +185,14 @@ export function LoginForm() {
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             placeholder="Repeat new password"
-            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#d4a853]/30"
+            className="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/30"
           />
         </div>
 
         <Button
           type="submit"
           disabled={fpLoading}
-          className="w-full bg-[#1a1208] hover:bg-[#2d1f0d] text-white rounded-xl font-bold py-3 h-auto"
+          className="w-full bg-[#14203E] hover:bg-[#1d2c52] text-white rounded-xl font-bold py-3 h-auto"
         >
           {fpLoading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Resetting…</> : 'Reset Password'}
         </Button>
@@ -224,7 +224,7 @@ export function LoginForm() {
               value={fpEmail}
               onChange={e => setFpEmail(e.target.value)}
               placeholder="admin@lawfirm.com"
-              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#d4a853]/30"
+              className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 text-sm text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/30"
             />
           </div>
         </div>
@@ -232,7 +232,7 @@ export function LoginForm() {
         <Button
           type="submit"
           disabled={fpLoading}
-          className="w-full bg-[#1a1208] hover:bg-[#2d1f0d] text-white rounded-xl font-bold py-3 h-auto"
+          className="w-full bg-[#14203E] hover:bg-[#1d2c52] text-white rounded-xl font-bold py-3 h-auto"
         >
           {fpLoading ? <><Loader2 className="h-4 w-4 animate-spin mr-2" />Sending OTP…</> : <><KeyRound className="h-4 w-4 mr-2" />Send OTP</>}
         </Button>
@@ -258,7 +258,7 @@ export function LoginForm() {
             required
             value={email}
             onChange={e => setEmail(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4a853]/40 sm:text-sm"
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#14203E]/40 sm:text-sm"
             placeholder="admin@lawfirm.com"
           />
         </div>
@@ -275,7 +275,7 @@ export function LoginForm() {
             required
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d4a853]/40 sm:text-sm pr-10"
+            className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#14203E]/40 sm:text-sm pr-10"
             placeholder="Enter your password"
           />
           <button
@@ -301,7 +301,7 @@ export function LoginForm() {
         <button
           type="button"
           onClick={() => { setMode('forgot'); setFpError(''); setFpEmail(email) }}
-          className="text-sm font-medium text-[#8c7355] hover:text-[#1a1208] transition-colors"
+          className="text-sm font-medium text-[#64748b] hover:text-[#14203E] transition-colors"
         >
           Forgot your password?
         </button>
@@ -312,7 +312,7 @@ export function LoginForm() {
           type="submit"
           disabled={isLoading}
           className={cn(
-            'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#1a1208] hover:bg-[#2d1f0d] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#d4a853]',
+            'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-[#14203E] hover:bg-[#1d2c52] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#14203E]',
             isLoading && 'opacity-75 cursor-not-allowed'
           )}
         >

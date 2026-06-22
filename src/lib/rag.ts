@@ -303,7 +303,7 @@ const KNOWLEDGE_BASE: Document[] = [
     category: 'Firm Information',
     content: `We are a professional law firm providing expert legal services across multiple practice areas including Corporate Law, Criminal Defense, Family Law, Property Disputes, and Constitutional Law.
     Our team of experienced advocates provides personalized legal guidance with deep expertise in Indian law.
-    We offer consultation modes: In-Person at our office, Google Meet virtual sessions, and Zoom virtual sessions.
+    We offer two consultation modes: In-Person at our office, and Virtual live video sessions hosted in our own secure meeting workspace.
     Our services: Legal consultation, case representation, contract drafting, legal advisory, court representation.
     Contact us through the website to book a priority consultation slot.`
   },
@@ -314,12 +314,12 @@ const KNOWLEDGE_BASE: Document[] = [
     content: `To book a consultation with our law firm:
     1. Visit the Consultation page and open the booking modal.
     2. Select a date from the calendar.
-    3. Choose your preferred meeting mode: Physical (in-person), Google Meet, or Zoom.
+    3. Choose your preferred meeting mode: In-Person or Virtual (live video).
     4. Select an available time slot.
     5. Fill in your details: Name, Email, Phone, Case Subject, and Brief.
     6. Submit the booking form inside the modal.
     A confirmation email will be sent to your email address with meeting details.
-    Meeting links for Google Meet or Zoom will be auto-generated and sent by email.`
+    For Virtual meetings, a secure live video link is auto-generated and sent by email.`
   },
   {
     id: 'site-3',

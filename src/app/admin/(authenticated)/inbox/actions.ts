@@ -1,8 +1,28 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { prisma } from '@/lib/prisma'
 import { getBookingWithSlot } from '@/lib/meeting-workspace'
 import { sendEmail, generateClientEmailPayload, type ClientEmailTemplateType } from '@/lib/email'
+
+export async function deleteContactAction(formData: FormData) {
+  const id = String(formData.get('id') || '').trim()
+  if (!id) return
+  await prisma.contactSubmission.delete({ where: { id } }).catch(() => {})
+  revalidatePath('/admin/inbox')
+}
+
+export async function deleteBookingAction(formData: FormData) {
+  const id = String(formData.get('id') || '').trim()
+  if (!id) return
+  const booking = await prisma.consultationBooking.findUnique({ where: { id } })
+  if (!booking) return
+  await prisma.$transaction(async (tx) => {
+    await tx.consultationBooking.delete({ where: { id } })
+    await tx.availabilitySlot.update({ where: { id: booking.slotId }, data: { bookedCount: { decrement: 1 } } }).catch(() => {})
+  })
+  revalidatePath('/admin/inbox')
+}
 
 export async function sendClientEmailAction(formData: FormData) {
   const bookingId = String(formData.get('bookingId') || '').trim()

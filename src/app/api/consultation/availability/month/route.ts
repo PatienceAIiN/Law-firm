@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   const availability = await listAvailabilityForMonth(
     month,
-    meetingMode === 'PHYSICAL' || meetingMode === 'GOOGLE_MEET' || meetingMode === 'ZOOM'
+    meetingMode === 'PHYSICAL' || meetingMode === 'VIRTUAL'
       ? meetingMode
       : undefined
   )

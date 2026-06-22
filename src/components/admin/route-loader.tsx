@@ -15,7 +15,7 @@ export function AdminPageRouteLoader() {
       const timer = setTimeout(() => {
         setLoading(false)
         setLastPath(pathname)
-      }, 500) // Simulated threshold
+      }, 200)
       return () => clearTimeout(timer)
     }
   }, [pathname, lastPath])

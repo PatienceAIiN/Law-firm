@@ -104,25 +104,25 @@ export function TeamManager({ initialData, createAction, updateAction, deleteAct
             className="card-3d bg-white rounded-[2rem] border border-gray-100 overflow-hidden group relative"
           >
             {/* Header with image */}
-            <div className="bg-gradient-to-br from-[#0a192f] to-[#1e3a5f] p-6 text-center relative">
+            <div className="bg-gradient-to-br from-[#14203E] to-[#1e3a5f] p-6 text-center relative">
               <div className="relative w-20 h-20 mx-auto mb-3">
                 {member.image ? (
                   <Image
                     src={member.image}
                     alt={member.name}
                     fill
-                    className="rounded-full object-cover border-2 border-[#c5a059]"
+                    className="rounded-full object-cover border-2 border-[#F4E8D8]"
                   />
                 ) : (
-                  <div className="w-20 h-20 rounded-full bg-[#c5a059]/20 border-2 border-[#c5a059] flex items-center justify-center">
-                    <span className="text-[#c5a059] text-xl font-black">
+                  <div className="w-20 h-20 rounded-full bg-[#F6F0E8]/20 border-2 border-[#F4E8D8] flex items-center justify-center">
+                    <span className="text-[#14203E] text-xl font-black">
                       {member.name.split(' ').map((n) => n[0]).join('')}
                     </span>
                   </div>
                 )}
               </div>
               <h3 className="text-white font-black text-sm uppercase tracking-tight">{member.name}</h3>
-              <p className="text-[#c5a059] text-[10px] font-bold uppercase tracking-widest mt-1">{member.title}</p>
+              <p className="text-[#14203E] text-[10px] font-bold uppercase tracking-widest mt-1">{member.title}</p>
 
               {/* Action buttons — visible on hover */}
               <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -168,17 +168,17 @@ export function TeamManager({ initialData, createAction, updateAction, deleteAct
 
               <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
                 {member.email && (
-                  <a href={`mailto:${member.email}`} className="text-slate-400 hover:text-[#c5a059] transition-colors">
+                  <a href={`mailto:${member.email}`} className="text-slate-400 hover:text-[#14203E] transition-colors">
                     <Mail className="w-4 h-4" />
                   </a>
                 )}
                 {member.phone && (
-                  <a href={`tel:${member.phone}`} className="text-slate-400 hover:text-[#c5a059] transition-colors">
+                  <a href={`tel:${member.phone}`} className="text-slate-400 hover:text-[#14203E] transition-colors">
                     <Phone className="w-4 h-4" />
                   </a>
                 )}
                 {member.linkedin && (
-                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#c5a059] transition-colors">
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[#14203E] transition-colors">
                     <Linkedin className="w-4 h-4" />
                   </a>
                 )}

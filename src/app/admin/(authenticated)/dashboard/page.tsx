@@ -13,7 +13,7 @@ export default async function AdminDashboard() {
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl lg:text-5xl font-black text-[#0a192f] uppercase tracking-tighter">DASHBOARD</h1>
+          <h1 className="text-3xl lg:text-5xl font-black text-[#14203E] uppercase tracking-tighter">DASHBOARD</h1>
           <p className="mt-2 text-gray-500 font-bold uppercase tracking-widest text-[10px]">Real-time metrics and management node</p>
         </div>
 

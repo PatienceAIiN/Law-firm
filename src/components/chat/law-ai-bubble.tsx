@@ -28,7 +28,7 @@ function NavChip({ label, href, onClick }: { label: string; href: string; onClic
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#c5a059]/40 bg-[#c5a059]/10 text-[10px] font-black uppercase tracking-widest text-[#c5a059] hover:bg-[#c5a059]/20 transition-colors"
+      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#F4E8D8]/40 bg-[#F6F0E8]/10 text-[10px] font-black uppercase tracking-widest text-[#14203E] hover:bg-[#F6F0E8]/20 transition-colors"
     >
       <ExternalLink className="w-3 h-3" />{label}
     </button>
@@ -52,14 +52,14 @@ function MessageBubble({ msg, triggerNav }: { msg: Message & { triggerAction?: s
   return (
     <div className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
       {!isUser && (
-        <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a192f]">
-          <Bot className="h-4 w-4 text-[#c5a059]" />
+        <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#14203E]">
+          <Bot className="h-4 w-4 text-[#14203E]" />
         </div>
       )}
       <div className="max-w-[82%] space-y-1.5">
         <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isUser
-            ? 'rounded-tr-sm bg-[#0a192f] font-medium text-white'
+            ? 'rounded-tr-sm bg-[#14203E] font-medium text-white'
             : 'rounded-tl-sm border border-gray-100 bg-[#f8fafc] font-medium text-gray-700'
         }`}>
           <p className="whitespace-pre-wrap">{msg.content}</p>
@@ -114,16 +114,8 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
     setIdCollapsed(true)
   }, [pathname])
 
-  // Click outside to close
-  useEffect(() => {
-    const handler = (e: PointerEvent) => {
-      if (!open) return
-      if (shellRef.current?.contains(e.target as Node)) return
-      setOpen(false)
-    }
-    document.addEventListener('pointerdown', handler)
-    return () => document.removeEventListener('pointerdown', handler)
-  }, [open])
+  // Note: intentionally NO click-outside auto-close — it was closing the chat
+  // mid-conversation on stray clicks. Users close via the X or the toggle button.
 
   // Cycle suggestions
   useEffect(() => {
@@ -247,10 +239,10 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
           style={{ width: 'min(92vw, 420px)', height: 'min(640px, calc(100vh - 120px))' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between rounded-t-[1.75rem] bg-[#0a192f] px-4 py-3 flex-shrink-0">
+          <div className="flex items-center justify-between rounded-t-[1.75rem] bg-[#14203E] px-4 py-3 flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#c5a059]/20">
-                <Scale className="h-4 w-4 text-[#c5a059]" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F6F0E8]/20">
+                <Scale className="h-4 w-4 text-[#14203E]" />
               </div>
               <div>
                 <div className="text-xs font-black uppercase tracking-widest text-white">LAW AI</div>
@@ -279,7 +271,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                   {conversationId || 'New session'}
                 </code>
                 {conversationId && (
-                  <button onClick={copyConversationId} className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-[#0a192f] transition-colors">
+                  <button onClick={copyConversationId} className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-[#14203E] transition-colors">
                     {copiedId ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 )}
@@ -292,12 +284,12 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
             {messages.length === 0 && (
               <div className="space-y-4">
                 <div className="flex gap-2.5">
-                  <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a192f]">
-                    <Bot className="h-4 w-4 text-[#c5a059]" />
+                  <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#14203E]">
+                    <Bot className="h-4 w-4 text-[#14203E]" />
                   </div>
                   <div className="max-w-[82%] rounded-2xl rounded-tl-sm border border-gray-100 bg-[#f8fafc] px-4 py-3">
                     <p className="text-sm font-medium leading-relaxed text-gray-700">
-                      Namaste! I&apos;m <span className="font-black text-[#0a192f]">LAW AI</span> — your expert Indian legal assistant. I can help with any law question, navigate to pages, or book a consultation. I remember our conversation!
+                      Namaste! I&apos;m <span className="font-black text-[#14203E]">LAW AI</span> — your expert Indian legal assistant. I can help with any law question, navigate to pages, or book a consultation. I remember our conversation!
                     </p>
                   </div>
                 </div>
@@ -305,7 +297,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                   <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Try asking</p>
                   {visibleSuggestions.map((q) => (
                     <button key={q} onClick={() => sendMessage(q)}
-                      className="block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-[#0a192f] transition-all hover:border-[#c5a059] hover:bg-[#c5a059]/5">
+                      className="block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-[#14203E] transition-all hover:border-[#F4E8D8] hover:bg-[#F6F0E8]/5">
                       {q}
                     </button>
                   ))}
@@ -319,13 +311,13 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
 
             {loading && (
               <div className="flex gap-2.5">
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a192f]">
-                  <Bot className="h-4 w-4 text-[#c5a059]" />
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-[#14203E]">
+                  <Bot className="h-4 w-4 text-[#14203E]" />
                 </div>
                 <div className="rounded-2xl rounded-tl-sm border border-gray-100 bg-[#f8fafc] px-4 py-3">
                   <div className="flex items-center gap-1">
                     {[0, 150, 300].map(d => (
-                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#c5a059]" style={{ animationDelay: `${d}ms` }} />
+                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#F6F0E8]" style={{ animationDelay: `${d}ms` }} />
                     ))}
                   </div>
                 </div>
@@ -338,7 +330,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
 
           {/* Input */}
           <div className="flex-shrink-0 border-t border-gray-100 p-3">
-            <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-[#f8fafc] px-4 py-2 transition-colors focus-within:border-[#c5a059]">
+            <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-[#f8fafc] px-4 py-2 transition-colors focus-within:border-[#F4E8D8]">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -346,13 +338,13 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything about Indian law…"
                 rows={1}
-                className="max-h-24 flex-1 resize-none bg-transparent text-sm font-medium leading-relaxed text-[#0a192f] outline-none placeholder:text-gray-400"
+                className="max-h-24 flex-1 resize-none bg-transparent text-sm font-medium leading-relaxed text-[#14203E] outline-none placeholder:text-gray-400"
                 style={{ minHeight: '24px' }}
               />
               <button
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || loading}
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-[#0a192f] text-white transition-all hover:bg-[#c5a059] disabled:bg-gray-200"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-[#14203E] text-white transition-all hover:bg-[#F6F0E8] disabled:bg-gray-200"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </button>
@@ -365,7 +357,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
       {/* Trigger button */}
       <button
         onClick={() => { setOpen(v => !v); setIdCollapsed(true) }}
-        className="group fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-[#0a192f] px-4 py-3 text-white shadow-2xl shadow-[#0a192f]/30 transition-all duration-300 hover:scale-105 hover:bg-[#c5a059] sm:right-6"
+        className="group fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-[#14203E] px-4 py-3 text-white shadow-2xl shadow-[#14203E]/30 transition-all duration-300 hover:scale-105 hover:bg-[#F6F0E8] sm:right-6"
       >
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20">
           <Scale className="h-4 w-4" />

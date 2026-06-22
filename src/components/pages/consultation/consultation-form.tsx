@@ -135,11 +135,11 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
   const [success, setSuccess] = useState(false)
   const [bookingResult, setBookingResult] = useState<BookingResult | null>(null)
   const [selectedDate, setSelectedDate] = useState(() => istDateKey(new Date()))
-  const [meetingMode, setMeetingMode] = useState<MeetingMode>('GOOGLE_MEET')
+  const [meetingMode, setMeetingMode] = useState<MeetingMode>('VIRTUAL')
   const [selectedSlotId, setSelectedSlotId] = useState('')
   const [slotConfirmed, setSlotConfirmed] = useState(false)
   const [availabilityDays, setAvailabilityDays] = useState<Record<string, AvailabilityDay>>({})
-  const [availableModes, setAvailableModes] = useState<MeetingMode[]>(['PHYSICAL', 'GOOGLE_MEET', 'ZOOM'])
+  const [availableModes, setAvailableModes] = useState<MeetingMode[]>(['PHYSICAL', 'VIRTUAL'])
   const [visibleMonth, setVisibleMonth] = useState(() => istDateKey(new Date()).slice(0, 7))
   const section = content?.consultation || {}
 
@@ -168,7 +168,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           })
         })
         if (modesFound.size > 0) {
-          const ordered: MeetingMode[] = (['PHYSICAL', 'GOOGLE_MEET', 'ZOOM'] as MeetingMode[]).filter((m) => modesFound.has(m))
+          const ordered: MeetingMode[] = (['PHYSICAL', 'VIRTUAL'] as MeetingMode[]).filter((m) => modesFound.has(m))
           setAvailableModes(ordered)
           // If the current default mode isn't available, switch to first available
           setMeetingMode((prev) => (modesFound.has(prev) ? prev : ordered[0]))
@@ -337,7 +337,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
             <CheckCircle2 className="h-8 w-8 text-emerald-600" />
           </div>
-          <h2 className="mb-3 text-2xl font-black uppercase tracking-tighter text-[#0a192f]">
+          <h2 className="mb-3 text-2xl font-black uppercase tracking-tighter text-[#14203E]">
             {section.form?.successTitle || 'REQUEST SENT'}
           </h2>
           <p className="mb-6 text-sm leading-6 text-slate-600">
@@ -346,32 +346,32 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="space-y-3 rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-left">
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date</span>
-              <span className="text-sm font-bold text-[#0a192f]">{formatIstDate(parseIstDate(bookingResult.slot.date))}</span>
+              <span className="text-sm font-bold text-[#14203E]">{formatIstDate(parseIstDate(bookingResult.slot.date))}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Time</span>
-              <span className="text-sm font-bold text-[#0a192f]">{bookingResult.slot.startTime} - {bookingResult.slot.endTime}</span>
+              <span className="text-sm font-bold text-[#14203E]">{bookingResult.slot.startTime} - {bookingResult.slot.endTime}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Mode</span>
-              <span className="text-sm font-bold text-[#0a192f]">{bookingResult.booking.meetingMode.replace('_', ' ')}</span>
+              <span className="text-sm font-bold text-[#14203E]">{bookingResult.booking.meetingMode.replace('_', ' ')}</span>
             </div>
             <div className="pt-3 border-t border-slate-200 space-y-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                 <LinkIcon className="w-3.5 h-3.5" />
                 Scheduled Link / Location
               </span>
-              <div className="text-sm font-bold text-[#0a192f] break-all">{bookingSuccessMeetingValue}</div>
+              <div className="text-sm font-bold text-[#14203E] break-all">{bookingSuccessMeetingValue}</div>
             </div>
           </div>
           <Button
             onClick={inModal ? onClose : () => window.location.href = '/'}
-            className="mt-6 w-full h-14 bg-[#0a192f] rounded-2xl font-black tracking-widest uppercase"
+            className="mt-6 w-full h-14 bg-[#14203E] rounded-2xl font-black tracking-widest uppercase"
           >
             {inModal ? 'CLOSE' : (section.form?.homeText || 'RETURN HOME')}
           </Button>
           {bookingResult.booking.meetingMode !== 'PHYSICAL' && (
-            <Button onClick={() => window.location.href = `/meeting/${bookingResult.booking.id}`} className="mt-3 w-full h-14 bg-[#c5a059] text-[#0a192f] rounded-2xl font-black tracking-widest uppercase">
+            <Button onClick={() => window.location.href = `/meeting/${bookingResult.booking.id}`} className="mt-3 w-full h-14 bg-[#F6F0E8] text-[#14203E] rounded-2xl font-black tracking-widest uppercase">
               OPEN MEETING WORKSPACE
             </Button>
           )}
@@ -387,15 +387,15 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="w-full max-w-sm rounded-[26px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#c5a059]">Confirm Slot</p>
-                <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[#0a192f]">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">Confirm Slot</p>
+                <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[#14203E]">
                   {selectedSlot.startTime} - {selectedSlot.endTime}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={resetSlot}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors hover:text-[#0a192f]"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors hover:text-[#14203E]"
                 aria-label="Close slot confirmation"
               >
                 <X className="h-4 w-4" />
@@ -404,10 +404,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <LinkIcon className="h-4 w-4 text-[#0a192f]" />
+                <LinkIcon className="h-4 w-4 text-[#14203E]" />
                 Meeting details
               </div>
-              <div className="mt-2 break-all text-sm font-bold text-[#0a192f]">
+              <div className="mt-2 break-all text-sm font-bold text-[#14203E]">
                 {meetingDetails}
               </div>
             </div>
@@ -416,7 +416,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <Button
                 type="button"
                 onClick={confirmSlot}
-                className="h-12 rounded-2xl bg-[#0a192f] font-black uppercase tracking-widest text-white hover:bg-[#c5a059] hover:text-[#0a192f]"
+                className="h-12 rounded-2xl bg-[#14203E] font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[#14203E]"
               >
                 Confirm and Continue
               </Button>
@@ -438,7 +438,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="mb-4 flex flex-col gap-3 text-center">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#b8872f]">Consultation Date *</p>
-              <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[#0a192f]">
+              <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[#14203E]">
                 {monthLabel(visibleMonth)}
               </h3>
             </div>
@@ -446,7 +446,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <button
                 type="button"
                 onClick={() => setVisibleMonth((value) => shiftMonth(value, -1))}
-                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#c5a059]/40 hover:text-[#0a192f]"
+                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-[#14203E]"
                 aria-label="Previous month"
               >
                 <Calendar className="h-4 w-4 rotate-180" />
@@ -454,7 +454,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <button
                 type="button"
                 onClick={() => setVisibleMonth((value) => shiftMonth(value, 1))}
-                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#c5a059]/40 hover:text-[#0a192f]"
+                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-[#14203E]"
                 aria-label="Next month"
               >
                 <Calendar className="h-4 w-4" />
@@ -502,7 +502,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                   onClick={() => hasSlots && setSelectedDate(date)}
                   className={`min-h-[68px] rounded-2xl border p-2 text-left transition-all ${
                     isSelected
-                      ? 'border-[#c5a059] bg-[#c5a059]/5 shadow-sm ring-1 ring-[#c5a059]/25'
+                      ? 'border-[#F4E8D8] bg-[#F6F0E8]/5 shadow-sm ring-1 ring-[#14203E]/25'
                       : status.tone === 'unavailable'
                         ? 'cursor-not-allowed border-red-200 bg-red-50 text-red-300'
                         : isLimited
@@ -564,8 +564,8 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                   required
                   className="peer sr-only"
                 />
-                <div className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition-all peer-checked:bg-[#0a192f] peer-checked:text-white">
-                  <span className="text-[8px] font-black uppercase tracking-widest">{mode.replace(/_/g, ' ')}</span>
+                <div className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition-all peer-checked:bg-[#14203E] peer-checked:text-white">
+                  <span className="text-[8px] font-black uppercase tracking-widest">{mode === 'PHYSICAL' ? 'In-Person' : 'Virtual Meeting'}</span>
                 </div>
               </label>
             ))}
@@ -586,10 +586,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <Clock className="h-4 w-4 text-[#0a192f]" />
+                <Clock className="h-4 w-4 text-[#14203E]" />
                 Selected Date
               </div>
-              <div className="mt-2 text-sm font-bold text-[#0a192f]">
+              <div className="mt-2 text-sm font-bold text-[#14203E]">
                 {formatIstDate(parseIstDate(selectedDate))}
               </div>
               <div className="mt-2 text-xs text-slate-500">
@@ -631,7 +631,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                     }}
                     className={`rounded-3xl border p-3.5 text-left transition-all ${
                       selectedSlot?.id === slot.id
-                        ? 'border-[#c5a059] bg-[#c5a059]/5 shadow-sm'
+                        ? 'border-[#F4E8D8] bg-[#F6F0E8]/5 shadow-sm'
                         : 'border-slate-200 bg-white hover:border-slate-300 hover:shadow-sm'
                     }`}
                   >
@@ -644,7 +644,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                           {slot.availableCount} seat{slot.availableCount === 1 ? '' : 's'} left
                         </div>
                       </div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-[#c5a059]">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-[#14203E]">
                         Select
                       </div>
                     </div>
@@ -657,10 +657,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
         <div className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4">
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-            <Clock className="h-4 w-4 text-[#0a192f]" />
+            <Clock className="h-4 w-4 text-[#14203E]" />
             Selected Slot
           </div>
-          <div className="mt-2 text-sm font-bold text-[#0a192f]">
+          <div className="mt-2 text-sm font-bold text-[#14203E]">
             {selectedSlotLabel || 'Pick a slot to continue'}
           </div>
           <div className="mt-2 text-xs text-slate-500">
@@ -682,32 +682,32 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
               <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-600">Full Identity *</label>
-              <input name="name" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#c5a059]" placeholder="Your name" />
+              <input name="name" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="Your name" />
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-600">Email *</label>
-                <input type="email" name="email" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#c5a059]" placeholder="contact@example.com" />
+                <input type="email" name="email" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="contact@example.com" />
               </div>
               <div className="space-y-2">
                 <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-600">Phone *</label>
-                <input name="phone" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#c5a059]" placeholder="+91" />
+                <input name="phone" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="+91" />
               </div>
             </div>
 
             <div className="space-y-2">
               <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-600">Case Subject *</label>
-              <input name="subject" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#c5a059]" placeholder="Corporate Law" />
+              <input name="subject" required className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="Corporate Law" />
             </div>
 
             <div className="space-y-2">
               <label className="ml-1 text-[10px] font-black uppercase tracking-widest text-slate-600">Case Brief *</label>
-              <textarea name="notes" required rows={4} className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-[#c5a059]" placeholder="Provide context about your legal requirements..." />
+              <textarea name="notes" required rows={4} className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="Provide context about your legal requirements..." />
             </div>
 
-            <Button disabled={loading} type="submit" className="h-14 w-full rounded-2xl bg-[#0a192f] font-black uppercase tracking-widest text-white transition-all hover:bg-[#c5a059] hover:text-[#0a192f]">
-              {loading ? <Loader2 className="h-6 w-6 animate-spin text-[#c5a059]" /> : (section.form?.submitText || 'BOOK PRIORITY SLOT')}
+            <Button disabled={loading} type="submit" className="h-14 w-full rounded-2xl bg-[#14203E] font-black uppercase tracking-widest text-white transition-all hover:bg-[#F6F0E8] hover:text-[#14203E]">
+              {loading ? <Loader2 className="h-6 w-6 animate-spin text-[#14203E]" /> : (section.form?.submitText || 'BOOK PRIORITY SLOT')}
             </Button>
           </form>
         )}
@@ -724,10 +724,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
         <div className="space-y-6">
           <div className={`${surfaceClass} p-5 text-center sm:p-7`}>
-            <div className="inline-flex items-center justify-center rounded-full border border-[#c5a059]/20 bg-[#c5a059]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[#c5a059]">
+            <div className="inline-flex items-center justify-center rounded-full border border-[#F4E8D8]/20 bg-[#F6F0E8]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">
               {section.hero?.badge || 'PRIORITY BOOKING'}
             </div>
-            <h1 className="mt-5 text-3xl font-black uppercase tracking-tight text-[#0a192f] sm:text-5xl">
+            <h1 className="mt-5 text-3xl font-black uppercase tracking-tight text-[#14203E] sm:text-5xl">
               {section.hero?.title || 'LEGAL CONSULTATION'}
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-lg">
@@ -737,16 +737,16 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
           <div className="grid gap-3 sm:gap-4">
             {[
-              { Icon: Video, title: 'Virtual Meeting', desc: 'Secure Google Meet or Zoom sessions.' },
+              { Icon: Video, title: 'Virtual Meeting', desc: 'Secure live video sessions in our workspace.' },
               { Icon: MapPin, title: 'In-Person', desc: 'Visit our chambers for a face-to-face brief.' },
               { Icon: Calendar, title: 'Flexible Timing', desc: 'Available Mon-Fri, 10:00 AM - 6:00 PM.' },
             ].map(({ Icon, title, desc }) => (
               <div key={title} className="flex items-start gap-4 rounded-[22px] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#0a192f]/5 text-[#0a192f]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#14203E]/5 text-[#14203E]">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#0a192f]">{title}</h2>
+                  <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[#14203E]">{title}</h2>
                   <p className="mt-1 text-sm leading-6 text-slate-600">{desc}</p>
                 </div>
               </div>

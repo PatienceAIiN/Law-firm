@@ -4,8 +4,9 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import {
   Calendar, Clock, Download, FileVideo, Loader2, Maximize,
   Mic, Monitor, Save, Video, ShieldAlert, FolderOpen,
-  HardDrive, Cloud, AlertTriangle, CheckCircle2, X
+  HardDrive, Cloud, AlertTriangle, CheckCircle2, X, FileText, Send
 } from 'lucide-react'
+import { LiveKitCall } from './livekit-call'
 
 type MeetingConfig = {
   storageMode: string
@@ -99,6 +100,54 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
   const [localFolderName, setLocalFolderName] = useState<string>('')
   const [storageError, setStorageError] = useState<string | null>(null)
   const [adminEvents, setAdminEvents] = useState<any[]>([])
+
+  // ── Notes + Minutes of Meeting ───────────────────────────────────────────────
+  const notesStorageKey = `meeting-notes-${booking.id}`
+  const [notes, setNotes] = useState('')
+  const [extraRecipients, setExtraRecipients] = useState('')
+  const [momStatus, setMomStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle')
+  const [momMessage, setMomMessage] = useState('')
+
+  // Load any locally-saved notes for this meeting on mount.
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(notesStorageKey)
+      if (saved) setNotes(saved)
+    } catch {}
+  }, [notesStorageKey])
+
+  // Persist notes locally as they change.
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(notesStorageKey, notes)
+    } catch {}
+  }, [notesStorageKey, notes])
+
+  const sendMinutes = useCallback(async () => {
+    setMomStatus('sending')
+    setMomMessage('')
+    try {
+      const recipients = extraRecipients
+        .split(/[,\s]+/)
+        .map((r) => r.trim())
+        .filter((r) => r.includes('@'))
+      const res = await fetch('/api/meeting-mom', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookingId: booking.id, notes, recipients }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Failed to send minutes')
+      setMomStatus('sent')
+      setMomMessage(
+        `Sent to ${data.recipients?.length || 0} participant(s)${data.delivery === 'logged' ? ' (dev: logged to server console)' : ''}.`,
+      )
+      logActivity(booking.id, 'MOM_SENT', `Minutes of meeting emailed to ${data.recipients?.length || 0} participant(s)`)
+    } catch (err: any) {
+      setMomStatus('error')
+      setMomMessage(err?.message || 'Could not send minutes of meeting')
+    }
+  }, [booking.id, notes, extraRecipients])
 
   // ── Meeting guard: warn before leaving ──────────────────────────────────────
   useEffect(() => {
@@ -340,13 +389,13 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
   if (meetingEnded) {
     return (
-      <div className="min-h-screen bg-[#091220] flex items-center justify-center p-8">
+      <div className="min-h-screen bg-[#14203E] flex items-center justify-center p-8">
         <div className="text-center space-y-4 max-w-sm">
-          <CheckCircle2 className="w-16 h-16 text-[#c5a059] mx-auto" />
+          <CheckCircle2 className="w-16 h-16 text-[#14203E] mx-auto" />
           <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Meeting Ended</h2>
           <p className="text-slate-300 text-sm">This session has been closed. Thank you for using our virtual workspace.</p>
           {localRecordings.length > 0 && (
-            <p className="text-[#c5a059] text-xs font-semibold">{localRecordings.length} recording(s) saved.</p>
+            <p className="text-[#14203E] text-xs font-semibold">{localRecordings.length} recording(s) saved.</p>
           )}
         </div>
       </div>
@@ -354,11 +403,11 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#091220] text-white">
+    <div ref={containerRef} className="min-h-screen bg-[#14203E] text-white">
       {/* End meeting alert */}
       {endAlert && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[#0f1e35] border border-red-500/30 rounded-3xl p-8 max-w-sm w-full mx-4 space-y-5 text-center">
+          <div className="bg-[#14203E] border border-red-500/30 rounded-3xl p-8 max-w-sm w-full mx-4 space-y-5 text-center">
             <AlertTriangle className="w-12 h-12 text-red-400 mx-auto" />
             <h3 className="text-lg font-black uppercase tracking-tight text-white">Leave Meeting?</h3>
             <p className="text-slate-300 text-sm">Leaving will end your session and this will be logged. The meeting should continue in this workspace only.</p>
@@ -378,16 +427,16 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#c5a059]">
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">
               {adminView ? 'Admin Virtual Meeting' : 'Secure Meeting Workspace'}
             </div>
             <h1 className="text-2xl font-black uppercase tracking-tighter">
               {booking.meetingMode === 'PHYSICAL' ? 'In-Person Consultation' : 'Virtual Meeting Workspace'}
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-slate-300">
-              <span className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-[#c5a059]" />{formatDate(booking.slot.day.date)}</span>
-              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4 text-[#c5a059]" />{formatTime(booking.slot.startTime)} – {formatTime(booking.slot.endTime)}</span>
-              <span className="inline-flex items-center gap-2"><Video className="w-4 h-4 text-[#c5a059]" />{booking.meetingMode.replace('_', ' ')}</span>
+              <span className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-[#14203E]" />{formatDate(booking.slot.day.date)}</span>
+              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4 text-[#14203E]" />{formatTime(booking.slot.startTime)} – {formatTime(booking.slot.endTime)}</span>
+              <span className="inline-flex items-center gap-2"><Video className="w-4 h-4 text-[#14203E]" />{booking.meetingMode.replace('_', ' ')}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -419,24 +468,17 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
           <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/30 shadow-2xl">
             {booking.meetingMode === 'PHYSICAL' ? (
               <div className="flex min-h-[65vh] flex-col items-center justify-center gap-4 p-8 text-center">
-                <Monitor className="h-14 w-14 text-[#c5a059]" />
+                <Monitor className="h-14 w-14 text-[#14203E]" />
                 <h2 className="text-2xl font-black uppercase tracking-tighter">Office Visit Scheduled</h2>
                 <p className="max-w-xl text-sm font-medium text-slate-300">{booking.slot.physicalAddress || 'The office address will be shared by the advocate team.'}</p>
               </div>
-            ) : booking.meetingLink ? (
-              <iframe
-                src={booking.meetingLink}
-                title="Meeting stage"
-                className="h-[65vh] w-full bg-white"
-                allow="camera; microphone; fullscreen; display-capture"
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-downloads allow-modals allow-presentation"
-              />
             ) : (
-              <div className="flex min-h-[65vh] flex-col items-center justify-center gap-4 p-8 text-center">
-                <Video className="h-14 w-14 text-[#c5a059]" />
-                <h2 className="text-2xl font-black uppercase tracking-tighter">Meeting Ready</h2>
-                <p className="max-w-xl text-sm font-medium text-slate-300">Waiting for the meeting link to be generated. Please refresh or contact the admin.</p>
-              </div>
+              <LiveKitCall
+                room={booking.id}
+                identity={adminView ? `advocate-${booking.id}` : `client-${booking.id}`}
+                name={adminView ? 'Advocate' : booking.name}
+                onDisconnected={endMeeting}
+              />
             )}
           </div>
 
@@ -444,7 +486,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
           <div className="space-y-5">
             {/* Session info */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#c5a059]">Session Info</div>
+              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">Session Info</div>
               <div className="space-y-3">
                 <div className="rounded-2xl bg-black/20 p-3">
                   <div className="text-xs font-black uppercase tracking-widest text-slate-400">Client</div>
@@ -455,17 +497,49 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
               </div>
             </div>
 
+            {/* Meeting notes + Minutes of Meeting */}
+            <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-3">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">
+                <FileText className="w-4 h-4" /> Meeting Notes
+              </div>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="Type minutes / action items here. One point per line — they are auto-saved on this device."
+                rows={6}
+                className="w-full resize-y rounded-2xl border border-white/10 bg-black/30 p-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-[#F4E8D8] focus:outline-none"
+              />
+              <input
+                value={extraRecipients}
+                onChange={(e) => setExtraRecipients(e.target.value)}
+                placeholder="Extra recipient emails (comma separated, optional)"
+                className="w-full rounded-2xl border border-white/10 bg-black/30 px-3 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:border-[#F4E8D8] focus:outline-none"
+              />
+              <button
+                onClick={sendMinutes}
+                disabled={momStatus === 'sending'}
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#14203E] hover:bg-[#1d2c52] transition-colors disabled:opacity-60"
+              >
+                {momStatus === 'sending' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                Email Minutes to Joinees
+              </button>
+              {momMessage && (
+                <p className={`text-xs ${momStatus === 'error' ? 'text-red-300' : 'text-emerald-300'}`}>{momMessage}</p>
+              )}
+              <p className="text-[10px] text-slate-500">Sends notes + meeting details to the client, advocate, and any extra emails.</p>
+            </div>
+
             {/* Recording controls */}
             {meetingConfig.allowRecording && (
               <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-4">
-                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#c5a059]">Recording</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">Recording</div>
 
                 {/* Local folder picker */}
                 <button
                   onClick={pickLocalFolder}
                   className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-white/10 bg-black/20 text-sm hover:bg-white/10 transition-colors"
                 >
-                  <FolderOpen className="w-4 h-4 text-[#c5a059]" />
+                  <FolderOpen className="w-4 h-4 text-[#14203E]" />
                   <span className="text-sm font-medium text-slate-200 truncate">
                     {localFolderName ? `📁 ${localFolderName}` : 'Pick Save Folder (local)'}
                   </span>
@@ -482,7 +556,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                 )}
 
                 {!isRecording ? (
-                  <button onClick={startRecording} className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#c5a059] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#091220] hover:bg-[#d4b472] transition-colors">
+                  <button onClick={startRecording} className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#14203E] hover:bg-[#1d2c52] transition-colors">
                     <Mic className="w-4 h-4" />Start Recording
                   </button>
                 ) : (
@@ -504,7 +578,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                     </div>
                     {status === 'uploading' && (
                       <div className="h-1.5 overflow-hidden rounded-full bg-white/10">
-                        <div className="h-full bg-[#c5a059] transition-all" style={{ width: `${uploadProgress}%` }} />
+                        <div className="h-full bg-[#F6F0E8] transition-all" style={{ width: `${uploadProgress}%` }} />
                       </div>
                     )}
                     <p className="text-xs text-slate-300">{statusMessage}</p>
@@ -513,7 +587,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Saved Path</div>
                         <div className="break-all text-xs text-emerald-300">{savedPath}</div>
                         {savedUrl && (
-                          <a href={savedUrl} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#c5a059]">
+                          <a href={savedUrl} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[#14203E]">
                             <Download className="w-3.5 h-3.5" />Open File
                           </a>
                         )}
@@ -526,9 +600,9 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
             {/* Storage indicator */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#c5a059]">Storage Config</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">Storage Config</div>
               <div className="flex items-center gap-2 text-xs">
-                {meetingConfig.storageMode === 'GOOGLE_DRIVE' ? <Cloud className="w-4 h-4 text-blue-400" /> : <HardDrive className="w-4 h-4 text-[#c5a059]" />}
+                {meetingConfig.storageMode === 'GOOGLE_DRIVE' ? <Cloud className="w-4 h-4 text-blue-400" /> : <HardDrive className="w-4 h-4 text-[#14203E]" />}
                 <span className="font-semibold text-slate-200">{meetingConfig.storageMode}</span>
               </div>
               {meetingConfig.storageMode === 'GOOGLE_DRIVE' && !meetingConfig.googleDriveFolderId && (
@@ -543,7 +617,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
             {/* Saved recordings */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#c5a059]">Saved Recordings ({localRecordings.length})</div>
+              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[#14203E]">Saved Recordings ({localRecordings.length})</div>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {localRecordings.length === 0 && (
                   <div className="rounded-2xl bg-black/20 p-3 text-xs font-medium text-slate-400">No recordings yet.</div>
@@ -551,11 +625,11 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                 {localRecordings.map((r) => (
                   <div key={r.id} className="rounded-2xl bg-black/20 p-3">
                     <div className="flex items-center gap-2 text-xs font-bold text-white mb-1">
-                      <FileVideo className="w-3.5 h-3.5 text-[#c5a059]" />{r.fileName}
+                      <FileVideo className="w-3.5 h-3.5 text-[#14203E]" />{r.fileName}
                     </div>
                     <div className="text-[10px] text-slate-400">{new Date(r.createdAt).toLocaleString('en-IN')}</div>
                     {r.publicUrl && (
-                      <a href={r.publicUrl} className="mt-1 inline-flex items-center gap-1 text-[10px] text-[#c5a059] font-semibold">
+                      <a href={r.publicUrl} className="mt-1 inline-flex items-center gap-1 text-[10px] text-[#14203E] font-semibold">
                         <Download className="w-3 h-3" />Download
                       </a>
                     )}

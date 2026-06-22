@@ -32,13 +32,13 @@ export function ContactForm({ content }: { content?: any }) {
         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100 shadow-sm">
           <CheckCircle2 className="w-10 h-10 text-green-600" />
         </div>
-        <h3 className="text-3xl font-black text-[#0a192f] mb-4 uppercase tracking-tighter">{section.successTitle || 'MESSAGE RECEIVED'}</h3>
+        <h3 className="text-3xl font-black text-[#14203E] mb-4 uppercase tracking-tighter">{section.successTitle || 'MESSAGE RECEIVED'}</h3>
         <p className="text-gray-500 font-medium mb-8 leading-relaxed mb-10">
           {section.successMessage || 'Thank you for reaching out. A senior associate will review your inquiry and contact you within 24 hours.'}
         </p>
         <Button 
           onClick={() => setIsSubmitted(false)}
-          className="bg-[#0a192f] hover:bg-[#c5a059] text-white px-8 py-6 rounded-2xl font-bold transition-all"
+          className="bg-[#14203E] hover:bg-[#F6F0E8] text-white px-8 py-6 rounded-2xl font-bold transition-all"
         >
           {section.resetText || 'Send Another Inquiry'}
         </Button>
@@ -48,9 +48,9 @@ export function ContactForm({ content }: { content?: any }) {
 
   return (
     <div className="relative h-full overflow-hidden rounded-[2.5rem] border border-gray-100 bg-gradient-to-b from-white via-slate-50 to-white p-10 shadow-2xl">
-      <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-[#c5a059]/5 -mr-16 -mt-16"></div>
+      <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-[#F6F0E8]/5 -mr-16 -mt-16"></div>
       
-      <h2 className="text-3xl font-black text-[#0a192f] mb-8 uppercase tracking-tighter">{section.title || 'LEGAL INQUIRY FORM'}</h2>
+      <h2 className="text-3xl font-black text-[#14203E] mb-8 uppercase tracking-tighter">{section.title || 'LEGAL INQUIRY FORM'}</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -61,7 +61,7 @@ export function ContactForm({ content }: { content?: any }) {
             <input
               name="fullName"
               required
-              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#c5a059] focus:bg-white outline-none transition-all font-medium"
+              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#14203E] focus:bg-white outline-none transition-all font-medium"
               placeholder={section.fullNamePlaceholder || 'Case lead name'}
             />
           </div>
@@ -74,7 +74,7 @@ export function ContactForm({ content }: { content?: any }) {
               type="email"
               name="email"
               required
-              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#c5a059] focus:bg-white outline-none transition-all font-medium"
+              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#14203E] focus:bg-white outline-none transition-all font-medium"
               placeholder={section.emailPlaceholder || 'e.g. counsel@example.com'}
             />
           </div>
@@ -88,7 +88,7 @@ export function ContactForm({ content }: { content?: any }) {
             <input
               type="tel"
               name="phone"
-              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#c5a059] focus:bg-white outline-none transition-all font-medium"
+              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#14203E] focus:bg-white outline-none transition-all font-medium"
               placeholder={section.phonePlaceholder || '+91 00000 00000'}
             />
           </div>
@@ -100,7 +100,7 @@ export function ContactForm({ content }: { content?: any }) {
             <select
               name="subject"
               required
-              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#c5a059] focus:bg-white outline-none transition-all font-medium"
+              className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#14203E] focus:bg-white outline-none transition-all font-medium"
             >
               <option value="">{section.subjectPlaceholder || 'Select Category'}</option>
               {(section.subjectOptions || [
@@ -124,7 +124,7 @@ export function ContactForm({ content }: { content?: any }) {
             name="message"
             required
             rows={5}
-            className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#c5a059] focus:bg-white outline-none transition-all font-medium resize-none"
+            className="w-full px-5 py-4 bg-[#f8fafc] border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#14203E] focus:bg-white outline-none transition-all font-medium resize-none"
             placeholder={section.messagePlaceholder || 'Describe your legal situation briefly...'}
           />
         </div>
@@ -132,7 +132,7 @@ export function ContactForm({ content }: { content?: any }) {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full h-16 bg-[#0a192f] hover:bg-[#c5a059] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl transition-all disabled:opacity-50"
+          className="w-full h-16 bg-[#14203E] hover:bg-[#F6F0E8] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl transition-all disabled:opacity-50"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />

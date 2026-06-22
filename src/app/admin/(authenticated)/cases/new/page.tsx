@@ -65,11 +65,11 @@ export default function NewCasePage() {
   return (
     <div className="max-w-4xl mx-auto p-6 lg:p-8 space-y-6">
       <div className="flex items-center gap-3">
-        <Link href="/admin/cases" className="p-2 rounded-xl border border-[#e8e3dc] hover:bg-[#faf8f5] transition-colors">
-          <ArrowLeft className="w-4 h-4 text-[#8c7355]" />
+        <Link href="/admin/cases" className="p-2 rounded-xl border border-[#F4E8D8] hover:bg-[#FFFCF8] transition-colors">
+          <ArrowLeft className="w-4 h-4 text-[#64748b]" />
         </Link>
         <div>
-          <h1 className="text-2xl font-black text-[#1a1208]">Add New Case</h1>
+          <h1 className="text-2xl font-black text-[#14203E]">Add New Case</h1>
           <p className="text-sm text-gray-500">Fill in all case details to create a new court case record.</p>
         </div>
       </div>
@@ -158,7 +158,7 @@ export default function NewCasePage() {
               {EMAIL_CONTROLS.map(e => <option key={e.value} value={e.value}>{e.label}</option>)}
             </select>
           </Field>
-          <label className="flex items-center gap-3 rounded-2xl border border-[#e8e3dc] bg-white px-4 py-3 text-sm font-semibold text-[#1a1208]">
+          <label className="flex items-center gap-3 rounded-2xl border border-[#F4E8D8] bg-white px-4 py-3 text-sm font-semibold text-[#14203E]">
             <input
               type="checkbox"
               name="sendReminder"
@@ -175,12 +175,12 @@ export default function NewCasePage() {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#1a1208] text-white text-sm font-bold hover:bg-[#2d1f0d] transition-colors disabled:opacity-60"
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-[#14203E] text-white text-sm font-bold hover:bg-[#1d2c52] transition-colors disabled:opacity-60"
           >
             {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Scale className="w-4 h-4" />}
             {loading ? 'Creating Case…' : 'Create Case'}
           </button>
-          <Link href="/admin/cases" className="px-6 py-3 rounded-xl border border-[#e8e3dc] text-sm font-bold text-[#8c7355] hover:bg-[#faf8f5] transition-colors">
+          <Link href="/admin/cases" className="px-6 py-3 rounded-xl border border-[#F4E8D8] text-sm font-bold text-[#64748b] hover:bg-[#FFFCF8] transition-colors">
             Cancel
           </Link>
         </div>
@@ -189,12 +189,12 @@ export default function NewCasePage() {
   )
 }
 
-const input = 'w-full px-3 py-2.5 rounded-xl bg-white border border-[#e8e3dc] text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#1a1208]/10'
+const input = 'w-full px-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/10'
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-[#e8e3dc] bg-[#faf8f5] p-5 space-y-4">
-      <h2 className="text-[10px] font-black uppercase tracking-widest text-[#8c7355]">{title}</h2>
+    <div className="rounded-2xl border border-[#F4E8D8] bg-[#FFFCF8] p-5 space-y-4">
+      <h2 className="text-[10px] font-black uppercase tracking-widest text-[#64748b]">{title}</h2>
       {children}
     </div>
   )

@@ -3,7 +3,7 @@
 import { prisma } from '@/lib/prisma'
 import { revalidatePath } from 'next/cache'
 import { createConsultationBooking } from '@/lib/consultation-scheduling'
-import { sendEmail, generateBookingConfirmationEmail, generateBookingNotificationEmail, generateSlotFullAdminEmail } from '@/lib/email'
+import { sendEmail, generateBookingConfirmationEmail, generateBookingNotificationEmail, generateSlotFullAdminEmail, generateContactEmailTemplate } from '@/lib/email'
 
 export async function submitContact(formData: FormData) {
   const data = {
@@ -16,13 +16,37 @@ export async function submitContact(formData: FormData) {
   }
 
   await prisma.contactSubmission.create({ data })
+
+  // Notify admin about new inquiry
+  try {
+    const profile = await prisma.aboutProfile.findUnique({ where: { id: 'default-profile' } })
+    const office = (() => {
+      try { return profile?.officeDetails ? JSON.parse(profile.officeDetails) : {} } catch { return {} }
+    })()
+    const adminEmail =
+      process.env.ADMIN_EMAIL ||
+      process.env.INQUIRY_NOTIFY_EMAIL ||
+      office?.email ||
+      process.env.BREVO_SENDER_EMAIL
+    if (adminEmail) {
+      await sendEmail({
+        to: adminEmail,
+        subject: `New inquiry: ${data.subject || 'Website contact form'}`,
+        htmlContent: generateContactEmailTemplate(data),
+        textContent: `New inquiry from ${data.fullName} <${data.email}>\n\n${data.message}`,
+      })
+    }
+  } catch (err) {
+    console.error('Failed to send admin inquiry notification:', err)
+  }
+
   revalidatePath('/admin/inbox')
 }
 
 export async function submitBooking(formData: FormData) {
   const date = formData.get('date') as string
   const slotId = formData.get('slotId') as string
-  const meetingMode = formData.get('meetingMode') as 'PHYSICAL' | 'GOOGLE_MEET' | 'ZOOM'
+  const meetingMode = formData.get('meetingMode') as 'PHYSICAL' | 'VIRTUAL'
 
   if (!date || !slotId || !meetingMode) {
     throw new Error('Date, slot, and meeting mode are required')

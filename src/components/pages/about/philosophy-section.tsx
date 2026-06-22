@@ -30,7 +30,7 @@ export function PhilosophySection({ content }: { content?: any }) {
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#0a192f]/5 border border-slate-200 text-[#0a192f] text-sm font-medium">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#14203E]/5 border border-slate-200 text-[#14203E] text-sm font-medium">
             <span>{section.badge || 'Our Values'}</span>
           </div>
           
@@ -49,7 +49,7 @@ export function PhilosophySection({ content }: { content?: any }) {
               key={index} 
               className="text-center space-y-4 group"
             >
-              <div className="w-16 h-16 bg-[#c5a059]/10 rounded-2xl flex items-center justify-center mx-auto border border-[#c5a059]/10 group-hover:bg-[#c5a059]/15 transition-colors duration-300">
+              <div className="w-16 h-16 bg-[#F6F0E8]/10 rounded-2xl flex items-center justify-center mx-auto border border-[#F4E8D8]/10 group-hover:bg-[#F6F0E8]/15 transition-colors duration-300">
                 {(() => {
                   const Icon = value.icon || fallbackIcons[index] || Shield
                   return <Icon className="w-8 h-8 text-gold-500" />
@@ -74,7 +74,7 @@ export function PhilosophySection({ content }: { content?: any }) {
           </div>
           
           <div className="relative text-center space-y-6">
-            <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-[#0a192f]">
+            <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-[#14203E]">
               {section.missionTitle || 'Our Mission'}
             </h3>
             
@@ -89,7 +89,7 @@ export function PhilosophySection({ content }: { content?: any }) {
                 { title: 'Trust', subtitle: 'Building lasting relationships' }
               ]).map((item: any) => (
                 <div key={item.title} className="text-center">
-                  <div className="text-2xl font-black text-[#c5a059]">{item.title}</div>
+                  <div className="text-2xl font-black text-[#14203E]">{item.title}</div>
                   <div className="text-slate-500 text-sm">{item.subtitle}</div>
                 </div>
               ))}

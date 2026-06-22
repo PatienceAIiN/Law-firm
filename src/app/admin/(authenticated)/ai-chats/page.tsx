@@ -48,7 +48,7 @@ export default async function AiChatsPage() {
   return (
     <div className="space-y-8 p-8">
       <div>
-        <h1 className="text-3xl font-black uppercase tracking-tighter text-[#0a192f]">AI Chats</h1>
+        <h1 className="text-3xl font-black uppercase tracking-tighter text-[#14203E]">AI Chats</h1>
         <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">
           Search LAW AI conversations by unique session ID and review message history.
         </p>

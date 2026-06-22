@@ -1,9 +1,8 @@
 import { prisma } from './prisma'
-import { createGoogleMeetEvent, createZoomMeeting } from './meeting-providers'
 
 export const IST_TIME_ZONE = 'Asia/Kolkata'
 
-export type MeetingMode = 'PHYSICAL' | 'GOOGLE_MEET' | 'ZOOM'
+export type MeetingMode = 'PHYSICAL' | 'VIRTUAL'
 
 export type AvailabilitySlotView = {
   id: string
@@ -82,11 +81,14 @@ export function formatIstTimeValue(date: Date) {
 }
 
 export function parseAllowedModes(raw: string | null | undefined): MeetingMode[] {
-  if (!raw) return ['PHYSICAL', 'GOOGLE_MEET', 'ZOOM']
-  return raw
+  if (!raw) return ['PHYSICAL', 'VIRTUAL']
+  // Normalise legacy values (GOOGLE_MEET / ZOOM) into the single VIRTUAL mode.
+  const modes = raw
     .split(',')
     .map((item) => item.trim())
-    .filter(Boolean) as MeetingMode[]
+    .filter(Boolean)
+    .map((item) => (item === 'PHYSICAL' ? 'PHYSICAL' : 'VIRTUAL')) as MeetingMode[]
+  return Array.from(new Set(modes))
 }
 
 function serializeSlot(slot: any): AvailabilitySlotView {
@@ -252,13 +254,9 @@ export async function deleteAvailabilitySlot(slotId: string) {
 }
 
 export function generateMeetingLink(mode: MeetingMode, bookingId: string, slotId: string) {
-  const code = `${bookingId.slice(0, 8)}-${slotId.slice(0, 8)}`
-  if (mode === 'GOOGLE_MEET') {
-    return `https://meet.google.com/${code}`
-  }
-  if (mode === 'ZOOM') {
-    return `https://zoom.us/j/${code}`
-  }
+  // Virtual meetings are hosted in our own LiveKit workspace. The concrete URL
+  // (which needs the booking id) is filled in once the booking exists; this
+  // returns an empty string so callers fall back to that logic.
   return ''
 }
 
@@ -289,38 +287,17 @@ export async function createConsultationBooking(input: {
     throw new Error('Selected slot is fully booked')
   }
 
-  // Resolve meeting link — try real OAuth APIs first, fallback to generated link
+  // Resolve meeting link. Physical → office address. Virtual → our own LiveKit
+  // workspace (URL is filled in after the booking id exists), unless the slot
+  // carries an explicit manual link.
   let resolvedMeetingLink = ''
+  let useInternalWorkspace = false
   if (input.meetingMode === 'PHYSICAL') {
     resolvedMeetingLink = slot.physicalAddress || ''
   } else if (slot.manualMeetingLink) {
     resolvedMeetingLink = slot.manualMeetingLink
   } else {
-    // Build time strings for API calls (ISO 8601 in IST)
-    const dateKey = istDateKey(slot.day.date)
-    const startISO = `${dateKey}T${formatIstTimeValue(slot.startTime)}:00+05:30`
-    const endISO = `${dateKey}T${formatIstTimeValue(slot.endTime)}:00+05:30`
-    const durationMs = slot.endTime.getTime() - slot.startTime.getTime()
-    const durationMinutes = Math.round(durationMs / 60_000) || 60
-
-    if (input.meetingMode === 'GOOGLE_MEET') {
-      const link = await createGoogleMeetEvent({
-        summary: `Legal Consultation — ${input.name}`,
-        description: input.subject,
-        startISO,
-        endISO,
-        attendeeEmails: [input.email],
-      }).catch(() => null)
-      resolvedMeetingLink = link || generateMeetingLink(input.meetingMode, 'pending', slot.id)
-    } else if (input.meetingMode === 'ZOOM') {
-      const link = await createZoomMeeting({
-        topic: `Legal Consultation — ${input.name}`,
-        startISO,
-        durationMinutes,
-        agenda: input.subject,
-      }).catch(() => null)
-      resolvedMeetingLink = link || generateMeetingLink(input.meetingMode, 'pending', slot.id)
-    }
+    useInternalWorkspace = true
   }
 
   const booking = await prisma.$transaction(async (tx) => {
@@ -337,6 +314,15 @@ export async function createConsultationBooking(input: {
         status: 'CONFIRMED',
       }
     })
+
+    // No external link available — host the call in our own LiveKit workspace.
+    if (useInternalWorkspace) {
+      const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+      await tx.consultationBooking.update({
+        where: { id: created.id },
+        data: { meetingLink: `${base}/meeting/${created.id}` },
+      })
+    }
 
     await tx.availabilitySlot.update({
       where: { id: slot.id },

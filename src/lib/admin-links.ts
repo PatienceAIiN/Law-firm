@@ -11,7 +11,7 @@ export const STATIC_ADMIN_LINK_OPTIONS: AdminLinkOption[] = [
   { label: 'Practice Areas', href: '/practice-areas' },
   { label: 'Consultation', href: '/consultation' },
   { label: 'Contact', href: '/contact' },
-  { label: 'Blog', href: '/blog' },
+  { label: 'Articles', href: '/blog' },
 ]
 
 export function buildAdminLinkOptions(pages: SitePage[] = []): AdminLinkOption[] {

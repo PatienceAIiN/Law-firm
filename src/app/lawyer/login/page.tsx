@@ -4,11 +4,12 @@ import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Mail, KeyRound, Loader2 } from 'lucide-react'
+import { Mail, KeyRound, Loader2, Eye, EyeOff } from 'lucide-react'
 
 export default function LawyerLoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const router = useRouter()
@@ -39,11 +40,11 @@ export default function LawyerLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1208] to-[#2d1f0d] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#14203E] to-[#1d2c52] flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-12 h-12 bg-[#d4a853] rounded-lg flex items-center justify-center">
-            <span className="text-[#1a1208] font-bold text-xl">⚖️</span>
+          <div className="w-12 h-12 bg-[#F6F0E8] rounded-lg flex items-center justify-center">
+            <span className="text-[#14203E] font-bold text-xl">⚖️</span>
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-white">
@@ -73,7 +74,7 @@ export default function LawyerLoginPage() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-[#d4a853] focus:outline-none focus:ring-[#d4a853]"
+                  className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-[#F4E8D8] focus:outline-none focus:ring-[#14203E]"
                   placeholder="your@email.com"
                   required
                 />
@@ -87,20 +88,28 @@ export default function LawyerLoginPage() {
               <div className="mt-1 relative">
                 <KeyRound className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="pl-10 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-[#d4a853] focus:outline-none focus:ring-[#d4a853]"
+                  className="pl-10 pr-11 block w-full appearance-none rounded-lg border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-[#14203E] focus:outline-none focus:ring-1 focus:ring-[#14203E]"
                   placeholder="••••••••"
                   required
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((v) => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  className="absolute right-3 top-2.5 text-gray-400 transition-colors hover:text-[#14203E]"
+                >
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
               </div>
             </div>
 
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-[#1a1208] text-white font-semibold hover:bg-[#2d1f0d] transition-colors disabled:opacity-50"
+              className="w-full flex justify-center items-center gap-2 py-2.5 px-4 rounded-lg bg-[#14203E] text-white font-semibold hover:bg-[#1d2c52] transition-colors disabled:opacity-50"
             >
               {isLoading ? (
                 <>

@@ -245,37 +245,37 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
     <div className="max-w-5xl mx-auto p-6 lg:p-8 space-y-6">
       {/* Toast */}
       {toast && (
-        <div className="fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#1a1208] text-white text-sm font-medium shadow-xl">
-          <CheckCircle className="w-4 h-4 text-[#d4a853]" /> {toast}
+        <div className="fixed top-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#14203E] text-white text-sm font-medium shadow-xl">
+          <CheckCircle className="w-4 h-4 text-[#14203E]" /> {toast}
         </div>
       )}
 
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/admin/cases" className="p-2 rounded-xl border border-[#e8e3dc] hover:bg-[#faf8f5]">
-            <ArrowLeft className="w-4 h-4 text-[#8c7355]" />
+          <Link href="/admin/cases" className="p-2 rounded-xl border border-[#F4E8D8] hover:bg-[#FFFCF8]">
+            <ArrowLeft className="w-4 h-4 text-[#64748b]" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-xs font-black font-mono text-[#8c7355]">{caseData.caseNumber}</span>
+              <span className="text-xs font-black font-mono text-[#64748b]">{caseData.caseNumber}</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border ${statusColor(caseData.status)}`}>
                 {caseData.status}
               </span>
             </div>
-            <h1 className="text-xl font-black text-[#1a1208]">{caseData.title}</h1>
+            <h1 className="text-xl font-black text-[#14203E]">{caseData.title}</h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           {editing ? (
             <>
-              <button onClick={() => setEditing(false)} className="p-2 rounded-xl border border-[#e8e3dc] hover:bg-[#faf8f5]">
+              <button onClick={() => setEditing(false)} className="p-2 rounded-xl border border-[#F4E8D8] hover:bg-[#FFFCF8]">
                 <X className="w-4 h-4 text-gray-400" />
               </button>
               <button
                 onClick={handleSave}
                 disabled={saving}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1208] text-white text-sm font-bold hover:bg-[#2d1f0d] disabled:opacity-60"
+                className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#14203E] text-white text-sm font-bold hover:bg-[#1d2c52] disabled:opacity-60"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
                 Save Changes
@@ -284,7 +284,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
           ) : (
             <>
               <button onClick={() => { setEditing(true); setEditForm({ ...caseData }) }}
-                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#e8e3dc] text-sm font-bold text-[#1a1208] hover:bg-[#faf8f5]">
+                className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#F4E8D8] text-sm font-bold text-[#14203E] hover:bg-[#FFFCF8]">
                 <Edit3 className="w-3.5 h-3.5" /> Edit
               </button>
               <button onClick={handleDelete} disabled={deleting}
@@ -328,7 +328,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 <EField label="Court Appearance Date">
                   <input type="date" value={editForm.courtAppearanceDate?.slice(0, 10) || ''} onChange={eField('courtAppearanceDate')} className={inp} />
                 </EField>
-                <label className="flex items-center gap-3 rounded-xl border border-[#e8e3dc] bg-white px-4 py-3 text-sm font-semibold text-[#1a1208]">
+                <label className="flex items-center gap-3 rounded-xl border border-[#F4E8D8] bg-white px-4 py-3 text-sm font-semibold text-[#14203E]">
                   <input
                     type="checkbox"
                     checked={Boolean(editForm.sendReminder)}
@@ -354,7 +354,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 ].map(([l, v]) => v && (
                   <div key={String(l)}>
                     <dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">{l}</dt>
-                    <dd className={`text-sm font-semibold mt-0.5 ${l === 'Next Hearing' ? 'text-[#d4a853]' : 'text-[#1a1208]'}`}>{v}</dd>
+                    <dd className={`text-sm font-semibold mt-0.5 ${l === 'Next Hearing' ? 'text-[#14203E]' : 'text-[#14203E]'}`}>{v}</dd>
                   </div>
                 ))}
                 <div>
@@ -385,9 +385,9 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               </div>
             ) : (
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Name</dt><dd className="text-sm font-semibold text-[#1a1208] mt-0.5">{caseData.clientName}</dd></div>
-                <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</dt><dd className="text-sm font-semibold text-[#1a1208] mt-0.5">{caseData.clientEmail}</dd></div>
-                {caseData.clientPhone && <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Phone</dt><dd className="text-sm font-semibold text-[#1a1208] mt-0.5">{caseData.clientPhone}</dd></div>}
+                <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Name</dt><dd className="text-sm font-semibold text-[#14203E] mt-0.5">{caseData.clientName}</dd></div>
+                <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Email</dt><dd className="text-sm font-semibold text-[#14203E] mt-0.5">{caseData.clientEmail}</dd></div>
+                {caseData.clientPhone && <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Phone</dt><dd className="text-sm font-semibold text-[#14203E] mt-0.5">{caseData.clientPhone}</dd></div>}
               </dl>
             )}
           </Card>
@@ -400,7 +400,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               </div>
             ) : (
               <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-3">
-                {caseData.advocateId && <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Advocate ID</dt><dd className="text-sm font-semibold text-[#1a1208] mt-0.5">{caseData.advocateId}</dd></div>}
+                {caseData.advocateId && <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Advocate ID</dt><dd className="text-sm font-semibold text-[#14203E] mt-0.5">{caseData.advocateId}</dd></div>}
                 {!caseData.advocateId && <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Status</dt><dd className="text-sm font-semibold text-amber-700 mt-0.5">Not assigned</dd></div>}
               </dl>
             )}
@@ -415,7 +415,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 placeholder="Document name (optional)"
                 className={inp + ' flex-1'}
               />
-              <label className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#e8e3dc] text-sm font-bold text-[#1a1208] hover:bg-[#faf8f5] cursor-pointer">
+              <label className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#F4E8D8] text-sm font-bold text-[#14203E] hover:bg-[#FFFCF8] cursor-pointer">
                 {docUploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
                 Upload
                 <input ref={docRef} type="file" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" className="hidden" onChange={handleDocUpload} />
@@ -426,13 +426,13 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 <p className="text-sm text-gray-400 text-center py-4">No documents uploaded yet.</p>
               )}
               {caseData.documents.map(doc => (
-                <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#f0ece4] bg-[#faf8f5]">
-                  <FileText className="w-4 h-4 text-[#8c7355] flex-shrink-0" />
-                  <span className="flex-1 text-sm text-[#1a1208] truncate">{doc.name}</span>
+                <div key={doc.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#F6F0E8] bg-[#FFFCF8]">
+                  <FileText className="w-4 h-4 text-[#64748b] flex-shrink-0" />
+                  <span className="flex-1 text-sm text-[#14203E] truncate">{doc.name}</span>
                   <span className="text-[10px] text-gray-400">{doc.fileSize ? `${(doc.fileSize / 1024).toFixed(0)} KB` : ''}</span>
                   <a href={doc.fileUrl} target="_blank" rel="noopener noreferrer"
-                    className="p-1.5 rounded-lg hover:bg-[#e8e3dc] transition-colors">
-                    <Download className="w-3.5 h-3.5 text-[#8c7355]" />
+                    className="p-1.5 rounded-lg hover:bg-[#F4E8D8] transition-colors">
+                    <Download className="w-3.5 h-3.5 text-[#64748b]" />
                   </a>
                   <button onClick={() => handleDelDoc(doc.id)} className="p-1.5 rounded-lg hover:bg-red-50 transition-colors">
                     <Trash2 className="w-3.5 h-3.5 text-red-400" />
@@ -448,12 +448,12 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               {!showPaymentForm ? (
                 <button
                   onClick={() => setShowPaymentForm(true)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#e8e3dc] text-sm font-bold text-[#1a1208] hover:bg-[#faf8f5]"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl border border-[#F4E8D8] text-sm font-bold text-[#14203E] hover:bg-[#FFFCF8]"
                 >
                   <Plus className="w-4 h-4" /> Add Payment
                 </button>
               ) : (
-                <form onSubmit={handleAddPayment} className="space-y-3 rounded-xl border border-[#e8e3dc] bg-[#faf8f5] p-4">
+                <form onSubmit={handleAddPayment} className="space-y-3 rounded-xl border border-[#F4E8D8] bg-[#FFFCF8] p-4">
                   <div className="grid grid-cols-2 gap-3">
                     <div>
                       <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Amount (₹) *</label>
@@ -484,12 +484,12 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                   </div>
                   <div className="flex items-center gap-2">
                     <button type="submit" disabled={payLoading}
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#1a1208] text-white text-sm font-bold hover:bg-[#2d1f0d] disabled:opacity-60">
+                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#14203E] text-white text-sm font-bold hover:bg-[#1d2c52] disabled:opacity-60">
                       {payLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <IndianRupee className="w-3.5 h-3.5" />}
                       Record Payment
                     </button>
                     <button type="button" onClick={() => setShowPaymentForm(false)}
-                      className="px-4 py-2 rounded-xl border border-[#e8e3dc] text-sm font-bold text-gray-500 hover:bg-[#faf8f5]">
+                      className="px-4 py-2 rounded-xl border border-[#F4E8D8] text-sm font-bold text-gray-500 hover:bg-[#FFFCF8]">
                       Cancel
                     </button>
                   </div>
@@ -501,11 +501,11 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
                 <p className="text-sm text-gray-400 text-center py-4">No payments recorded yet.</p>
               )}
               {caseData.payments.map(p => (
-                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#f0ece4] bg-[#faf8f5]">
+                <div key={p.id} className="flex items-center gap-3 p-3 rounded-xl border border-[#F6F0E8] bg-[#FFFCF8]">
                   <IndianRupee className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-[#1a1208]">{fmtCur(p.amount)}</span>
+                      <span className="text-sm font-bold text-[#14203E]">{fmtCur(p.amount)}</span>
                       <span className="text-[10px] font-bold border rounded-full px-2 py-0.5 border-emerald-200 bg-emerald-50 text-emerald-700">{p.mode}</span>
                     </div>
                     <p className="text-xs text-gray-400 truncate">
@@ -524,16 +524,16 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
         {/* Right column */}
         <div className="space-y-6">
           {/* Case Photo */}
-          <div className="rounded-2xl border border-[#e8e3dc] bg-white overflow-hidden">
+          <div className="rounded-2xl border border-[#F4E8D8] bg-white overflow-hidden">
             {caseData.photoUrl ? (
               <img src={caseData.photoUrl} alt="Case" className="w-full h-48 object-cover" />
             ) : (
-              <div className="w-full h-48 bg-[#faf8f5] flex items-center justify-center">
+              <div className="w-full h-48 bg-[#FFFCF8] flex items-center justify-center">
                 <Scale className="w-12 h-12 text-gray-200" />
               </div>
             )}
             <div className="p-3">
-              <label className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border border-[#e8e3dc] text-xs font-bold text-[#8c7355] hover:bg-[#faf8f5] cursor-pointer">
+              <label className="flex items-center justify-center gap-2 w-full py-2 rounded-xl border border-[#F4E8D8] text-xs font-bold text-[#64748b] hover:bg-[#FFFCF8] cursor-pointer">
                 {photoUploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Camera className="w-3.5 h-3.5" />}
                 {caseData.photoUrl ? 'Change Photo' : 'Upload Photo'}
                 <input type="file" accept="image/*" className="hidden" ref={photoRef} onChange={handlePhotoUpload} />
@@ -544,11 +544,11 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
           {/* Quick Stats */}
           <Card title="Case Summary">
             <dl className="space-y-3">
-              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Client</dt><dd className="text-sm font-bold text-[#1a1208] mt-0.5">{caseData.clientName}</dd></div>
+              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Client</dt><dd className="text-sm font-bold text-[#14203E] mt-0.5">{caseData.clientName}</dd></div>
               <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Paid</dt><dd className="text-lg font-black text-emerald-600 mt-0.5">{fmtCur(totalPaid)}</dd></div>
-              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Documents</dt><dd className="text-sm font-bold text-[#1a1208] mt-0.5">{caseData.documents.length} files</dd></div>
+              <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Documents</dt><dd className="text-sm font-bold text-[#14203E] mt-0.5">{caseData.documents.length} files</dd></div>
               <div><dt className="text-[10px] font-black uppercase tracking-widest text-gray-400">Next Hearing</dt>
-                <dd className={`text-sm font-bold mt-0.5 ${caseData.nextHearingDate ? 'text-[#d4a853]' : 'text-gray-400'}`}>
+                <dd className={`text-sm font-bold mt-0.5 ${caseData.nextHearingDate ? 'text-[#14203E]' : 'text-gray-400'}`}>
                   {fmtDate(caseData.nextHearingDate)}
                 </dd>
               </div>
@@ -576,7 +576,7 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
               <button
                 onClick={handleSendEmail}
                 disabled={emailLoading || sendType === 'NONE'}
-                className="flex items-center gap-2 w-full justify-center px-4 py-2.5 rounded-xl bg-[#1a1208] text-white text-sm font-bold hover:bg-[#2d1f0d] disabled:opacity-50 transition-colors"
+                className="flex items-center gap-2 w-full justify-center px-4 py-2.5 rounded-xl bg-[#14203E] text-white text-sm font-bold hover:bg-[#1d2c52] disabled:opacity-50 transition-colors"
               >
                 {emailLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Mail className="w-4 h-4" />}
                 {emailLoading ? 'Sending…' : 'Send to ' + caseData.clientEmail}
@@ -592,12 +592,12 @@ export function CaseDetailClient({ caseData: initial }: { caseData: CaseData }) 
   )
 }
 
-const inp = 'w-full px-3 py-2.5 rounded-xl bg-white border border-[#e8e3dc] text-sm text-[#1a1208] outline-none focus:ring-2 focus:ring-[#1a1208]/10'
+const inp = 'w-full px-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[#14203E] outline-none focus:ring-2 focus:ring-[#14203E]/10'
 
 function Card({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-[#e8e3dc] bg-white p-5">
-      <h2 className="text-[10px] font-black uppercase tracking-widest text-[#8c7355] mb-4">{title}</h2>
+    <div className="rounded-2xl border border-[#F4E8D8] bg-white p-5">
+      <h2 className="text-[10px] font-black uppercase tracking-widest text-[#64748b] mb-4">{title}</h2>
       {children}
     </div>
   )

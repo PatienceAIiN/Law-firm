@@ -15,11 +15,12 @@ import {
   Loader2,
   CalendarDays,
   MonitorPlay,
-  Plug,
   MessageSquareText,
+  Mail,
   Layers3,
   Users,
-  Scale
+  Scale,
+  ReceiptText
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { signOut } from 'next-auth/react'
@@ -28,14 +29,16 @@ import { AlertTriangle, LogOut as LogOutIcon } from 'lucide-react'
 
 const navigation = [
   { name: 'Dashboard', href: '/admin/dashboard', icon: LayoutDashboard },
+  { name: 'Home Page', href: '/admin/home-content', icon: Layers3 },
   { name: 'Case Management', href: '/admin/cases', icon: Scale },
   { name: 'Blogs', href: '/admin/blogs', icon: FileText },
   { name: 'Practice Areas', href: '/admin/practice-areas', icon: Briefcase },
   { name: 'Availability', href: '/admin/availability', icon: CalendarDays },
   { name: 'Virtual Meetings', href: '/admin/virtual-meetings', icon: MonitorPlay },
+  { name: 'Receipts', href: '/admin/receipts', icon: ReceiptText },
   { name: 'AI Chats', href: '/admin/ai-chats', icon: MessageSquareText },
+  { name: 'Mail', href: '/admin/mail', icon: Mail },
   { name: 'Pages', href: '/admin/pages', icon: Layers3 },
-  { name: 'Integrations', href: '/admin/integrations', icon: Plug },
   { name: 'Legal Team', href: '/admin/team', icon: Users },
   { name: 'Success Stories', href: '/admin/testimonials', icon: Star },
   { name: 'About Profile', href: '/admin/profile', icon: User },
@@ -72,19 +75,19 @@ export function AdminSidebar() {
                   'flex items-center justify-between px-4 py-3.5 text-xs font-black uppercase tracking-widest rounded-2xl transition-all duration-300 group',
                   isActive
                     ? 'bg-navy-900 text-white shadow-xl shadow-navy-900/20'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-[#0a192f]'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-[#14203E]'
                 )}
             >
               <div className="flex items-center">
                 <item.icon
                   className={cn(
                     'mr-3 h-4 w-4 transition-colors',
-                    isActive ? 'text-[#c5a059]' : 'text-slate-400 group-hover:text-[#0a192f]'
+                    isActive ? 'text-[#14203E]' : 'text-slate-400 group-hover:text-[#14203E]'
                   )}
                 />
                 <span>{item.name}</span>
               </div>
-              {isActive && <ChevronRight className="h-3 w-3 text-[#c5a059]" />}
+              {isActive && <ChevronRight className="h-3 w-3 text-[#14203E]" />}
             </Link>
           )
         })}

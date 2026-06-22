@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
-import { Inter, Libre_Baskerville } from 'next/font/google'
+import { IBM_Plex_Sans, Libre_Baskerville } from 'next/font/google'
 import './globals.css'
 import { getSiteTheme } from '@/lib/theme'
+import { PwaRegister } from '@/components/pwa-register'
+import { ThemeAuto } from '@/components/theme-auto'
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-sans' })
+const inter = IBM_Plex_Sans({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-sans' })
 const serif = Libre_Baskerville({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-serif' })
 
 function resolveIconHref(input?: string, version?: string) {
@@ -42,10 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${theme.siteTitle}`
     },
     description: 'Professional legal services with expertise in corporate law, litigation, and advisory services.',
+    manifest: '/manifest.webmanifest',
+    themeColor: '#14203E',
+    appleWebApp: { capable: true, statusBarStyle: 'default', title: theme.siteTitle },
     icons: {
       icon: [{ url: faviconHref, type }],
       shortcut: faviconHref,
-      apple: faviconHref,
+      apple: '/apple-touch-icon.png',
     }
   }
 }
@@ -65,6 +70,16 @@ export default async function RootLayout({
     >
       <head>
         <link rel="icon" href={resolveIconHref(theme.faviconUrl, theme.updatedAt)} />
+        {/* Apply IST-based dark/light before paint (public pages only) */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          (function(){try{
+            var p=location.pathname;
+            var portal=p.indexOf('/admin')===0||p.indexOf('/lawyer')===0;
+            var h=parseInt(new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Kolkata',hour:'2-digit',hour12:false}).formatToParts(new Date()).find(function(x){return x.type==='hour'}).value,10);
+            var dark=!portal&&(h>=19||h<6);
+            document.documentElement.classList.toggle('dark',dark);
+          }catch(e){}})();
+        ` }} />
         <style dangerouslySetInnerHTML={{ __html: `
           :root {
             --primary: ${theme.primaryColor};
@@ -82,6 +97,8 @@ export default async function RootLayout({
       </head>
       <body suppressHydrationWarning>
         {children}
+        <ThemeAuto />
+        <PwaRegister />
       </body>
     </html>
   )

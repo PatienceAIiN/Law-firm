@@ -50,13 +50,13 @@ export function ActivityLogPanel({ events, bookings }: ActivityLogPanelProps) {
         </div>
       )}
 
-      <div className="rounded-2xl border border-[#e8e3dc] bg-white overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-[#f0ece4] bg-[#faf8f5]">
-          <Filter className="w-4 h-4 text-[#8c7355]" />
+      <div className="rounded-2xl border border-[#F4E8D8] bg-white overflow-hidden">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-[#F6F0E8] bg-[#FFFCF8]">
+          <Filter className="w-4 h-4 text-[#64748b]" />
           <select
             value={filter}
             onChange={e => setFilter(e.target.value)}
-            className="flex-1 bg-transparent text-sm font-medium text-[#1a1208] outline-none"
+            className="flex-1 bg-transparent text-sm font-medium text-[#14203E] outline-none"
           >
             <option value="all">All Meetings ({events.length} events)</option>
             {bookings.map(b => (
@@ -72,7 +72,7 @@ export function ActivityLogPanel({ events, bookings }: ActivityLogPanelProps) {
             Clear All
           </button>
         </div>
-        <div className="divide-y divide-[#f0ece4] max-h-80 overflow-y-auto">
+        <div className="divide-y divide-[#F6F0E8] max-h-80 overflow-y-auto">
           {filtered.length === 0 && (
             <div className="px-4 py-8 text-center text-sm text-gray-400">No activity events.</div>
           )}
@@ -82,7 +82,7 @@ export function ActivityLogPanel({ events, bookings }: ActivityLogPanelProps) {
                 {e.type}
               </span>
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-[#1a1208]">{e.details}</p>
+                <p className="text-xs text-[#14203E]">{e.details}</p>
                 <p className="text-[10px] text-gray-400 mt-0.5">
                   {bookingMap[e.bookingId] || e.bookingId.slice(0, 8)} · {new Date(e.timestamp).toLocaleString('en-IN')}
                 </p>

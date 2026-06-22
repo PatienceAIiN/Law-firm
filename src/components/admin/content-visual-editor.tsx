@@ -33,14 +33,14 @@ function Field({ label, value, onChange }: { label: string; value: string; onCha
           rows={3}
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#1a1208]/10 resize-none"
+          className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#14203E]/10 resize-none"
         />
       ) : (
         <input
           type="text"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#1a1208]/10"
+          className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-sm text-gray-800 outline-none focus:ring-2 focus:ring-[#14203E]/10"
         />
       )}
     </div>
@@ -69,7 +69,7 @@ function ArrayField({ label, value, onChange }: { label: string; value: any[]; o
         value={json}
         onChange={(e) => setJson(e.target.value)}
         onBlur={handleBlur}
-        className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-xs font-mono text-gray-700 outline-none focus:ring-2 focus:ring-[#1a1208]/10 resize-y"
+        className="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-100 text-xs font-mono text-gray-700 outline-none focus:ring-2 focus:ring-[#14203E]/10 resize-y"
         spellCheck={false}
       />
       {error && <p className="text-red-500 text-[10px]">{error}</p>}
@@ -94,7 +94,7 @@ function Section({
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
       >
-        <span className="text-xs font-black uppercase tracking-widest text-[#1a1208]">{title}</span>
+        <span className="text-xs font-black uppercase tracking-widest text-[#14203E]">{title}</span>
         {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
       </button>
       {open && <div className="px-5 py-4 space-y-4 bg-white">{children}</div>}
@@ -141,14 +141,14 @@ export function ContentVisualEditor({ initialContent, updateContent, withLoading
         <button
           type="button"
           onClick={() => setTab('visual')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'visual' ? 'bg-white text-[#1a1208] shadow-sm' : 'text-gray-500 hover:text-[#1a1208]'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'visual' ? 'bg-white text-[#14203E] shadow-sm' : 'text-gray-500 hover:text-[#14203E]'}`}
         >
           <LayoutTemplate className="w-3.5 h-3.5" /> Visual Editor
         </button>
         <button
           type="button"
           onClick={() => setTab('json')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'json' ? 'bg-white text-[#1a1208] shadow-sm' : 'text-gray-500 hover:text-[#1a1208]'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'json' ? 'bg-white text-[#14203E] shadow-sm' : 'text-gray-500 hover:text-[#14203E]'}`}
         >
           <Code2 className="w-3.5 h-3.5" /> Raw JSON
         </button>
@@ -293,7 +293,7 @@ export function ContentVisualEditor({ initialContent, updateContent, withLoading
             name="contentJson"
             defaultValue={jsonStr}
             rows={22}
-            className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#1a1208]/10 font-mono text-[11px] leading-6 resize-y"
+            className="w-full p-4 bg-gray-50 border border-gray-100 rounded-2xl outline-none focus:ring-2 focus:ring-[#14203E]/10 font-mono text-[11px] leading-6 resize-y"
             spellCheck={false}
             onChange={(e) => {
               try {
@@ -308,7 +308,7 @@ export function ContentVisualEditor({ initialContent, updateContent, withLoading
       <button
         type="button"
         onClick={handleVisualSave}
-        className="w-full bg-[#1a1208] text-white p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#2d1f0d] transition-all text-sm"
+        className="w-full bg-[#14203E] text-white p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[#1d2c52] transition-all text-sm"
       >
         <Save className="w-4 h-4" />
         Save All Content

@@ -11,7 +11,7 @@ export function HeroSection({ data, content }: HeroSectionProps) {
   const section = content?.about?.hero || {}
   
   return (
-    <section className="relative bg-gradient-to-br from-[#0a192f] via-[#112240] to-[#0a192f] text-white overflow-hidden uppercase tracking-wider">
+    <section className="relative bg-gradient-to-br from-[#14203E] via-[#112240] to-[#14203E] text-white overflow-hidden uppercase tracking-wider">
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width%3D%2260%22%20height%3D%2260%22%20viewBox%3D%220%200%2060%2060%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22none%22%20fill-rule%3D%22evenodd%22%3E%3Cg%20fill%3D%22%23ffffff%22%20fill-opacity%3D%220.1%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%222%22/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
       </div>
@@ -19,12 +19,12 @@ export function HeroSection({ data, content }: HeroSectionProps) {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div className="text-center space-y-8 animate-in fade-in zoom-in duration-700">
           <div className="space-y-4">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#c5a059]/20 border border-[#c5a059]/30 text-[#c5a059] text-[10px] font-black uppercase tracking-widest">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#F6F0E8]/20 border border-[#F4E8D8]/30 text-[#14203E] text-[10px] font-black uppercase tracking-widest">
               <span>{section.badge || 'OUR STORY & LEGACY'}</span>
             </div>
             
             <h1 className="text-4xl lg:text-7xl font-black leading-none">
-              <span className="text-[#c5a059]">{section.title?.split(' ')[0] || 'BEYOND'}</span>
+              <span className="text-[#14203E]">{section.title?.split(' ')[0] || 'BEYOND'}</span>
               <br />
               <span className="text-white">{section.title?.split(' ').slice(1).join(' ') || 'LEGAL BOUNDARIES'}</span>
             </h1>
@@ -36,19 +36,19 @@ export function HeroSection({ data, content }: HeroSectionProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto pt-8">
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#c5a059] group-hover:scale-110 transition-transform">25+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">25+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">YEARS OF PRACTICE</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#c5a059] group-hover:scale-110 transition-transform">1.5K+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">1.5K+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">SUCCESSFUL CLIENTS</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#c5a059] group-hover:scale-110 transition-transform">98%</div>
+              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">98%</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">CASE VICTORY</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#c5a059] group-hover:scale-110 transition-transform">8+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">8+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">PRACTICE AREAS</div>
             </div>
           </div>

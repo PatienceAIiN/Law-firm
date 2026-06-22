@@ -96,7 +96,7 @@ function fmtDate(value?: string | null) {
   return value ? new Date(value).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' }) : 'Not set'
 }
 
-const inputClass = 'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#0a192f]/10'
+const inputClass = 'w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#14203E]/10'
 
 export function CaseManager() {
   const [cases, setCases] = useState<CourtCase[]>([])
@@ -261,19 +261,19 @@ export function CaseManager() {
       <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#c5a059]">Case Management</p>
-            <h2 className="text-2xl font-black uppercase tracking-tighter text-[#0a192f]">Digital court file system</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">Case Management</p>
+            <h2 className="text-2xl font-black uppercase tracking-tighter text-[#14203E]">Digital court file system</h2>
             <p className="max-w-3xl text-sm leading-6 text-slate-600">Create, preview, update, and delete files. Assign advocates, store case documents, record payments, and trigger reminders from one place.</p>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={openCreate} className="h-11 rounded-2xl bg-[#0a192f] px-5 font-black uppercase tracking-widest text-white hover:bg-[#c5a059] hover:text-[#0a192f]"><Plus className="mr-2 h-4 w-4" />Add Case</Button>
-            <Link href="/admin/cases/new" className="inline-flex h-11 items-center rounded-2xl border border-slate-200 px-5 text-[10px] font-black uppercase tracking-[0.24em] text-slate-600 hover:border-[#0a192f] hover:text-[#0a192f]">Full Form</Link>
+            <Button type="button" onClick={openCreate} className="h-11 rounded-2xl bg-[#14203E] px-5 font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[#14203E]"><Plus className="mr-2 h-4 w-4" />Add Case</Button>
+            <Link href="/admin/cases/new" className="inline-flex h-11 items-center rounded-2xl border border-slate-200 px-5 text-[10px] font-black uppercase tracking-[0.24em] text-slate-600 hover:border-[#14203E] hover:text-[#14203E]">Full Form</Link>
           </div>
         </div>
 
         <div className="mt-6 grid gap-4 md:grid-cols-4">
           {[
-            { label: 'Total Cases', value: stats.total, icon: FileText, color: 'text-[#0a192f]' },
+            { label: 'Total Cases', value: stats.total, icon: FileText, color: 'text-[#14203E]' },
             { label: 'Active', value: stats.active, icon: Shield, color: 'text-emerald-600' },
             { label: 'Assigned', value: stats.assigned, icon: Users, color: 'text-blue-600' },
             { label: 'Urgent', value: stats.urgent, icon: AlertCircle, color: 'text-amber-600' },
@@ -289,11 +289,11 @@ export function CaseManager() {
         <div className="mt-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="relative flex-1">
             <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search case number, client, court, advocate..." className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#0a192f]/10" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search case number, client, court, advocate..." className="w-full rounded-2xl border border-slate-200 bg-white py-3.5 pl-11 pr-4 text-sm text-slate-800 outline-none focus:ring-2 focus:ring-[#14203E]/10" />
           </div>
           <div className="flex flex-wrap gap-2">
             {TABS.map((item) => (
-              <button key={item} type="button" onClick={() => setTab(item)} className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] ${tab === item ? 'bg-[#0a192f] text-white' : 'border border-slate-200 bg-white text-slate-500 hover:border-[#0a192f] hover:text-[#0a192f]'}`}>
+              <button key={item} type="button" onClick={() => setTab(item)} className={`rounded-full px-4 py-2 text-[10px] font-black uppercase tracking-[0.24em] ${tab === item ? 'bg-[#14203E] text-white' : 'border border-slate-200 bg-white text-slate-500 hover:border-[#14203E] hover:text-[#14203E]'}`}>
                 {item}
               </button>
             ))}
@@ -305,7 +305,7 @@ export function CaseManager() {
 
       <div className="grid gap-4">
         {loading ? (
-          <div className="rounded-[28px] border border-slate-200 bg-white p-12 text-center text-sm text-slate-500"><Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-[#0a192f]" />Loading cases...</div>
+          <div className="rounded-[28px] border border-slate-200 bg-white p-12 text-center text-sm text-slate-500"><Loader2 className="mx-auto mb-3 h-6 w-6 animate-spin text-[#14203E]" />Loading cases...</div>
         ) : filtered.length === 0 ? (
           <div className="rounded-[28px] border border-dashed border-slate-200 bg-white p-12 text-center text-sm text-slate-500">No cases found for the selected filter.</div>
         ) : filtered.map((item) => {
@@ -321,7 +321,7 @@ export function CaseManager() {
                     {isUrgent(item) && <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.24em] text-amber-700"><CalendarDays className="h-3 w-3" />Urgent</span>}
                   </div>
                   <div>
-                    <h3 className="text-xl font-black uppercase tracking-tight text-[#0a192f]">{item.title}</h3>
+                    <h3 className="text-xl font-black uppercase tracking-tight text-[#14203E]">{item.title}</h3>
                     <p className="mt-1 text-sm text-slate-600">{item.clientName} - {item.court}</p>
                   </div>
                   <div className="grid gap-3 text-sm text-slate-600 md:grid-cols-3">
@@ -366,7 +366,7 @@ export function CaseManager() {
           </label>
           <Field label="Description"><textarea value={form.description} onChange={(e) => setForm((c) => ({ ...c, description: e.target.value }))} rows={5} className={`${inputClass} resize-none`} /></Field>
           <div className="flex gap-3">
-            <Button type="button" onClick={save} className="h-11 flex-1 rounded-2xl bg-[#0a192f] px-5 font-black uppercase tracking-widest text-white hover:bg-[#c5a059] hover:text-[#0a192f]">{editorMode === 'create' ? <Plus className="mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}{editorMode === 'create' ? 'Create Case' : 'Save Changes'}</Button>
+            <Button type="button" onClick={save} className="h-11 flex-1 rounded-2xl bg-[#14203E] px-5 font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[#14203E]">{editorMode === 'create' ? <Plus className="mr-2 h-4 w-4" /> : <CheckCircle2 className="mr-2 h-4 w-4" />}{editorMode === 'create' ? 'Create Case' : 'Save Changes'}</Button>
             <Button type="button" variant="outline" onClick={() => setEditorOpen(false)} className="h-11 flex-1 rounded-2xl border-slate-200 px-5 font-black uppercase tracking-widest text-slate-600">Cancel</Button>
           </div>
         </div>
@@ -381,7 +381,7 @@ export function CaseManager() {
                 <Tag>{preview.status}</Tag>
                 {isUrgent(preview) && <Tag urgent>Urgent</Tag>}
               </div>
-              <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#0a192f]">{preview.title}</h3>
+              <h3 className="mt-4 text-2xl font-black uppercase tracking-tight text-[#14203E]">{preview.title}</h3>
               <p className="mt-2 text-sm text-slate-600">{preview.clientName} - {preview.court}</p>
               <div className="mt-5 grid gap-3 md:grid-cols-2">
                 <Info label="Advocate" value={preview.advocate?.name || 'Unassigned'} />
@@ -393,12 +393,12 @@ export function CaseManager() {
               </div>
             </div>
             <div className="grid gap-3 md:grid-cols-3">
-              <Button type="button" onClick={() => reminder(preview)} className="h-11 rounded-2xl bg-[#0a192f] px-5 font-black uppercase tracking-widest text-white hover:bg-[#c5a059] hover:text-[#0a192f]"><Send className="mr-2 h-4 w-4" />Send Reminder</Button>
+              <Button type="button" onClick={() => reminder(preview)} className="h-11 rounded-2xl bg-[#14203E] px-5 font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[#14203E]"><Send className="mr-2 h-4 w-4" />Send Reminder</Button>
               <Button type="button" variant="outline" onClick={() => openEdit(preview)} className="h-11 rounded-2xl border-slate-200 px-5 font-black uppercase tracking-widest text-slate-600"><Pencil className="mr-2 h-4 w-4" />Edit Case</Button>
               <Button type="button" variant="outline" onClick={() => remove(preview)} className="h-11 rounded-2xl border-red-200 px-5 font-black uppercase tracking-widest text-red-600"><Trash2 className="mr-2 h-4 w-4" />Delete Case</Button>
             </div>
             <div className="flex gap-3">
-              <Link href={`/admin/cases/${preview.id}`} className="inline-flex h-11 items-center rounded-2xl bg-[#0a192f] px-5 text-[10px] font-black uppercase tracking-[0.24em] text-white hover:bg-[#c5a059] hover:text-[#0a192f]">Open Full File</Link>
+              <Link href={`/admin/cases/${preview.id}`} className="inline-flex h-11 items-center rounded-2xl bg-[#14203E] px-5 text-[10px] font-black uppercase tracking-[0.24em] text-white hover:bg-[#F6F0E8] hover:text-[#14203E]">Open Full File</Link>
               <Button type="button" variant="outline" onClick={() => setPreview(null)} className="h-11 rounded-2xl border-slate-200 px-5 font-black uppercase tracking-widest text-slate-600">Close</Button>
             </div>
           </div>

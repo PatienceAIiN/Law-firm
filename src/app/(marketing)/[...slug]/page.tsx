@@ -40,10 +40,10 @@ export default async function CustomPage({ params }: CustomPageProps) {
           {page.heroImage ? (
             <div className="relative h-72 sm:h-96">
               <img src={page.heroImage} alt={page.title} className="h-full w-full object-cover" />
-              <div className="absolute inset-0 bg-[#0a192f]/60" />
+              <div className="absolute inset-0 bg-[#14203E]/60" />
               <div className="absolute inset-0 flex items-center justify-center px-6 text-center text-white">
                 <div className="max-w-4xl space-y-4">
-                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#c5a059]">Custom Page</p>
+                  <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#14203E]">Custom Page</p>
                   <h1 className="text-3xl font-black uppercase tracking-tighter sm:text-5xl">{page.title}</h1>
                   <p className="mx-auto max-w-3xl text-sm leading-7 text-slate-200 sm:text-lg">{page.summary}</p>
                 </div>
@@ -51,8 +51,8 @@ export default async function CustomPage({ params }: CustomPageProps) {
             </div>
           ) : (
             <div className="p-8 sm:p-10">
-              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#c5a059]">Custom Page</p>
-              <h1 className="mt-4 text-3xl font-black uppercase tracking-tighter text-[#0a192f] sm:text-5xl">{page.title}</h1>
+              <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#14203E]">Custom Page</p>
+              <h1 className="mt-4 text-3xl font-black uppercase tracking-tighter text-[#14203E] sm:text-5xl">{page.title}</h1>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 sm:text-lg">{page.summary}</p>
             </div>
           )}

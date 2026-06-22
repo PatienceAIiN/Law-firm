@@ -47,7 +47,7 @@ export function MarketingShell({
   }, [pathname])
 
   return (
-    <div className="flex min-h-screen flex-col overflow-hidden bg-white text-slate-900">
+    <div className="flex min-h-screen flex-col overflow-hidden bg-white text-slate-900 transition-colors dark:bg-[#0b0f17] dark:text-slate-100">
       <Header
         brand={brand}
         navigation={visibleNavigation}
@@ -67,7 +67,7 @@ export function MarketingShell({
 
       <main className="min-h-0 flex-1">
         <div className="mx-auto flex min-h-full w-full max-w-[1680px] flex-col gap-4 px-3 py-3 sm:px-4 sm:py-4 lg:px-6">
-          <div className="flex-1 bg-white">
+          <div className="flex-1 bg-white dark:bg-[#0b0f17]">
             {children}
           </div>
 

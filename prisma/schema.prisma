@@ -355,3 +355,68 @@ model PasswordResetOTP {
 
   @@map("password_reset_otps")
 }
+
+model Receipt {
+  id          String   @id @default(cuid())
+  number      String   @unique
+  clientName  String
+  clientEmail String
+  advocateId  String?
+  createdByName String
+  items       String   // JSON array of { description, qty, rate, amount }
+  currency    String   @default("INR")
+  subtotal    Float    @default(0)
+  taxRate     Float    @default(0)
+  taxAmount   Float    @default(0)
+  total       Float    @default(0)
+  notes       String?
+  status      String   @default("DRAFT") // DRAFT, SENT
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("receipts")
+}
+
+model CaseActivity {
+  id        String   @id @default(cuid())
+  caseId    String
+  actorType String   // ADVOCATE, ADMIN
+  actorName String
+  action    String   // STATUS_CHANGED, CASE_EDITED, NOTE_ADDED, NOTE_DELETED
+  details   String?
+  createdAt DateTime @default(now())
+
+  @@index([caseId])
+  @@map("case_activities")
+}
+
+model CaseTrackOTP {
+  id          String   @id @default(cuid())
+  caseId      String
+  email       String
+  otp         String
+  accessToken String?
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([caseId])
+  @@map("case_track_otps")
+}
+
+model CaseReminder {
+  id           String   @id @default(cuid())
+  caseId       String
+  scheduledFor DateTime
+  message      String?
+  includeDetails Boolean @default(true)
+  sent         Boolean  @default(false)
+  sentAt       DateTime?
+  createdBy    String?
+  createdAt    DateTime @default(now())
+
+  @@index([caseId])
+  @@index([sent, scheduledFor])
+  @@map("case_reminders")
+}

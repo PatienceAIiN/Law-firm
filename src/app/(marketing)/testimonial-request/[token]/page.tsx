@@ -61,7 +61,7 @@ export default function TestimonialRequestPage() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-white to-slate-50">
-        <Loader2 className="w-8 h-8 animate-spin text-[#c5a059]" />
+        <Loader2 className="w-8 h-8 animate-spin text-[#14203E]" />
       </div>
     )
   }
@@ -73,7 +73,7 @@ export default function TestimonialRequestPage() {
           <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
-          <h2 className="text-xl font-black uppercase tracking-tight text-[#0a192f] mb-2">Link Unavailable</h2>
+          <h2 className="text-xl font-black uppercase tracking-tight text-[#14203E] mb-2">Link Unavailable</h2>
           <p className="text-gray-500 text-sm">{error}</p>
         </div>
       </div>
@@ -87,7 +87,7 @@ export default function TestimonialRequestPage() {
           <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle2 className="w-8 h-8 text-emerald-600" />
           </div>
-          <h2 className="text-xl font-black uppercase tracking-tight text-[#0a192f] mb-3">Thank You!</h2>
+          <h2 className="text-xl font-black uppercase tracking-tight text-[#14203E] mb-3">Thank You!</h2>
           <p className="text-gray-600 text-sm leading-relaxed">
             Your testimonial has been submitted successfully. Once our team reviews and approves it, it will appear on our website.
           </p>
@@ -102,15 +102,15 @@ export default function TestimonialRequestPage() {
       <div className="max-w-lg w-full">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#0a192f]/5 border border-slate-200 text-[#0a192f] text-sm font-medium mb-4">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#14203E]/5 border border-slate-200 text-[#14203E] text-sm font-medium mb-4">
             Share Your Experience
           </div>
-          <h1 className="text-3xl font-black uppercase tracking-tight text-[#0a192f]">
-            Your <span className="text-[#c5a059]">Testimonial</span>
+          <h1 className="text-3xl font-black uppercase tracking-tight text-[#14203E]">
+            Your <span className="text-[#14203E]">Testimonial</span>
           </h1>
           {recipientName && (
             <p className="mt-3 text-gray-600">
-              Hi <span className="font-semibold text-[#0a192f]">{recipientName}</span>, we'd love to hear about your experience with us.
+              Hi <span className="font-semibold text-[#14203E]">{recipientName}</span>, we'd love to hear about your experience with us.
             </p>
           )}
         </div>
@@ -131,7 +131,7 @@ export default function TestimonialRequestPage() {
                   className="transition-transform hover:scale-110"
                 >
                   <Star
-                    className={`w-8 h-8 ${star <= rating ? 'text-[#c5a059] fill-[#c5a059]' : 'text-gray-300'}`}
+                    className={`w-8 h-8 ${star <= rating ? 'text-[#14203E] fill-[#14203E]' : 'text-gray-300'}`}
                   />
                 </button>
               ))}
@@ -182,7 +182,7 @@ export default function TestimonialRequestPage() {
           <button
             type="submit"
             disabled={submitting || !content.trim()}
-            className="w-full py-4 bg-[#0a192f] text-white rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#c5a059] hover:text-[#0a192f] transition-all shadow-xl shadow-navy-900/20 disabled:opacity-50"
+            className="w-full py-4 bg-[#14203E] text-white rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#F6F0E8] hover:text-[#14203E] transition-all shadow-xl shadow-navy-900/20 disabled:opacity-50"
           >
             {submitting ? (
               <span className="flex items-center justify-center gap-2">

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import { logCaseActivity } from '@/lib/case-activity'
 
 // GET /api/cases/[id] - Get case details
 export async function GET(
@@ -95,6 +96,14 @@ export async function PUT(
         documents: true,
         payments: true,
       },
+    })
+
+    await logCaseActivity({
+      caseId: id,
+      actorType: 'ADMIN',
+      actorName: (session.user as any)?.name || 'Admin',
+      action: 'CASE_EDITED',
+      details: 'Case updated from admin panel',
     })
 
     return NextResponse.json(courtCase)

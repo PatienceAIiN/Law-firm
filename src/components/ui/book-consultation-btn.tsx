@@ -21,9 +21,9 @@ export function BookConsultationBtn({
     'inline-flex items-center gap-2 font-black uppercase tracking-widest text-xs px-6 py-4 rounded-2xl transition-all cursor-pointer'
 
   const variants = {
-    primary: 'bg-[#0a192f] text-white hover:bg-[#c5a059] shadow-lg shadow-[#0a192f]/20',
-    secondary: 'bg-white text-[#0a192f] border border-gray-200 hover:bg-[#0a192f] hover:text-white',
-    gold: 'bg-[#c5a059] text-[#0a192f] hover:bg-[#d4b06a] shadow-lg shadow-[#c5a059]/20',
+    primary: 'bg-[#14203E] text-white hover:bg-[#F6F0E8] shadow-lg shadow-[#14203E]/20',
+    secondary: 'bg-white text-[#14203E] border border-gray-200 hover:bg-[#14203E] hover:text-white',
+    gold: 'bg-[#F6F0E8] text-[#14203E] hover:bg-[#d4b06a] shadow-lg shadow-[#14203E]/20',
   }
 
   return (

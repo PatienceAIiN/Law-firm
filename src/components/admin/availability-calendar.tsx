@@ -76,7 +76,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
     startTime: '09:00',
     endTime: '09:30',
     capacity: '1',
-    allowedModes: ['PHYSICAL', 'GOOGLE_MEET', 'ZOOM'] as string[],
+    allowedModes: ['PHYSICAL', 'VIRTUAL'] as string[],
     manualMeetingLink: '',
     physicalAddress: ''
   })
@@ -230,14 +230,14 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-[#0a192f] uppercase tracking-tighter">Availability Calendar</h2>
+          <h2 className="text-2xl font-black text-[#14203E] uppercase tracking-tighter">Availability Calendar</h2>
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Manage consultation slots by day</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => loadMonth(shiftMonth(month, -1))} className="p-3 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm font-black text-[#0a192f] uppercase tracking-widest">
+          <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm font-black text-[#14203E] uppercase tracking-widest">
             {monthLabel(month)}
           </div>
           <button onClick={() => loadMonth(shiftMonth(month, 1))} className="p-3 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50">
@@ -268,16 +268,16 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
               onClick={() => openDay(date)}
               className={cn(
                 'text-left rounded-3xl p-4 min-h-28 border transition-all bg-white hover:shadow-lg',
-                isSelected ? 'border-[#c5a059] shadow-lg' : 'border-gray-100'
+                isSelected ? 'border-[#F4E8D8] shadow-lg' : 'border-gray-100'
               )}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="text-lg font-black text-[#0a192f]">{Number(date.slice(-2))}</div>
-                <CalendarIcon className="w-4 h-4 text-[#c5a059]" />
+                <div className="text-lg font-black text-[#14203E]">{Number(date.slice(-2))}</div>
+                <CalendarIcon className="w-4 h-4 text-[#14203E]" />
               </div>
               {day ? (
                 <div className="space-y-2">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-[#0a192f]">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-[#14203E]">
                     {day.totalSlots} slots
                   </div>
                   <div className="text-[10px] font-bold text-gray-400">
@@ -303,15 +303,15 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
           <div className="grid grid-cols-3 gap-4">
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Slots</div>
-              <div className="text-2xl font-black text-[#0a192f]">{selectedDay?.totalSlots || 0}</div>
+              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.totalSlots || 0}</div>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Available Seats</div>
-              <div className="text-2xl font-black text-[#0a192f]">{selectedDay?.availableSlots || 0}</div>
+              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.availableSlots || 0}</div>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Booked Seats</div>
-              <div className="text-2xl font-black text-[#0a192f]">{selectedDay?.bookedSlots || 0}</div>
+              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.bookedSlots || 0}</div>
             </div>
           </div>
 
@@ -329,7 +329,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                 <div key={slot.id} className="rounded-3xl border border-gray-100 p-4 bg-white space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-black text-[#0a192f] uppercase tracking-tighter">
+                      <div className="font-black text-[#14203E] uppercase tracking-tighter">
                         {slot.startTime} - {slot.endTime}
                       </div>
                       <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -396,7 +396,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                       />
                       <button
                         onClick={() => updateSlot(slot.id, draft)}
-                        className="md:col-span-2 w-full bg-[#0a192f] text-white p-3 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                        className="md:col-span-2 w-full bg-[#14203E] text-white p-3 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
                       >
                         <Save className="w-4 h-4" />
                         Save Slot
@@ -405,8 +405,8 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {slot.allowedModes.map((mode) => (
-                        <span key={mode} className="px-3 py-1 rounded-full bg-gray-50 text-[10px] font-black uppercase tracking-widest text-[#0a192f]">
-                          {mode.replace('_', ' ')}
+                        <span key={mode} className="px-3 py-1 rounded-full bg-gray-50 text-[10px] font-black uppercase tracking-widest text-[#14203E]">
+                          {mode === 'PHYSICAL' ? 'In-Person' : 'Virtual Meeting'}
                         </span>
                       ))}
                     </div>
@@ -427,7 +427,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
               <input value={newSlot.physicalAddress} onChange={(e) => setNewSlot({ ...newSlot, physicalAddress: e.target.value })} placeholder="Physical address" className="p-3 rounded-2xl border border-gray-100 bg-gray-50 text-sm font-bold md:col-span-2" />
             </div>
             <div className="flex flex-wrap gap-2">
-              {['PHYSICAL', 'GOOGLE_MEET', 'ZOOM'].map((mode) => (
+              {['PHYSICAL', 'VIRTUAL'].map((mode) => (
                 <button
                   key={mode}
                   type="button"
@@ -442,15 +442,15 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                   className={cn(
                     'px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border',
                     newSlot.allowedModes.includes(mode)
-                      ? 'bg-[#0a192f] text-white border-[#0a192f]'
+                      ? 'bg-[#14203E] text-white border-[#14203E]'
                       : 'bg-white text-gray-400 border-gray-100'
                   )}
                 >
-                  {mode.replace('_', ' ')}
+                  {mode === 'PHYSICAL' ? 'In-Person' : 'Virtual Meeting'}
                 </button>
               ))}
             </div>
-            <button onClick={submitNewSlot} className="w-full bg-[#c5a059] text-[#0a192f] p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2">
+            <button onClick={submitNewSlot} className="w-full bg-[#F6F0E8] text-[#14203E] p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" />
               Add Slot
             </button>

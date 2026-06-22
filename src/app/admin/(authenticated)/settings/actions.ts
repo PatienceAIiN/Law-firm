@@ -27,10 +27,19 @@ export async function updateHero(formData: FormData) {
 }
 
 export async function updateBrand(formData: FormData) {
+  let logoStyle: any = null
+  const styleRaw = formData.get('logo_style')
+  if (typeof styleRaw === 'string' && styleRaw.trim()) {
+    try { logoStyle = JSON.parse(styleRaw) } catch { logoStyle = null }
+  }
+
   const data = {
-    logo_text: formData.get('logo_text') as string,
-    firm_name: formData.get('firm_name') as string,
-    firm_full_name: formData.get('firm_full_name') as string,
+    logo_text: (formData.get('logo_text') as string) || '',
+    firm_name: (formData.get('firm_name') as string) || '',
+    firm_full_name: (formData.get('firm_full_name') as string) || '',
+    logo_image_url: (formData.get('logo_image_url') as string) || '',
+    use_image_logo: formData.get('use_image_logo') === 'on',
+    logo_style: logoStyle || undefined,
   }
 
   await prisma.siteSetting.upsert({

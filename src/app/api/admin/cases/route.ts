@@ -51,6 +51,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Required fields missing' }, { status: 400 })
     }
 
+    // Case numbers must be unique so a single number resolves one case (used by Track Case).
+    const dupe = await prisma.courtCase.findFirst({ where: { caseNumber: { equals: caseNumber, mode: 'insensitive' } }, select: { id: true } })
+    if (dupe) {
+      return NextResponse.json({ error: 'A case with this case number already exists' }, { status: 409 })
+    }
+
     const courtCase = await prisma.courtCase.create({
       data: {
         caseNumber,

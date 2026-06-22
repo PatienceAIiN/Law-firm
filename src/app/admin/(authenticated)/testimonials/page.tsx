@@ -71,17 +71,17 @@ export default async function TestimonialsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl lg:text-3xl font-black text-[#1a1208] tracking-tight">Testimonials</h1>
+          <h1 className="text-2xl lg:text-3xl font-black text-[#14203E] tracking-tight">Testimonials</h1>
           <p className="text-sm text-gray-500 mt-1">Manage client reviews, send requests, and approve submissions.</p>
         </div>
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#faf8f5] border border-[#e8e3dc]">
-            <Star className="w-4 h-4 text-[#d4a853]" />
-            <span className="text-sm font-semibold text-[#1a1208]">{totalPublished} published</span>
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFFCF8] border border-[#F4E8D8]">
+            <Star className="w-4 h-4 text-[#14203E]" />
+            <span className="text-sm font-semibold text-[#14203E]">{totalPublished} published</span>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#faf8f5] border border-[#e8e3dc]">
-            <Send className="w-4 h-4 text-[#8c7355]" />
-            <span className="text-sm font-semibold text-[#1a1208]">{totalRequests} requests</span>
+          <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#FFFCF8] border border-[#F4E8D8]">
+            <Send className="w-4 h-4 text-[#64748b]" />
+            <span className="text-sm font-semibold text-[#14203E]">{totalRequests} requests</span>
           </div>
           {pendingCount > 0 && (
             <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 border border-amber-200">
@@ -95,7 +95,7 @@ export default async function TestimonialsPage() {
       {/* Testimonial Requests Section — top, prominent */}
       <section>
         <div className="flex items-center gap-3 mb-5">
-          <h2 className="text-lg font-black text-[#1a1208] tracking-tight">Client Review Requests</h2>
+          <h2 className="text-lg font-black text-[#14203E] tracking-tight">Client Review Requests</h2>
           <span className="text-xs font-medium text-gray-400">Send an email link — client fills in their review</span>
         </div>
         <Suspense fallback={<div className="py-8 text-center text-xs text-gray-400">Loading requests...</div>}>
@@ -108,12 +108,12 @@ export default async function TestimonialsPage() {
         </Suspense>
       </section>
 
-      <div className="border-t border-[#e8e3dc]" />
+      <div className="border-t border-[#F4E8D8]" />
 
       {/* Published Testimonials */}
       <section>
         <div className="flex items-center gap-3 mb-5">
-          <h2 className="text-lg font-black text-[#1a1208] tracking-tight">Published Testimonials</h2>
+          <h2 className="text-lg font-black text-[#14203E] tracking-tight">Published Testimonials</h2>
           <span className="text-xs font-medium text-gray-400">Live on your website</span>
         </div>
         <Suspense fallback={<div className="py-8 text-center text-xs text-gray-400">Loading testimonials...</div>}>

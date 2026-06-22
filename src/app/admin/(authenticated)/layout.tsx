@@ -4,6 +4,11 @@ import { authOptions } from '@/lib/auth'
 import { AdminSidebar } from '@/components/admin/sidebar'
 import { AdminPageRouteLoader } from '@/components/admin/route-loader'
 
+export const metadata = {
+  manifest: '/manifest-admin.webmanifest',
+  appleWebApp: { capable: true, title: 'Law Firm Admin' },
+}
+
 export default async function AuthenticatedLayout({
   children,
 }: {

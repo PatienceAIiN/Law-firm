@@ -39,13 +39,13 @@ export async function POST(req: NextRequest) {
       to: email,
       subject: `Admin Password Reset OTP — ${firmName}`,
       htmlContent: `
-        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#faf8f5;border-radius:16px;">
-          <h2 style="color:#1a1208;margin:0 0 8px;">Password Reset</h2>
-          <p style="color:#5c4d38;margin:0 0 24px;">Use the OTP below to reset your admin password. It expires in <strong>15 minutes</strong>.</p>
-          <div style="background:#1a1208;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
-            <span style="font-size:40px;font-weight:900;letter-spacing:12px;color:#d4a853;">${otp}</span>
+        <div style="font-family:Arial,sans-serif;max-width:480px;margin:0 auto;padding:32px;background:#FFFCF8;border-radius:16px;">
+          <h2 style="color:#14203E;margin:0 0 8px;">Password Reset</h2>
+          <p style="color:#475569;margin:0 0 24px;">Use the OTP below to reset your admin password. It expires in <strong>15 minutes</strong>.</p>
+          <div style="background:#14203E;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+            <span style="font-size:40px;font-weight:900;letter-spacing:12px;color:#14203E;">${otp}</span>
           </div>
-          <p style="color:#8c7355;font-size:12px;">If you did not request this, ignore this email. Your password will remain unchanged.</p>
+          <p style="color:#64748b;font-size:12px;">If you did not request this, ignore this email. Your password will remain unchanged.</p>
         </div>`,
       textContent: `Your OTP is: ${otp}\n\nThis expires in 15 minutes. If you did not request this, ignore this email.`,
     })

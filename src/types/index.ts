@@ -1,5 +1,5 @@
 export type BlogStatus = 'DRAFT' | 'PUBLISHED' | 'ARCHIVED'
-export type MeetingMode = 'PHYSICAL' | 'GOOGLE_MEET' | 'ZOOM'
+export type MeetingMode = 'PHYSICAL' | 'VIRTUAL'
 export type BookingStatus = 'PENDING' | 'CONFIRMED' | 'CANCELLED' | 'COMPLETED'
 
 export interface BlogPost {

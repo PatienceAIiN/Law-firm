@@ -336,7 +336,7 @@ export function generateTestimonialRequestEmail(data: {
             If you're willing to share a few words about your experience, it would mean a great deal to us and help future clients understand the quality of service they can expect.
           </p>
           <div style="text-align:center;margin:28px 0;">
-            <a href="${data.formUrl}" style="background:#c5a059;color:#1e293b;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;display:inline-block;">
+            <a href="${data.formUrl}" style="background:#14203E;color:#1e293b;padding:14px 32px;text-decoration:none;border-radius:8px;font-weight:bold;font-size:15px;display:inline-block;">
               Share My Testimonial
             </a>
           </div>

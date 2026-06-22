@@ -101,7 +101,7 @@ export function Testimonials({ data: testimonials, metrics, content }: Testimoni
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#0a192f]/5 border border-slate-200 text-[#0a192f] text-sm font-medium">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#14203E]/5 border border-slate-200 text-[#14203E] text-sm font-medium">
             <span>{section.badge || 'Client Success Stories'}</span>
           </div>
 
@@ -159,7 +159,7 @@ export function Testimonials({ data: testimonials, metrics, content }: Testimoni
                 type="button"
                 onClick={() => scrollCarousel(-1)}
                 disabled={!canScrollPrev}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-[#0a192f] hover:text-[#0a192f] disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-[#14203E] hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Previous testimonials"
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -168,7 +168,7 @@ export function Testimonials({ data: testimonials, metrics, content }: Testimoni
                 type="button"
                 onClick={() => scrollCarousel(1)}
                 disabled={!canScrollNext}
-                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-[#0a192f] hover:text-[#0a192f] disabled:cursor-not-allowed disabled:opacity-40"
+                className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition-all hover:border-[#14203E] hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
                 aria-label="Next testimonials"
               >
                 <ChevronRight className="h-5 w-5" />

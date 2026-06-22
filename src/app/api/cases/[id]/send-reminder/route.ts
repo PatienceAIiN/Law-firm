@@ -78,28 +78,28 @@ export async function POST(
     }
 
     const htmlContent = `
-      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#faf8f5;border-radius:16px;">
-        <h2 style="color:#1a1208;">Court Appearance Reminder</h2>
+      <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:32px;background:#FFFCF8;border-radius:16px;">
+        <h2 style="color:#14203E;">Court Appearance Reminder</h2>
         <p>Dear ${recipientName},</p>
         <p>This is a reminder for the upcoming appearance assigned to this file.</p>
 
-        <div style="background:white;padding:20px;border-radius:8px;margin:20px 0;border-left:4px solid #d4a853;">
+        <div style="background:white;padding:20px;border-radius:8px;margin:20px 0;border-left:4px solid #14203E;">
           <p><strong>Case Number:</strong> ${courtCase.caseNumber}</p>
           <p><strong>Title:</strong> ${courtCase.title}</p>
           <p><strong>Court:</strong> ${courtCase.court}</p>
-          <p><strong>Appearance Date:</strong> <span style="color:#d4a853;font-weight:bold;">${hearingLabel}</span></p>
+          <p><strong>Appearance Date:</strong> <span style="color:#14203E;font-weight:bold;">${hearingLabel}</span></p>
           ${courtCase.judge ? `<p><strong>Judge:</strong> ${courtCase.judge}</p>` : ''}
           ${courtCase.advocate?.name ? `<p><strong>File Owner:</strong> ${courtCase.advocate.name}</p>` : ''}
         </div>
 
-        <div style="background:white;padding:20px;border-radius:8px;margin:20px 0;border-top:2px solid #d4a853;">
-          <h3 style="color:#1a1208;margin-top:0;">Fees Snapshot</h3>
+        <div style="background:white;padding:20px;border-radius:8px;margin:20px 0;border-top:2px solid #14203E;">
+          <h3 style="color:#14203E;margin-top:0;">Fees Snapshot</h3>
           <p><strong>Total Fees Recorded:</strong> ₹${totalPaid.toFixed(2)}</p>
-          <p style="margin-bottom:0;color:#8c7355;font-size:12px;">Case detail and receipt PDFs are attached when payment records exist.</p>
+          <p style="margin-bottom:0;color:#64748b;font-size:12px;">Case detail and receipt PDFs are attached when payment records exist.</p>
         </div>
 
-        <p style="color:#8c7355;font-size:12px;">Please ensure attendance and case preparation are completed before the scheduled date.</p>
-        <p style="color:#8c7355;font-size:12px;">${courtCase.advocate?.email ? `Reply to ${courtCase.advocate.email}` : `Contact ${firmName}`}</p>
+        <p style="color:#64748b;font-size:12px;">Please ensure attendance and case preparation are completed before the scheduled date.</p>
+        <p style="color:#64748b;font-size:12px;">${courtCase.advocate?.email ? `Reply to ${courtCase.advocate.email}` : `Contact ${firmName}`}</p>
       </div>
     `
 

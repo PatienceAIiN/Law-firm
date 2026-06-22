@@ -12,7 +12,7 @@ export async function GET(req: NextRequest) {
 
   const availability = await getAvailabilityForDate(
     date,
-    meetingMode === 'PHYSICAL' || meetingMode === 'GOOGLE_MEET' || meetingMode === 'ZOOM'
+    meetingMode === 'PHYSICAL' || meetingMode === 'VIRTUAL'
       ? meetingMode
       : undefined
   )

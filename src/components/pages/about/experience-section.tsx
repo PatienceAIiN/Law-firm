@@ -42,10 +42,10 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-center">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-black text-[#0a192f] uppercase tracking-tighter">
-                {section.heading?.split(' ').slice(0, 3).join(' ') || 'The Heritage of'} <span className="text-[#c5a059]">{section.heading?.split(' ').slice(3).join(' ') || 'Advocacy'}</span>
+              <h2 className="text-3xl lg:text-4xl font-black text-[#14203E] uppercase tracking-tighter">
+                {section.heading?.split(' ').slice(0, 3).join(' ') || 'The Heritage of'} <span className="text-[#14203E]">{section.heading?.split(' ').slice(3).join(' ') || 'Advocacy'}</span>
               </h2>
-              <div className="w-20 h-1.5 bg-[#c5a059] rounded-full"></div>
+              <div className="w-20 h-1.5 bg-[#F6F0E8] rounded-full"></div>
             </div>
             <div className="prose prose-lg text-gray-500 font-medium leading-relaxed">
               <p className="whitespace-pre-line">
@@ -60,13 +60,13 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
                 key={index} 
                 className="rounded-3xl border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white p-8 shadow-[0_12px_28px_rgba(15,23,42,0.05)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_18px_36px_rgba(15,23,42,0.08)]"
               >
-                <div className="w-12 h-12 bg-[#c5a059]/10 rounded-2xl flex items-center justify-center mb-6">
+                <div className="w-12 h-12 bg-[#F6F0E8]/10 rounded-2xl flex items-center justify-center mb-6">
                   {(() => {
                     const Icon = achievement.icon || fallbackIcons[index] || Award
-                    return <Icon className="w-6 h-6 text-[#c5a059]" />
+                    return <Icon className="w-6 h-6 text-[#14203E]" />
                   })()}
                 </div>
-                <div className="text-3xl font-black text-[#0a192f] mb-1 tracking-tighter">{achievement.stat}</div>
+                <div className="text-3xl font-black text-[#14203E] mb-1 tracking-tighter">{achievement.stat}</div>
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
                   {achievement.title}
                 </h3>
@@ -80,18 +80,18 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
 
         {/* Journey/Milestones can be static or hardcoded for now as per design */}
         <div className="relative overflow-hidden rounded-[3rem] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white p-12 shadow-[0_18px_40px_rgba(15,23,42,0.06)]">
-          <div className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-[#c5a059]/10 blur-3xl"></div>
+          <div className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-[#F6F0E8]/10 blur-3xl"></div>
           <div className="relative z-10 grid grid-cols-1 gap-12 text-center md:grid-cols-3">
             <div className="space-y-2">
-              <div className="text-[#c5a059] text-5xl font-black">{section.milestones?.[0]?.year || '2003'}</div>
+              <div className="text-[#14203E] text-5xl font-black">{section.milestones?.[0]?.year || '2003'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[0]?.label || 'Foundation Rooted in Ethics'}</p>
             </div>
             <div className="space-y-2">
-              <div className="text-[#c5a059] text-5xl font-black">{section.milestones?.[1]?.year || '2015'}</div>
+              <div className="text-[#14203E] text-5xl font-black">{section.milestones?.[1]?.year || '2015'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[1]?.label || 'Expansion to High Court Chambers'}</p>
             </div>
             <div className="space-y-2">
-              <div className="text-[#c5a059] text-5xl font-black">{section.milestones?.[2]?.year || '2024'}</div>
+              <div className="text-[#14203E] text-5xl font-black">{section.milestones?.[2]?.year || '2024'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[2]?.label || 'Digital Legal Transformation'}</p>
             </div>
           </div>

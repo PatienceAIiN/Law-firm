@@ -47,12 +47,12 @@ export function ConsultationModal({ open, onClose, content }: ConsultationModalP
       <div className="relative z-10 flex w-full max-w-[1180px] max-h-[92vh] flex-col overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-2xl shadow-black/25">
         <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#c5a059]">Booking Modal</p>
-            <h2 className="text-lg font-black uppercase tracking-tight text-[#0a192f]">Book Consultation</h2>
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">Booking Modal</p>
+            <h2 className="text-lg font-black uppercase tracking-tight text-[#14203E]">Book Consultation</h2>
           </div>
           <button
             onClick={onClose}
-            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:text-[#0a192f]"
+            className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:text-[#14203E]"
             aria-label="Close booking modal"
           >
             <X className="w-5 h-5" />

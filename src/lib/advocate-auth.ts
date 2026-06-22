@@ -56,6 +56,19 @@ export const advocateAuthOptions: NextAuthOptions = {
   session: {
     strategy: "jwt"
   },
+  secret: process.env.NEXTAUTH_SECRET,
+  // Separate cookie so advocate and admin sessions never collide.
+  cookies: {
+    sessionToken: {
+      name: "advocate-session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {

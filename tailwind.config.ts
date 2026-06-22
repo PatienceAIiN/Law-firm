@@ -60,9 +60,9 @@ const config: Config = {
           400: "#94a3b8",
           500: "#64748b",
           600: "#475569",
-          700: "#334155",
-          800: "#1e293b",
-          900: "#0f172a",
+          700: "#25365f",
+          800: "#1d2c52",
+          900: "#14203E",
         },
         gold: {
           50: "#fffbeb",
@@ -98,7 +98,7 @@ const config: Config = {
       },
       fontFamily: {
         serif: ["Georgia", "serif"],
-        sans: ["Inter", "system-ui", "sans-serif"],
+        sans: ["var(--font-sans)", "IBM Plex Sans", "system-ui", "sans-serif"],
       },
     },
   },

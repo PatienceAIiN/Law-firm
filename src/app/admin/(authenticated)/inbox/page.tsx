@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma'
-import { Mail, Phone, Calendar, Clock, MessageSquare, Briefcase } from 'lucide-react'
+import { Mail, Phone, Calendar, Clock, MessageSquare, Briefcase, Trash2 } from 'lucide-react'
 import { CLIENT_EMAIL_TEMPLATE_OPTIONS } from '@/lib/admin-email-templates'
-import { sendClientEmailAction } from './actions'
+import { sendClientEmailAction, deleteContactAction, deleteBookingAction } from './actions'
 
 export default async function AdminInbox() {
   const [contacts, bookings] = await Promise.all([
@@ -22,7 +22,7 @@ export default async function AdminInbox() {
   return (
     <div className="p-8 space-y-12">
       <div>
-        <h1 className="text-2xl font-black text-[#0a192f] uppercase tracking-tighter">LEAD INBOX</h1>
+        <h1 className="text-2xl font-black text-[#14203E] uppercase tracking-tighter">LEAD INBOX</h1>
         <p className="text-gray-400 font-bold uppercase tracking-widest text-[10px]">Manage inquiries and booking requests</p>
       </div>
 
@@ -30,8 +30,8 @@ export default async function AdminInbox() {
         {/* Contact Submissions */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-            <MessageSquare className="w-5 h-5 text-[#c5a059]" />
-            <h2 className="text-lg font-black text-[#0a192f] uppercase tracking-tight">Direct Inquiries</h2>
+            <MessageSquare className="w-5 h-5 text-[#14203E]" />
+            <h2 className="text-lg font-black text-[#14203E] uppercase tracking-tight">Direct Inquiries</h2>
           </div>
 
           <div className="space-y-4">
@@ -39,15 +39,19 @@ export default async function AdminInbox() {
               <div key={contact.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group">
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-bold text-[#0a192f]">{contact.fullName}</h3>
-                    <p className="text-xs text-[#c5a059] font-bold uppercase tracking-widest">{contact.subject}</p>
+                    <h3 className="font-bold text-[#14203E]">{contact.fullName}</h3>
+                    <p className="text-xs text-[#14203E] font-bold uppercase tracking-widest">{contact.subject}</p>
                   </div>
                   <span className="text-[10px] font-bold text-gray-400">{contact.createdAt.toLocaleDateString()}</span>
                 </div>
                 <p className="text-sm text-gray-500 mb-6 font-medium line-clamp-2 italic">"{contact.message}"</p>
-                <div className="flex gap-4 pt-4 border-t border-gray-50">
-                  <a href={`mailto:${contact.email}`} className="text-[#0a192f] hover:text-[#c5a059] transition-colors"><Mail className="w-4 h-4" /></a>
-                  {contact.phone && <a href={`tel:${contact.phone}`} className="text-[#0a192f] hover:text-[#c5a059] transition-colors"><Phone className="w-4 h-4" /></a>}
+                <div className="flex items-center gap-4 pt-4 border-t border-gray-50">
+                  <a href={`mailto:${contact.email}`} className="text-[#14203E] hover:text-[#14203E] transition-colors"><Mail className="w-4 h-4" /></a>
+                  {contact.phone && <a href={`tel:${contact.phone}`} className="text-[#14203E] hover:text-[#14203E] transition-colors"><Phone className="w-4 h-4" /></a>}
+                  <form action={deleteContactAction} className="ml-auto">
+                    <input type="hidden" name="id" value={contact.id} />
+                    <button type="submit" className="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700"><Trash2 className="w-3.5 h-3.5" /> Delete</button>
+                  </form>
                 </div>
               </div>
             ))}
@@ -58,28 +62,28 @@ export default async function AdminInbox() {
         {/* Consultation Bookings */}
         <section className="space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-gray-100">
-            <Calendar className="w-5 h-5 text-[#c5a059]" />
-            <h2 className="text-lg font-black text-[#0a192f] uppercase tracking-tight">Booking Requests</h2>
+            <Calendar className="w-5 h-5 text-[#14203E]" />
+            <h2 className="text-lg font-black text-[#14203E] uppercase tracking-tight">Booking Requests</h2>
           </div>
 
           <div className="space-y-4">
             {bookings.map((booking) => (
               <div key={booking.id} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-sm hover:shadow-md transition-all group relative overflow-hidden">
-                <div className={`absolute top-0 right-0 w-2 h-full ${booking.status === 'PENDING' ? 'bg-[#c5a059]' : 'bg-green-500'}`}></div>
+                <div className={`absolute top-0 right-0 w-2 h-full ${booking.status === 'PENDING' ? 'bg-[#F6F0E8]' : 'bg-green-500'}`}></div>
                 <div className="flex justify-between items-start mb-4">
                   <div>
-                    <h3 className="font-bold text-[#0a192f]">{booking.name}</h3>
+                    <h3 className="font-bold text-[#14203E]">{booking.name}</h3>
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest">{booking.meetingMode}</span>
                       <span className="w-1 h-1 bg-gray-200 rounded-full"></span>
-                      <span className="text-[10px] font-black uppercase text-[#c5a059] tracking-widest">{booking.status}</span>
+                      <span className="text-[10px] font-black uppercase text-[#14203E] tracking-widest">{booking.status}</span>
                     </div>
                   </div>
                   <span className="text-[10px] font-bold text-gray-400">{booking.createdAt.toLocaleDateString()}</span>
                 </div>
                 <div className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
-                    <Briefcase className="w-3 h-3 text-[#c5a059]" />
+                    <Briefcase className="w-3 h-3 text-[#14203E]" />
                     {booking.subject}
                   </div>
                 </div>
@@ -90,7 +94,7 @@ export default async function AdminInbox() {
                     id={`template-${booking.id}`}
                     name="templateType"
                     defaultValue="booking_confirmation"
-                    className="min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#0a192f] outline-none"
+                    className="min-w-0 flex-1 rounded-2xl border border-gray-200 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#14203E] outline-none"
                   >
                     {CLIENT_EMAIL_TEMPLATE_OPTIONS.map((option) => (
                       <option key={option.value} value={option.value}>
@@ -98,9 +102,13 @@ export default async function AdminInbox() {
                       </option>
                     ))}
                   </select>
-                  <button type="submit" className="rounded-2xl bg-[#0a192f] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-colors hover:bg-[#c5a059] hover:text-[#0a192f]">
+                  <button type="submit" className="rounded-2xl bg-[#14203E] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white transition-colors hover:bg-[#F6F0E8] hover:text-[#14203E]">
                     EMAIL CLIENT
                   </button>
+                </form>
+                <form action={deleteBookingAction} className="mt-3 flex justify-end">
+                  <input type="hidden" name="id" value={booking.id} />
+                  <button type="submit" className="inline-flex items-center gap-1 text-xs font-semibold text-red-500 hover:text-red-700"><Trash2 className="w-3.5 h-3.5" /> Cancel &amp; Delete</button>
                 </form>
               </div>
             ))}

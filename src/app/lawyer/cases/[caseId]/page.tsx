@@ -5,6 +5,8 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { ArrowLeft, FileText, DollarSign, MessageSquare, Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { CaseStatusSelect } from './case-status-select'
+import { EditCaseButton, AddNoteForm, DeleteNoteButton, DeleteCaseButton, DocumentManager, SetReminderButton } from './case-actions'
 
 export const metadata = {
   title: 'Case Details | Advocate Portal',
@@ -58,8 +60,26 @@ export default async function CaseDetailPage({ params }: Props) {
             <ArrowLeft className="w-4 h-4" />
             Back to Cases
           </Link>
-          <h1 className="text-2xl font-bold text-gray-900">{courtCase.caseNumber}</h1>
-          <p className="text-gray-600 mt-1">{courtCase.title}</p>
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">{courtCase.caseNumber}</h1>
+              <p className="text-gray-600 mt-1">{courtCase.title}</p>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <SetReminderButton caseId={courtCase.id} nextHearingDate={courtCase.nextHearingDate ? courtCase.nextHearingDate.toISOString() : null} />
+              <EditCaseButton
+                data={{
+                  id: courtCase.id, title: courtCase.title, caseType: courtCase.caseType, court: courtCase.court,
+                  judge: courtCase.judge, clientName: courtCase.clientName, clientEmail: courtCase.clientEmail,
+                  clientPhone: courtCase.clientPhone, opposingParty: courtCase.opposingParty,
+                  filingDate: courtCase.filingDate ? courtCase.filingDate.toISOString() : null,
+                  nextHearingDate: courtCase.nextHearingDate ? courtCase.nextHearingDate.toISOString() : null,
+                  description: courtCase.description,
+                }}
+              />
+              <DeleteCaseButton caseId={courtCase.id} />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -74,10 +94,8 @@ export default async function CaseDetailPage({ params }: Props) {
               <div className="font-semibold text-gray-900">{courtCase.caseType}</div>
             </div>
             <div>
-              <div className="text-sm text-gray-600">Status</div>
-              <div className={`font-semibold ${courtCase.status === 'ACTIVE' ? 'text-green-600' : 'text-gray-900'}`}>
-                {courtCase.status}
-              </div>
+              <div className="text-sm text-gray-600">Status / Process</div>
+              <CaseStatusSelect caseId={courtCase.id} initial={courtCase.status} />
             </div>
             <div>
               <div className="text-sm text-gray-600">Court</div>
@@ -136,34 +154,19 @@ export default async function CaseDetailPage({ params }: Props) {
         </div>
 
         {/* Documents */}
-        {courtCase.documents.length > 0 && (
-          <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              Documents ({courtCase.documents.length})
-            </h2>
-            <div className="space-y-2">
-              {courtCase.documents.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-200 rounded">
-                  <div>
-                    <div className="font-semibold text-gray-900">{doc.name}</div>
-                    <div className="text-xs text-gray-500">
-                      Uploaded: {new Date(doc.uploadedAt).toLocaleDateString('en-IN')}
-                    </div>
-                  </div>
-                  <a
-                    href={doc.fileUrl && doc.fileUrl.startsWith('http') ? doc.fileUrl : `/uploads/cases/${doc.fileUrl}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-blue-600 hover:text-blue-700 font-medium"
-                  >
-                    Download
-                  </a>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+            <FileText className="w-5 h-5" />
+            Documents ({courtCase.documents.length})
+          </h2>
+          <DocumentManager
+            caseId={courtCase.id}
+            initial={courtCase.documents.map((d) => ({
+              id: d.id, name: d.name, fileUrl: d.fileUrl, fileType: d.fileType,
+              fileSize: d.fileSize, uploadedAt: d.uploadedAt.toISOString(),
+            }))}
+          />
+        </div>
 
         {/* Payments */}
         {courtCase.payments.length > 0 && (
@@ -201,6 +204,7 @@ export default async function CaseDetailPage({ params }: Props) {
             <MessageSquare className="w-5 h-5" />
             Case Notes ({courtCase.notes.length})
           </h2>
+          <AddNoteForm caseId={courtCase.id} />
           {courtCase.notes.length === 0 ? (
             <p className="text-gray-500">No notes yet</p>
           ) : (
@@ -212,9 +216,12 @@ export default async function CaseDetailPage({ params }: Props) {
                       <div className="font-semibold text-gray-900">{note.advocate.name}</div>
                       <div className="text-xs text-gray-500">{new Date(note.createdAt).toLocaleString('en-IN')}</div>
                     </div>
-                    {note.isPrivate && (
-                      <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">Private</span>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {note.isPrivate && (
+                        <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-semibold rounded">Private</span>
+                      )}
+                      {note.advocateId === session.user.id && <DeleteNoteButton caseId={courtCase.id} noteId={note.id} />}
+                    </div>
                   </div>
                   <p className="text-gray-700">{note.content}</p>
                 </div>

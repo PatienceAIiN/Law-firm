@@ -6,6 +6,7 @@ import { Testimonials } from '@/components/sections/testimonials'
 import { SectionWrapper } from '@/components/ui/animation-wrapper'
 import { prisma } from '@/lib/prisma'
 import { getSiteContent } from '@/lib/site-content'
+import { VideoCover, COVER_VIDEOS } from '@/components/video-cover'
 
 export async function generateMetadata(): Promise<Metadata> {
   const content = await getSiteContent()
@@ -25,14 +26,14 @@ export default async function AboutPage() {
   const content = await getSiteContent()
 
   return (
-    <div className="min-h-screen bg-white">
-      <section className="mx-auto max-w-7xl px-4 pt-8 sm:px-6 lg:px-8">
-        <div className="rounded-[28px] border border-slate-200 bg-gradient-to-b from-white via-[#fbfcfe] to-white p-8 text-center shadow-sm sm:p-10">
-          <p className="text-[10px] font-black uppercase tracking-[0.28em] text-[#c5a059]">About Us</p>
-          <h1 className="mt-4 text-3xl font-black uppercase tracking-tighter text-[#0a192f] sm:text-5xl">
-            Beyond <span className="text-[#c5a059]">Legal Boundaries</span>
+    <div className="-mt-3 min-h-screen bg-white dark:bg-[#0b0f17] sm:-mt-4">
+      <section className="relative left-1/2 right-1/2 -mx-[50vw] w-screen overflow-hidden bg-[#FFFCF8] dark:bg-[#0b0f17]">
+        <VideoCover src={COVER_VIDEOS.about} />
+        <div className="relative z-10 mx-auto flex max-w-[760px] flex-col items-center px-6 py-24 text-center">
+          <h1 className="text-[40px] font-bold leading-[1.1] tracking-tight text-[#14203E] dark:text-white sm:text-[56px]">
+            Beyond Legal Boundaries
           </h1>
-          <p className="mx-auto mt-3 max-w-3xl text-sm leading-7 text-slate-600 sm:text-lg">
+          <p className="mx-auto mt-5 max-w-[600px] text-[18px] leading-[1.6] text-[#14203E]/70 dark:text-white/70 sm:text-[22px]">
             {content.about.hero.subtitle}
           </p>
         </div>

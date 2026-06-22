@@ -5,6 +5,7 @@ import { Save, Plus, Trash2, Link as LinkIcon, Globe, Layout, Type, Palette, Use
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { AdminDialog } from './admin-dialog'
 import { ImageUpload } from './image-upload'
+import { BrandLogoForm } from './brand-logo-form'
 import { IconPicker } from './icon-picker'
 import { ContentVisualEditor } from './content-visual-editor'
 import { buildAdminLinkOptions } from '@/lib/admin-links'
@@ -372,22 +373,7 @@ export function SiteEditor({
         description="Firm identity and logos"
         isLoading={loading}
       >
-        <form action={withLoading(updateBrand)} className="space-y-6">
-          <div className="space-y-4">
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-gray-400">Logo Text (Initial)</label>
-              <input name="logo_text" defaultValue={brand.logo_text} className="w-full p-4 bg-gray-50 rounded-xl outline-none font-black" />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[10px] font-black uppercase text-gray-400">Firm Name (Short)</label>
-              <input name="firm_name" defaultValue={brand.firm_name} className="w-full p-4 bg-gray-50 rounded-xl outline-none font-bold" />
-            </div>
-          </div>
-          <button className="w-full bg-navy-900 text-white p-5 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-black">
-            <Save className="w-5 h-5" />
-            Save Identity
-          </button>
-        </form>
+        <BrandLogoForm brand={brand} updateBrand={updateBrand} />
       </AdminDialog>
 
       <AdminDialog
@@ -425,7 +411,7 @@ export function SiteEditor({
                     type="button"
                     onClick={() => handleNavMove(index, -1)}
                     disabled={index === 0}
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#0a192f] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Move link up"
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -434,7 +420,7 @@ export function SiteEditor({
                     type="button"
                     onClick={() => handleNavMove(index, 1)}
                     disabled={index === navItems.length - 1}
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#0a192f] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Move link down"
                   >
                     <ArrowDown className="h-4 w-4" />
@@ -623,7 +609,7 @@ export function SiteEditor({
               { key: 'preferEmbeddedView', label: 'Prefer Embedded Meeting View' },
               { key: 'sameTabOnly', label: 'Force Same Tab Flow' },
             ].map((item) => (
-              <label key={item.key} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 text-xs font-black uppercase tracking-widest text-[#0a192f]">
+              <label key={item.key} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 text-xs font-black uppercase tracking-widest text-[#14203E]">
                 <input
                   type="checkbox"
                   name={item.key}
@@ -710,7 +696,7 @@ export function SiteEditor({
                       }
                       await updateAdminUser(formData)
                     })}
-                    className="rounded-2xl bg-[#0a192f] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white"
+                    className="rounded-2xl bg-[#14203E] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white"
                   >
                     Save User
                   </button>

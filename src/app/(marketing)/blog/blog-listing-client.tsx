@@ -25,10 +25,10 @@ export function BlogListingClient({ posts }: { posts: BlogPost[] }) {
   return (
     <div className="min-h-screen bg-[#f8fafc]">
       {/* Hero */}
-      <section className="bg-gradient-to-br from-[#0a192f] via-[#112240] to-[#0a192f] text-white py-24">
+      <section className="bg-gradient-to-br from-[#14203E] via-[#112240] to-[#14203E] text-white py-24">
         <div className="max-w-7xl mx-auto px-4 text-center space-y-6">
           <h1 className="text-4xl lg:text-7xl font-black leading-none uppercase tracking-tighter">
-            LEGAL <span className="text-[#c5a059]">INSIGHTS</span>
+            LEGAL <span className="text-[#14203E]">INSIGHTS</span>
           </h1>
           <p className="text-xl text-gray-400 max-w-2xl mx-auto font-medium">
             Expert analysis on the latest legal transitions and corporate laws in India.
@@ -47,7 +47,7 @@ export function BlogListingClient({ posts }: { posts: BlogPost[] }) {
                 onClick={() => setActivePost(post)}
               >
                 {/* Cover image */}
-                <div className="aspect-[16/10] bg-[#0a192f]/5 relative overflow-hidden flex-shrink-0">
+                <div className="aspect-[16/10] bg-[#14203E]/5 relative overflow-hidden flex-shrink-0">
                   {post.coverImage ? (
                     <img
                       src={post.coverImage}
@@ -55,27 +55,27 @@ export function BlogListingClient({ posts }: { posts: BlogPost[] }) {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#0a192f] to-[#112240]">
-                      <div className="text-[#c5a059] font-black text-4xl opacity-20">AW</div>
+                    <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-[#14203E] to-[#112240]">
+                      <div className="text-[#14203E] font-black text-4xl opacity-20">AW</div>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-[#0a192f]/0 group-hover:bg-[#0a192f]/10 transition-colors duration-300" />
+                  <div className="absolute inset-0 bg-[#14203E]/0 group-hover:bg-[#14203E]/10 transition-colors duration-300" />
                 </div>
 
                 <div className="p-8 flex-1 flex flex-col">
                   {/* Meta */}
                   <div className="flex items-center gap-4 text-[10px] font-bold text-gray-400 mb-4 uppercase tracking-widest">
                     <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-[#c5a059]" />
+                      <Calendar className="w-3.5 h-3.5 text-[#14203E]" />
                       {formatDate(post.publishedAt)}
                     </span>
                     <span className="flex items-center gap-1.5">
-                      <Clock className="w-3.5 h-3.5 text-[#c5a059]" />
+                      <Clock className="w-3.5 h-3.5 text-[#14203E]" />
                       5 Min Read
                     </span>
                   </div>
 
-                  <h2 className="text-xl font-black text-[#0a192f] mb-3 group-hover:text-[#c5a059] transition-colors line-clamp-2 leading-tight uppercase tracking-tight">
+                  <h2 className="text-xl font-black text-[#14203E] mb-3 group-hover:text-[#14203E] transition-colors line-clamp-2 leading-tight uppercase tracking-tight">
                     {post.title}
                   </h2>
 
@@ -83,7 +83,7 @@ export function BlogListingClient({ posts }: { posts: BlogPost[] }) {
                     {post.excerpt}
                   </p>
 
-                  <div className="inline-flex items-center text-[#0a192f] font-black text-[10px] tracking-[0.2em] group-hover:text-[#c5a059] transition-all uppercase mt-auto">
+                  <div className="inline-flex items-center text-[#14203E] font-black text-[10px] tracking-[0.2em] group-hover:text-[#14203E] transition-all uppercase mt-auto">
                     READ FULL CASE
                     <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-2 transition-transform duration-300" />
                   </div>
