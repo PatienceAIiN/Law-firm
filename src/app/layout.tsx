@@ -35,6 +35,10 @@ function resolveThemeIconType(theme: Awaited<ReturnType<typeof getSiteTheme>>) {
   return iconTypeFromHref(href)
 }
 
+export const viewport: import('next').Viewport = {
+  themeColor: '#14203E',
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const theme = await getSiteTheme()
   const faviconHref = resolveThemeIcon(theme)
@@ -46,7 +50,6 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: 'Professional legal services with expertise in corporate law, litigation, and advisory services.',
     manifest: '/manifest.webmanifest',
-    themeColor: '#14203E',
     appleWebApp: { capable: true, statusBarStyle: 'default', title: theme.siteTitle },
     icons: {
       icon: [{ url: faviconHref, type }],

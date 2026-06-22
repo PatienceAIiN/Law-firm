@@ -5,6 +5,8 @@ export const metadata: Metadata = {
   description: 'Manage your law firm website content',
 }
 
+export const dynamic = 'force-dynamic'
+
 export default function AdminRootLayout({
   children,
 }: {
