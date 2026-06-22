@@ -53,5 +53,5 @@ COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
 
 USER nextjs
 
-# Run pending migrations against DATABASE_URL, then launch the server.
-CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>/dev/null; node server.js"]
+# Launch the Next.js standalone server
+CMD ["node", "server.js"]
