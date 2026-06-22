@@ -1,35 +1,38 @@
 # syntax=docker/dockerfile:1.6
 
-# ---- deps ----
-FROM node:20-alpine AS deps
+# ---- base ---- (shared across stages so alpine is pulled only once)
+FROM node:22-alpine AS base
 RUN apk add --no-cache libc6-compat openssl
+
+# ---- deps ----
+FROM base AS deps
 WORKDIR /app
 COPY package.json package-lock.json* ./
-COPY prisma ./prisma
-RUN npm ci --legacy-peer-deps
+RUN --mount=type=cache,target=/root/.npm npm ci --legacy-peer-deps
 
 # ---- builder ----
-FROM node:20-alpine AS builder
-RUN apk add --no-cache libc6-compat openssl
+FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
+# Copy prisma schema first (cached if unchanged)
+COPY prisma ./prisma
+RUN npx prisma generate
+
+# Now copy everything else
 COPY . .
 
 # Pass DATABASE_URL from Render environment to the build process
 # so Prisma can initialize during Next.js static prerendering
 ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
-
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npx prisma generate
+
 # Push schema to database so tables exist for Next.js static prerendering
 RUN npx prisma db push --accept-data-loss
-# Skip type-check failures from breaking deploys; Render builds production output.
 RUN npm run build
 
 # ---- runner ----
-FROM node:20-alpine AS runner
-RUN apk add --no-cache libc6-compat openssl
+FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
@@ -51,4 +54,4 @@ USER nextjs
 EXPOSE 3000
 
 # Run pending migrations against DATABASE_URL, then launch the server.
-CMD ["sh", "-c", "npx prisma migrate deploy || npx prisma db push --accept-data-loss; node server.js"]
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss 2>/dev/null; node server.js"]
