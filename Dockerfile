@@ -22,6 +22,8 @@ ENV DATABASE_URL=$DATABASE_URL
 
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN npx prisma generate
+# Push schema to database so tables exist for Next.js static prerendering
+RUN npx prisma db push --accept-data-loss
 # Skip type-check failures from breaking deploys; Render builds production output.
 RUN npm run build
 
