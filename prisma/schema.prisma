@@ -420,3 +420,20 @@ model CaseReminder {
   @@index([sent, scheduledFor])
   @@map("case_reminders")
 }
+
+// DPDP Act 2023 — Consent records
+model DpdpConsent {
+  id            String   @id @default(cuid())
+  fingerprint   String   @unique          // browser fingerprint / cookie id
+  consentGiven  Boolean  @default(false)  // true = accepted, false = denied
+  purposes      String?                   // JSON array of accepted purposes
+  ipAddress     String?
+  userAgent     String?
+  givenAt       DateTime @default(now())
+  revokedAt     DateTime?
+  updatedAt     DateTime @updatedAt
+
+  @@index([fingerprint])
+  @@map("dpdp_consents")
+}
+
