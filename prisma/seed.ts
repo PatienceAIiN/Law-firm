@@ -9,16 +9,22 @@ async function main() {
 
   // 1. Admin User
   const hashedPassword = await bcrypt.hash('admin@123', 10)
-  const admin = await prisma.adminUser.upsert({
-    where: { email: 'admin@lawfirm.com' },
-    update: { password: hashedPassword, isPasswordResetNeeded: false },
-    create: {
-      email: 'admin@lawfirm.com',
-      name: 'Senior Administrator',
-      password: hashedPassword,
-      role: 'admin'
-    }
+  const existingAdmin = await prisma.adminUser.findFirst({
+    where: { email: 'admin@lawfirm.com', tenantId: null }
   })
+  const admin = existingAdmin
+    ? await prisma.adminUser.update({
+        where: { id: existingAdmin.id },
+        data: { password: hashedPassword, isPasswordResetNeeded: false }
+      })
+    : await prisma.adminUser.create({
+        data: {
+          email: 'admin@lawfirm.com',
+          name: 'Senior Administrator',
+          password: hashedPassword,
+          role: 'admin'
+        }
+      })
   console.log('Admin user created:', admin.email)
 
   // 2. About Profile
