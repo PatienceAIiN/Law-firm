@@ -9,7 +9,8 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state') // Expected format: "type:slug:id"
-  const base = `${url.protocol}//${url.host}`
+  const protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '')
+  const base = `${protocol}://${url.host}`
 
   if (!code || !state) {
     return NextResponse.redirect(`${base}/?error=missing_auth_params`)

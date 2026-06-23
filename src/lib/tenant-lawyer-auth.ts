@@ -12,7 +12,7 @@ export const tenantLawyerAuthOptions: NextAuthOptions = {
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         const tenantSlug = credentials?.tenantSlug?.toString().toLowerCase().trim()
         const email = credentials?.email?.toString().toLowerCase().trim()
         const password = credentials?.password?.toString()
@@ -29,8 +29,16 @@ export const tenantLawyerAuthOptions: NextAuthOptions = {
         const ok = await bcrypt.compare(password, advocate.password)
         if (!ok) return null
 
+        let ip = 'unknown'
+        if (req && req.headers) {
+          const xff = req.headers['x-forwarded-for']
+          const xreal = req.headers['x-real-ip']
+          if (xff) ip = Array.isArray(xff) ? xff[0] : xff.split(',')[0]
+          else if (xreal) ip = Array.isArray(xreal) ? xreal[0] : xreal
+        }
+
         await prisma.accessLog.create({
-          data: { advocateId: advocate.id, loginTime: new Date(), ipAddress: 'unknown' },
+          data: { advocateId: advocate.id, loginTime: new Date(), ipAddress: ip },
         })
 
         return {

@@ -14,6 +14,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
   // State carries tenant + role so the callback knows where to land.
   const state = `tenantadmin:${slug}:${u.tenantId}`
   const url = new URL(req.url)
-  const baseUrl = `${url.protocol}//${url.host}`
+  const protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '')
+  const baseUrl = `${protocol}://${url.host}`
   return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback', baseUrl))
 }

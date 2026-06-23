@@ -6,7 +6,7 @@ import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, 
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PasswordInput } from '@/components/ui/password-input'
-import { createAdvocateCase } from './actions'
+import { createAdvocateCase, deleteBooking, resendBookingEmail } from './actions'
 
 type T = { id: string; slug: string; name: string }
 type Adv = { id: string; name: string; email: string; title: string; bio: string | null; phone: string | null }
@@ -304,6 +304,32 @@ function AccessTab({ logs }: { logs: Log[] }) {
 }
 
 function BookingsTab({ bookings, slug }: { bookings: BookingItem[], slug: string }) {
+  const [busy, setBusy] = useState<{ id: string, type: 'delete' | 'resend' } | null>(null)
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Are you sure you want to delete this booking?')) return
+    setBusy({ id, type: 'delete' })
+    try {
+      await deleteBooking(slug, id)
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  const handleResend = async (id: string) => {
+    setBusy({ id, type: 'resend' })
+    try {
+      await resendBookingEmail(slug, id)
+      alert('Email sent successfully')
+    } catch (e: any) {
+      alert(e.message)
+    } finally {
+      setBusy(null)
+    }
+  }
+
   if (bookings.length === 0) {
     return (
       <Card>
@@ -322,7 +348,7 @@ function BookingsTab({ bookings, slug }: { bookings: BookingItem[], slug: string
               <th className="px-3 py-2 text-left">Subject</th>
               <th className="px-3 py-2 text-left">Mode</th>
               <th className="px-3 py-2 text-left">Status</th>
-              <th className="px-3 py-2 text-left">Join</th>
+              <th className="px-3 py-2 text-left">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200 dark:divide-white/10">
@@ -347,17 +373,33 @@ function BookingsTab({ bookings, slug }: { bookings: BookingItem[], slug: string
                   </span>
                 </td>
                 <td className="px-3 py-2">
-                  {(b.meetingMode === 'GOOGLE_MEET' || b.meetingMode === 'ZOOM') && b.meetingLink ? (
-                    <a href={b.meetingLink} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#14203E] hover:underline dark:text-white">
-                      Join Link
-                    </a>
-                  ) : b.meetingMode === 'LIVEKIT' ? (
-                    <Link href={`/meeting/${b.id}?admin=1`} target="_blank" rel="noopener noreferrer" className="text-xs font-semibold text-[#14203E] hover:underline dark:text-white">
-                      Host Room
-                    </Link>
-                  ) : (
-                    <span className="text-xs text-slate-400">—</span>
-                  )}
+                  <div className="flex items-center gap-2">
+                    {(b.meetingMode === 'GOOGLE_MEET' || b.meetingMode === 'ZOOM') && b.meetingLink ? (
+                      <a href={b.meetingLink} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400">
+                        Join
+                      </a>
+                    ) : b.meetingMode === 'LIVEKIT' ? (
+                      <Link href={`/meeting/${b.id}?admin=1`} target="_blank" rel="noopener noreferrer" className="rounded-md bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-600 hover:bg-emerald-100 dark:bg-emerald-500/10 dark:text-emerald-400">
+                        Host Room
+                      </Link>
+                    ) : null}
+                    
+                    <button
+                      onClick={() => handleResend(b.id)}
+                      disabled={busy?.id === b.id}
+                      className="rounded-md bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600 hover:bg-blue-100 disabled:opacity-50 dark:bg-blue-500/10 dark:text-blue-400"
+                    >
+                      {busy?.id === b.id && busy.type === 'resend' ? '...' : 'Resend'}
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(b.id)}
+                      disabled={busy?.id === b.id}
+                      className="rounded-md bg-rose-50 px-2 py-1 text-xs font-semibold text-rose-600 hover:bg-rose-100 disabled:opacity-50 dark:bg-rose-500/10 dark:text-rose-400"
+                    >
+                      {busy?.id === b.id && busy.type === 'delete' ? '...' : 'Delete'}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}

@@ -12,6 +12,7 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Gmail is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.' }, { status: 400 })
   }
   const url = new URL(req.url)
-  const baseUrl = `${url.protocol}//${url.host}`
+  const protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '')
+  const baseUrl = `${protocol}://${url.host}`
   return NextResponse.redirect(gmailAuthUrl('superadmin', '/api/mail/callback', baseUrl))
 }

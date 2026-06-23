@@ -13,6 +13,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ slug: st
   if (!gmailConfigured()) return NextResponse.json({ error: 'Gmail is not configured.' }, { status: 400 })
   const state = `advocate:${slug}:${u.id}`
   const url = new URL(req.url)
-  const baseUrl = `${url.protocol}//${url.host}`
+  const protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '')
+  const baseUrl = `${protocol}://${url.host}`
   return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback', baseUrl))
 }
