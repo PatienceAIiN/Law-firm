@@ -131,7 +131,7 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
               rel="noopener noreferrer"
               className="text-[#14203E]/60 transition-colors hover:text-[#14203E] dark:text-white/50 dark:hover:text-white"
             >
-              A product of <span className="font-semibold text-[#14203E] dark:text-white">Patience AI</span>
+              A product of <span className="font-semibold text-[#14203E] dark:text-white">Barrister By Patience AI</span>
             </a>
           </nav>
         </div>

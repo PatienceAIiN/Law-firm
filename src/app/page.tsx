@@ -5,7 +5,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { OpenWorkspace } from '@/components/open-workspace'
 
 export const metadata = {
-  title: 'Patience AI — Your law firm, fully online',
+  title: 'Barrister By Patience AI — Your law firm, fully online',
   description: 'A complete SaaS platform for law firms: marketing site, lawyer portal, case management, video consultations, and more.',
 }
 
@@ -127,7 +127,7 @@ export default function SaasLandingPage() {
       </section>
 
       <footer className="border-t border-[#F4E8D8] py-8 text-center text-xs text-slate-500 dark:border-white/10">
-        © {new Date().getFullYear()} Patience AI · A SaaS platform for modern law firms
+        © {new Date().getFullYear()} Barrister By Patience AI · A SaaS platform for modern law firms
       </footer>
     </div>
   )
