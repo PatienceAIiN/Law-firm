@@ -84,11 +84,14 @@ async function main() {
   ]
 
   for (const area of practiceAreas) {
-    await prisma.practiceArea.upsert({
-      where: { slug: area.slug },
-      update: area,
-      create: area
+    const existing = await prisma.practiceArea.findFirst({
+      where: { slug: area.slug, tenantId: null }
     })
+    if (existing) {
+      await prisma.practiceArea.update({ where: { id: existing.id }, data: area })
+    } else {
+      await prisma.practiceArea.create({ data: area })
+    }
   }
   console.log('Practice areas created')
 
@@ -207,11 +210,14 @@ async function main() {
   ]
 
   for (const blog of blogs) {
-    await prisma.blogPost.upsert({
-      where: { slug: blog.slug },
-      update: blog,
-      create: blog
+    const existing = await prisma.blogPost.findFirst({
+      where: { slug: blog.slug, tenantId: null }
     })
+    if (existing) {
+      await prisma.blogPost.update({ where: { id: existing.id }, data: blog })
+    } else {
+      await prisma.blogPost.create({ data: blog })
+    }
   }
   console.log('Sample blogs created')
 
