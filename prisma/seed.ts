@@ -8,10 +8,14 @@ async function main() {
   console.log('Seeding database...')
 
   // 1. Admin User
-  const hashedPassword = await bcrypt.hash('admin@123', 10)
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@lawfirm.com'
+  const adminPassword = process.env.ADMIN_PASSWORD || 'Harsh@0491'
+  const hashedPassword = await bcrypt.hash(adminPassword, 10)
+  
   const existingAdmin = await prisma.adminUser.findFirst({
-    where: { email: 'admin@lawfirm.com', tenantId: null }
+    where: { email: adminEmail, tenantId: null }
   })
+  
   const admin = existingAdmin
     ? await prisma.adminUser.update({
         where: { id: existingAdmin.id },
@@ -19,7 +23,7 @@ async function main() {
       })
     : await prisma.adminUser.create({
         data: {
-          email: 'admin@lawfirm.com',
+          email: adminEmail,
           name: 'Senior Administrator',
           password: hashedPassword,
           role: 'admin'
