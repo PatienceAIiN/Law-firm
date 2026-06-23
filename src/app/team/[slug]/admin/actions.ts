@@ -16,6 +16,19 @@ async function requireTenant(slug: string) {
   return { tenantId: u.tenantId as string, slug }
 }
 
+type ActionResult = { ok: true } | { ok: false; error: string }
+
+// Wrap a server-side body so failures return a serializable {ok,error}
+// instead of throwing — which would otherwise escalate to the cryptic
+// "Application error: a server-side exception has occurred" prod toast.
+async function safe<T extends ActionResult>(fn: () => Promise<T>): Promise<T | { ok: false; error: string }> {
+  try { return await fn() }
+  catch (e: any) {
+    console.error('[action error]', e)
+    return { ok: false, error: e?.message || 'Action failed' }
+  }
+}
+
 export async function createPracticeArea(slug: string, formData: FormData) {
   const { tenantId } = await requireTenant(slug)
   const title = (formData.get('title') as string)?.trim()
@@ -30,12 +43,15 @@ export async function createPracticeArea(slug: string, formData: FormData) {
   revalidatePath(`/team/${slug}`)
 }
 
-export async function deletePracticeArea(slug: string, id: string) {
-  const { tenantId } = await requireTenant(slug)
-  await prisma.practiceArea.deleteMany({ where: { id, tenantId } })
-  await invalidateCache(`tenant_shell:${tenantId}`)
-  revalidatePath(`/team/${slug}/admin`)
-  revalidatePath(`/team/${slug}`)
+export async function deletePracticeArea(slug: string, id: string): Promise<ActionResult> {
+  return safe(async () => {
+    const { tenantId } = await requireTenant(slug)
+    await prisma.practiceArea.deleteMany({ where: { id, tenantId } })
+    await invalidateCache(`tenant_shell:${tenantId}`)
+    revalidatePath(`/team/${slug}/admin`)
+    revalidatePath(`/team/${slug}`)
+    return { ok: true }
+  })
 }
 
 export async function createAdvocate(slug: string, formData: FormData) {
