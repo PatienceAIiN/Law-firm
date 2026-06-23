@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { X, Calendar, Clock, Share2, Check, ArrowLeft } from 'lucide-react'
+import { X, Calendar, Clock, Share2, Check, ArrowLeft, Scale } from 'lucide-react'
 
 interface BlogPost {
   id: string
@@ -99,7 +99,7 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
           )}
           {!post.coverImage && (
             <div className="aspect-[21/6] bg-gradient-to-br from-[#14203E] to-[#112240] flex items-center justify-center">
-              <span className="text-[var(--primary)] font-black text-5xl opacity-20">AW</span>
+              <Scale className="h-16 w-16 text-[var(--primary)] opacity-20" />
             </div>
           )}
 
@@ -133,10 +133,10 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
             <div className="mt-10 pt-8 border-t border-gray-100 flex items-center justify-between flex-wrap gap-4">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 bg-[var(--primary)] rounded-full flex items-center justify-center text-[var(--primary)] font-black text-sm">
-                  SA
+                  <Scale className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="text-sm font-black text-[var(--primary)] uppercase tracking-wider">Senior Advocate</div>
+                  <div className="text-sm font-black text-[var(--primary)] uppercase tracking-wider">Advocate</div>
                   <div className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Editorial Team</div>
                 </div>
               </div>

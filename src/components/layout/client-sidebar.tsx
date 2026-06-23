@@ -119,7 +119,7 @@ export function ClientSidebar({
       <div className="border-b border-gray-200 bg-gray-50/60 px-5 py-5">
         <Link href="/" className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--primary)] text-xl font-black text-white shadow-lg">
-            {brand?.logo_text || 'SA'}
+            {brand?.logo_text || 'Firm'}
           </div>
           <div className="min-w-0">
             <p className="whitespace-nowrap text-sm font-black uppercase tracking-[0.22em] text-[#0f172a]">
@@ -171,7 +171,7 @@ export function ClientSidebar({
         <div className="flex items-center justify-between px-3 py-3 sm:px-4">
           <Link href="/" className="flex items-center gap-3">
             <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--primary)] text-lg font-black text-white shadow-lg">
-              {brand?.logo_text || 'SA'}
+              {brand?.logo_text || 'Firm'}
             </div>
             <div className="min-w-0">
               <p className="whitespace-nowrap text-sm font-black uppercase tracking-[0.22em] text-[#0f172a]">

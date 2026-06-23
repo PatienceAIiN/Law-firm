@@ -1,5 +1,6 @@
 import { Metadata } from 'next'
 import { LoginForm } from '@/components/admin/login-form'
+import { Scale } from 'lucide-react'
 import { VideoCover, COVER_VIDEOS } from '@/components/video-cover'
 
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export default function AdminLoginPage() {
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
           <div className="w-12 h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-md">
-            <span className="text-white font-bold text-xl">SA</span>
+            <Scale className="text-white h-6 w-6" />
           </div>
         </div>
         <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--primary)]">

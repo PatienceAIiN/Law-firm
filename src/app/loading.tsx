@@ -1,6 +1,6 @@
 'use client'
 
-import { Loader2 } from 'lucide-react'
+import { Loader2, Scale } from 'lucide-react'
 
 export default function Loading() {
   return (
@@ -11,7 +11,7 @@ export default function Loading() {
         
         {/* Logo in center */}
         <div className="w-16 h-16 bg-[var(--primary)] rounded-2xl flex items-center justify-center shadow-2xl z-10 transition-transform scale-100 hover:scale-110">
-          <span className="text-white font-black text-2xl uppercase tracking-tighter">SA</span>
+          <Scale className="text-white h-8 w-8" />
         </div>
       </div>
       
