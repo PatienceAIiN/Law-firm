@@ -97,16 +97,19 @@ export function MeetingRoom({ booking, allowRecording, adminView = false }: Meet
       const rec = new MediaRecorder(stream, { mimeType: mime })
       streamRef.current = stream; recorderRef.current = rec; chunksRef.current = []
       rec.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data) }
-      rec.onstop = async () => {
+      rec.onstop = () => {
         const blob = new Blob(chunksRef.current, { type: mime })
         setRecSaving(true)
         try {
-          const fd = new FormData()
-          fd.set('bookingId', booking.id)
-          fd.set('file', new File([blob], `meeting-${booking.id}.webm`, { type: mime }))
-          await fetch('/api/meeting-recordings', { method: 'POST', body: fd })
-          flash('Recording saved')
-        } catch { flash('Recording saved locally') }
+          const a = document.createElement('a')
+          a.href = URL.createObjectURL(blob)
+          a.download = `meeting-${booking.id}.webm`
+          document.body.appendChild(a)
+          a.click()
+          document.body.removeChild(a)
+          URL.revokeObjectURL(a.href)
+          flash('Recording downloaded locally')
+        } catch { flash('Error saving recording') }
         finally { setRecSaving(false) }
       }
       // If the user stops sharing via the browser UI, stop recording too.

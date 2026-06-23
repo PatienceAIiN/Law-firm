@@ -216,3 +216,8 @@
 @media (prefers-reduced-motion: reduce) {
   .hero-animated-bg::before { animation: none; }
 }
+
+/* Hide LiveKit default disconnect/leave button next to chat */
+.lk-disconnect-button {
+  display: none !important;
+}
