@@ -10,6 +10,11 @@ export function AnimatedTabTitle() {
   const visibleAwayRef = useRef(false)
 
   useEffect(() => {
+    // Only animate the title inside tenant workspaces. The main marketing
+    // site stays static as "Barrister By Patience AI".
+    const isTenantPage = /^\/(team|t)\//.test(window.location.pathname)
+    if (!isTenantPage) return
+
     baseTitle.current = document.title.replace(/^[^\w]+\s/, '')
 
     const titleTimer = window.setInterval(() => {

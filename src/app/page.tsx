@@ -8,7 +8,7 @@ import { AnimatedHeading, RotatingTagline } from '@/components/saas-hero'
 import { ScrollToTopCta } from '@/components/scroll-to-top-cta'
 
 export const metadata = {
-  title: 'Barrister By Patience AI — Your law firm, fully online',
+  title: { absolute: 'Barrister By Patience AI' },
   description: 'A complete SaaS platform for law firms: marketing site, lawyer portal, case management, video consultations, and more.',
 }
 
