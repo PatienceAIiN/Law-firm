@@ -25,7 +25,7 @@ export async function createPracticeArea(slug: string, formData: FormData) {
   await prisma.practiceArea.create({
     data: { title, slug: slugified, description, tenantId, isActive: true, order: 0 },
   })
-  await invalidateCache(`tenant_shell:${tenant.id}`)
+  await invalidateCache(`tenant_shell:${tenantId}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }
@@ -112,7 +112,7 @@ export async function createBlogPost(slug: string, formData: FormData) {
       status: 'PUBLISHED', publishedAt: new Date(), tenantId,
     },
   })
-  await invalidateCache(`tenant_shell:${tenant.id}`)
+  await invalidateCache(`tenant_shell:${tenantId}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }
