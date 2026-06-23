@@ -6,6 +6,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { isSuperAdmin } from '@/lib/super-admin'
 import { setTenantStatus, deleteTenant } from './actions'
+import { SuperAdminLogoutButton } from './logout-button'
 
 export const dynamic = 'force-dynamic'
 
@@ -70,7 +71,10 @@ export default async function SuperAdminDashboard() {
               <p className="text-xs text-slate-500">Platform-wide overview — read only</p>
             </div>
           </div>
-          <p className="text-xs text-slate-500">Signed in as {email}</p>
+          <div className="flex items-center gap-3">
+            <p className="hidden text-xs text-slate-500 sm:block">Signed in as {email}</p>
+            <SuperAdminLogoutButton />
+          </div>
         </div>
       </header>
 
