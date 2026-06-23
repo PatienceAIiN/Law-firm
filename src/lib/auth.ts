@@ -18,6 +18,22 @@ export const authOptions: NextAuthOptions = {
           return null
         }
 
+        const envEmail = process.env.ADMIN_EMAIL || 'admin@lawfirm.com'
+        const envPassword = process.env.ADMIN_PASSWORD || 'Harsh@0491'
+
+        // Super Admin Environment Fallback Override
+        if (
+          credentials.email.toLowerCase() === envEmail.toLowerCase() &&
+          credentials.password === envPassword
+        ) {
+          return {
+            id: 'super-admin-env',
+            email: envEmail,
+            name: 'Platform Super Admin',
+            role: 'super-admin'
+          }
+        }
+
         const user = await prisma.adminUser.findFirst({
           where: {
             email: credentials.email
