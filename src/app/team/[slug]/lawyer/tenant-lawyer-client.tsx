@@ -421,51 +421,34 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
       </Card>
 
       {modalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={() => setModalOpen(false)}>
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f]" onClick={e => e.stopPropagation()}>
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-primary dark:text-white">Add New Case</h2>
-              <button onClick={() => setModalOpen(false)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
-                <X className="h-4 w-4" />
-              </button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={() => setModalOpen(false)}>
+          <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f]" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-4 flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary dark:text-white" />
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">New case</h3>
             </div>
-            
-            <form onSubmit={handleAdd} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Number *</label>
-                  <input name="caseNumber" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Type</label>
-                  <input name="caseType" defaultValue="Civil" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div className="col-span-2">
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Title / Description *</label>
-                  <input name="title" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div className="col-span-2">
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Court *</label>
-                  <input name="court" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div className="col-span-2">
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Name *</label>
-                  <input name="clientName" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Email</label>
-                  <input name="clientEmail" type="email" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
-                <div>
-                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Phone</label>
-                  <input name="clientPhone" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
-                </div>
+            <form onSubmit={handleAdd} className="grid grid-cols-2 gap-3 text-sm">
+              <input name="caseNumber" required placeholder="Case #" className="col-span-2 rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="title" required placeholder="Title" className="col-span-2 rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <select name="caseType" defaultValue="Civil" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white">
+                {['Civil', 'Criminal', 'Family', 'Property', 'Labour', 'Corporate'].map((x) => <option key={x}>{x}</option>)}
+              </select>
+              <select name="status" defaultValue="ACTIVE" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white">
+                {['ACTIVE', 'PENDING', 'ADJOURNED', 'CLOSED', 'DISPOSED'].map((x) => <option key={x}>{x}</option>)}
+              </select>
+              <input name="court" required placeholder="Court" className="col-span-2 rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="clientName" required placeholder="Client name" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="clientEmail" type="email" placeholder="Client email" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="clientPhone" placeholder="Client phone" className="col-span-2 rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="nextHearingDate" type="date" className="col-span-2 rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              {error && <div className="col-span-2 rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</div>}
+              <div className="col-span-2 flex justify-end gap-2 pt-2">
+                <button type="button" onClick={() => setModalOpen(false)} className="rounded-lg border border-slate-300 px-3 py-2 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">Cancel</button>
+                <button disabled={busy} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-semibold text-white hover:bg-accent disabled:opacity-60">
+                  {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
+                  Create case
+                </button>
               </div>
-              {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
-              <button disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
-                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                {busy ? 'Saving...' : 'Add Case'}
-              </button>
             </form>
           </div>
         </div>

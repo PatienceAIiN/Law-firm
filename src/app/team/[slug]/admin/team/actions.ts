@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { prisma } from '@/lib/prisma'
+import { invalidateCache } from '@/lib/redis'
 
 async function authed(slug: string) {
   const session = await getServerSession(tenantAdminAuthOptions)
@@ -12,7 +13,8 @@ async function authed(slug: string) {
   return { tenantId: u.tenantId as string }
 }
 
-function bust(slug: string) {
+async function bust(slug: string, tenantId?: string) {
+  if (tenantId) await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath(`/team/${slug}/admin/team`)
   revalidatePath(`/team/${slug}`)
   revalidatePath(`/team/${slug}/team`)
@@ -29,7 +31,7 @@ export async function createTeamMember(slug: string, formData: FormData) {
   await prisma.teamMember.create({
     data: { name, title, bio, email: email || undefined, image: image || undefined, isActive: true, tenantId },
   })
-  bust(slug)
+  await bust(slug, tenantId)
 }
 
 export async function updateTeamMember(slug: string, id: string, formData: FormData) {
@@ -44,11 +46,11 @@ export async function updateTeamMember(slug: string, id: string, formData: FormD
     where: { id, tenantId },
     data: { name, title, bio, email: email || null, image: image || null },
   })
-  bust(slug)
+  await bust(slug, tenantId)
 }
 
 export async function deleteTeamMember(slug: string, id: string) {
   const { tenantId } = await authed(slug)
   await prisma.teamMember.deleteMany({ where: { id, tenantId } })
-  bust(slug)
+  await bust(slug, tenantId)
 }

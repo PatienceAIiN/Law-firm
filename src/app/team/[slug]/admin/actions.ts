@@ -38,7 +38,7 @@ export async function createPracticeArea(slug: string, formData: FormData) {
   await prisma.practiceArea.create({
     data: { title, slug: slugified, description, tenantId, isActive: true, order: 0 },
   })
-  await invalidateCache(`tenant_shell:${tenantId}`)
+  await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath(`/team/${slug}/admin`)
   revalidatePath(`/team/${slug}`)
 }
@@ -47,7 +47,7 @@ export async function deletePracticeArea(slug: string, id: string): Promise<Acti
   return safe(async () => {
     const { tenantId } = await requireTenant(slug)
     await prisma.practiceArea.deleteMany({ where: { id, tenantId } })
-    await invalidateCache(`tenant_shell:${tenantId}`)
+    await invalidateCache(`tenant_shell_v2:${tenantId}`)
     revalidatePath(`/team/${slug}/admin`)
     revalidatePath(`/team/${slug}`)
     return { ok: true }
@@ -128,7 +128,7 @@ export async function createBlogPost(slug: string, formData: FormData) {
       status: 'PUBLISHED', publishedAt: new Date(), tenantId,
     },
   })
-  await invalidateCache(`tenant_shell:${tenantId}`)
+  await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath(`/team/${slug}/admin`)
   revalidatePath(`/team/${slug}`)
 }
@@ -136,7 +136,7 @@ export async function createBlogPost(slug: string, formData: FormData) {
 export async function deleteBlogPost(slug: string, id: string) {
   const { tenantId } = await requireTenant(slug)
   await prisma.blogPost.deleteMany({ where: { id, tenantId } })
-  await invalidateCache(`tenant_shell:${tenantId}`)
+  await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath(`/team/${slug}/admin`)
   revalidatePath(`/team/${slug}`)
 }

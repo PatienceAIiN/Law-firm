@@ -2,8 +2,9 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { assignInquiry, replyInquiry, setInquiryStatus } from './actions'
+import { assignInquiry, replyInquiry, setInquiryStatus, deleteInquiry } from './actions'
 import { Loader2, Reply, X, Send, Archive, CheckCircle2 } from 'lucide-react'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type Advocate = { id: string; name: string }
 type Inquiry = {
@@ -115,12 +116,19 @@ export function TenantInquiriesClient({ slug, items, advocates }: { slug: string
                       ))}
                     </select>
                     {assigned && <span className="text-[10px] uppercase tracking-widest text-slate-400">→ {assigned.name}</span>}
-                    <button
-                      onClick={() => setOpen(i)}
-                      className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1 text-xs font-semibold text-white hover:bg-accent"
-                    >
-                      <Reply className="h-3 w-3" /> Open & reply
-                    </button>
+                    <div className="ml-auto flex items-center gap-2">
+                      <button
+                        onClick={() => setOpen(i)}
+                        className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1 text-xs font-semibold text-white hover:bg-accent"
+                      >
+                        <Reply className="h-3 w-3" /> Open & reply
+                      </button>
+                      <DeleteButton
+                        onDelete={() => deleteInquiry(slug, i.id)}
+                        confirmMessage={`Delete inquiry from ${i.fullName}? This cannot be undone.`}
+                        className="rounded-md p-1 text-rose-500 hover:bg-rose-50"
+                      />
+                    </div>
                   </div>
                 </li>
               )

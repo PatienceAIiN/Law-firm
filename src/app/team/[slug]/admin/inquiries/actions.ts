@@ -103,3 +103,18 @@ export async function setInquiryStatus(slug: string, inquiryId: string, status: 
   await prisma.contactSubmission.updateMany({ where: { id: inquiryId, tenantId }, data: { status } })
   revalidatePath(`/team/${slug}/admin/inquiries`)
 }
+
+export async function deleteInquiry(
+  slug: string,
+  inquiryId: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  try {
+    const { tenantId } = await authed(slug)
+    await prisma.contactSubmission.deleteMany({ where: { id: inquiryId, tenantId } })
+    revalidatePath(`/team/${slug}/admin/inquiries`)
+    return { ok: true }
+  } catch (e: any) {
+    console.error('[deleteInquiry]', e)
+    return { ok: false, error: e?.message || 'Could not delete the inquiry.' }
+  }
+}
