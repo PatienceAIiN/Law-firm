@@ -53,7 +53,7 @@ function hexToHsl(hex: string) {
     }
     h /= 6
   }
-  return \`\${(h*360).toFixed(1)} \${(s*100).toFixed(1)}% \${(l*100).toFixed(1)}%\`
+  return `${(h*360).toFixed(1)} ${(s*100).toFixed(1)}% ${(l*100).toFixed(1)}%`
 }
 
 export const viewport: import('next').Viewport = {
