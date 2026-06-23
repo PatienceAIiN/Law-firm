@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
@@ -39,13 +40,19 @@ export function TenantAdminShell({
   const pathname = usePathname()
   const tabs = TABS(tenant.slug)
 
+  useEffect(() => {
+    const activeTab = tabs.find((t) => (t.exact ? pathname === t.href : pathname.startsWith(t.href)))
+    const tabName = activeTab ? activeTab.label : 'Admin Portal'
+    document.title = `${tabName} | Admin Portal | ${tenant.name}`
+  }, [pathname, tabs, tenant.name])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-white/10 dark:bg-[#11151f]/95">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
             <Link href={`/t/${tenant.slug}/admin`} className="block">
-              <h1 className="truncate text-base font-bold text-[#14203E] dark:text-white">{tenant.name}</h1>
+              <h1 className="truncate text-base font-bold text-[var(--primary)] dark:text-white">{tenant.name}</h1>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">{currentUser.email}</p>
             </Link>
           </div>
@@ -83,8 +90,8 @@ export function TenantAdminShell({
                   prefetch={true}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                     active
-                      ? 'bg-[#14203E] text-white shadow'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-[#14203E] dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
+                      ? 'bg-[var(--primary)] text-white shadow'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-[var(--primary)] dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />

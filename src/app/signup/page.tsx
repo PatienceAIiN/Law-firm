@@ -55,7 +55,7 @@ export default function SignupPage() {
       <div className="w-full max-w-md rounded-2xl border border-[#F4E8D8] bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#11151f]">
         {step === 'form' && (
           <>
-            <h1 className="text-2xl font-bold text-[#14203E] dark:text-white">Create your workspace</h1>
+            <h1 className="text-2xl font-bold text-[var(--primary)] dark:text-white">Create your workspace</h1>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
               We'll email you a 6-digit code to verify, then send your admin credentials. Your data stays isolated — new workspaces start empty.
             </p>
@@ -76,7 +76,7 @@ export default function SignupPage() {
               </div>
               <Field name="email" type="email" label="Email" />
               {requestError && <Banner kind="error">{requestError}</Banner>}
-              <button type="submit" disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+              <button type="submit" disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
                 {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 {pending ? 'Sending OTP…' : 'Send verification code'}
               </button>
@@ -87,7 +87,7 @@ export default function SignupPage() {
         {step === 'otp' && (
           <>
             <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-300"><Mail className="h-4 w-4" /> Verification</div>
-            <h1 className="mt-2 text-2xl font-bold text-[#14203E] dark:text-white">Enter the code</h1>
+            <h1 className="mt-2 text-2xl font-bold text-[var(--primary)] dark:text-white">Enter the code</h1>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
               We sent a 6-digit code to <strong>{email}</strong>. Code expires in 10 minutes.
             </p>
@@ -105,10 +105,10 @@ export default function SignupPage() {
                 maxLength={6}
                 required
                 placeholder="123456"
-                className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center font-mono text-lg tracking-[0.6em] text-slate-900 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+                className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center font-mono text-lg tracking-[0.6em] text-slate-900 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
               />
               {verifyError && <Banner kind="error">{verifyError}</Banner>}
-              <button type="submit" disabled={pending || otp.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+              <button type="submit" disabled={pending || otp.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
                 {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
                 {pending ? 'Verifying…' : 'Verify & create workspace'}
               </button>
@@ -122,7 +122,7 @@ export default function SignupPage() {
         {step === 'done' && success && (
           <>
             <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
-            <h1 className="mt-4 text-center text-2xl font-bold text-[#14203E] dark:text-white">Workspace activated</h1>
+            <h1 className="mt-4 text-center text-2xl font-bold text-[var(--primary)] dark:text-white">Workspace activated</h1>
             <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-300">
               We emailed your admin credentials to <strong>{success.email}</strong>.
             </p>
@@ -134,13 +134,13 @@ export default function SignupPage() {
             <div className="mt-6 space-y-2">
               <Link
                 href={success.sitePath}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-3 text-sm font-semibold text-white hover:bg-[#1d2c52]"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--accent)]"
               >
                 Open your workspace <ArrowRight className="h-4 w-4" />
               </Link>
               <Link
                 href={success.loginPath}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[#14203E]/15 px-4 py-3 text-sm font-semibold text-[#14203E] hover:bg-[#F4E8D8] dark:border-white/15 dark:text-white dark:hover:bg-white/10"
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--primary)]/15 px-4 py-3 text-sm font-semibold text-[var(--primary)] hover:bg-[#F4E8D8] dark:border-white/15 dark:text-white dark:hover:bg-white/10"
               >
                 Go to admin login
               </Link>
@@ -163,7 +163,7 @@ function Field({ name, label, type = 'text' }: { name: string; label: string; ty
         name={name}
         type={type}
         required
-        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+        className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
       />
     </label>
   )

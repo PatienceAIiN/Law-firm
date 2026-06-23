@@ -92,7 +92,7 @@ function RequestCard({
           <User className="w-4 h-4 text-[#64748b]" />
         </div>
         <div className="flex-1 min-w-0">
-          <div className="font-semibold text-[#14203E] text-sm truncate">{request.recipientName}</div>
+          <div className="font-semibold text-[var(--primary)] text-sm truncate">{request.recipientName}</div>
           <div className="text-xs text-gray-400 truncate">{request.recipientEmail}</div>
         </div>
         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold border flex-shrink-0 ${s.bg} ${s.text} ${s.border}`}>
@@ -106,7 +106,7 @@ function RequestCard({
           <button
             type="button"
             onClick={() => setExpanded(v => !v)}
-            className="flex items-center gap-1.5 text-xs font-semibold text-[#64748b] hover:text-[#14203E] transition-colors"
+            className="flex items-center gap-1.5 text-xs font-semibold text-[#64748b] hover:text-[var(--primary)] transition-colors"
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? 'Hide review' : 'View submitted review'}
@@ -118,13 +118,13 @@ function RequestCard({
         <div className="mx-4 mb-4 rounded-xl border border-amber-100 bg-amber-50/60 p-4 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <div className="font-semibold text-[#14203E] text-sm">{request.submittedName}</div>
+              <div className="font-semibold text-[var(--primary)] text-sm">{request.submittedName}</div>
               {request.submittedRole && <div className="text-xs text-gray-500">{request.submittedRole}</div>}
             </div>
             {request.submittedRating && (
               <div className="flex gap-0.5">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className={`w-3.5 h-3.5 ${i < (request.submittedRating || 0) ? 'text-[#14203E] fill-[#14203E]' : 'text-gray-200 fill-gray-200'}`} />
+                  <Star key={i} className={`w-3.5 h-3.5 ${i < (request.submittedRating || 0) ? 'text-[var(--primary)] fill-[var(--primary)]' : 'text-gray-200 fill-gray-200'}`} />
                 ))}
               </div>
             )}
@@ -144,7 +144,7 @@ function RequestCard({
             <button
               onClick={handleApprove}
               disabled={approving}
-              className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#14203E] text-white text-xs font-semibold hover:bg-[#1d2c52] transition-colors disabled:opacity-50"
+              className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--accent)] transition-colors disabled:opacity-50"
             >
               {approving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
               Approve & Publish
@@ -163,7 +163,7 @@ function RequestCard({
             <button
               onClick={handleResend}
               disabled={resending}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] text-[#64748b] text-xs font-medium hover:bg-[#F6F0E8] hover:text-[#14203E] transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] text-[#64748b] text-xs font-medium hover:bg-[#F6F0E8] hover:text-[var(--primary)] transition-colors disabled:opacity-50"
             >
               {resending ? <Loader2 className="w-3 h-3 animate-spin" /> : <RotateCcw className="w-3 h-3" />}
               {resent ? 'Sent!' : 'Resend'}
@@ -249,7 +249,7 @@ export function TestimonialRequestsManager({
             <Send className="w-4 h-4 text-[#64748b]" />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#14203E]">Send Review Request</h3>
+            <h3 className="text-sm font-bold text-[var(--primary)]">Send Review Request</h3>
             <p className="text-xs text-gray-500">Client receives a personal link to submit their testimonial</p>
           </div>
         </div>
@@ -263,7 +263,7 @@ export function TestimonialRequestsManager({
               onChange={(e) => setRecipientName(e.target.value)}
               required
               placeholder="Client name"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[#14203E] placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#14203E]/10 transition-all"
+              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[var(--primary)] placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#14203E]/10 transition-all"
             />
           </div>
           <div className="relative">
@@ -274,13 +274,13 @@ export function TestimonialRequestsManager({
               onChange={(e) => setRecipientEmail(e.target.value)}
               required
               placeholder="client@email.com"
-              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[#14203E] placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#14203E]/10 transition-all"
+              className="w-full pl-9 pr-3 py-2.5 rounded-xl bg-white border border-[#F4E8D8] text-sm text-[var(--primary)] placeholder-gray-400 outline-none focus:ring-2 focus:ring-[#14203E]/10 transition-all"
             />
           </div>
           <button
             type="submit"
             disabled={sendingEmail}
-            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[#14203E] text-white text-sm font-semibold hover:bg-[#1d2c52] transition-colors disabled:opacity-60 whitespace-nowrap"
+            className="flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:bg-[var(--accent)] transition-colors disabled:opacity-60 whitespace-nowrap"
           >
             {sendingEmail ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
             {sendingEmail ? 'Sending…' : 'Send Request'}

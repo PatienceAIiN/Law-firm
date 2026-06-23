@@ -19,12 +19,12 @@ export function HeroSection({ data, content }: HeroSectionProps) {
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-32">
         <div className="text-center space-y-8 animate-in fade-in zoom-in duration-700">
           <div className="space-y-4">
-            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#F6F0E8]/20 border border-[#F4E8D8]/30 text-[#14203E] text-[10px] font-black uppercase tracking-widest">
+            <div className="inline-flex items-center px-4 py-1.5 rounded-full bg-[#F6F0E8]/20 border border-[#F4E8D8]/30 text-[var(--primary)] text-[10px] font-black uppercase tracking-widest">
               <span>{section.badge || 'OUR STORY & LEGACY'}</span>
             </div>
             
             <h1 className="text-4xl lg:text-7xl font-black leading-none">
-              <span className="text-[#14203E]">{section.title?.split(' ')[0] || 'BEYOND'}</span>
+              <span className="text-[var(--primary)]">{section.title?.split(' ')[0] || 'BEYOND'}</span>
               <br />
               <span className="text-white">{section.title?.split(' ').slice(1).join(' ') || 'LEGAL BOUNDARIES'}</span>
             </h1>
@@ -36,19 +36,19 @@ export function HeroSection({ data, content }: HeroSectionProps) {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-4xl mx-auto pt-8">
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">25+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[var(--primary)] group-hover:scale-110 transition-transform">25+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">YEARS OF PRACTICE</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">1.5K+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[var(--primary)] group-hover:scale-110 transition-transform">1.5K+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">SUCCESSFUL CLIENTS</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">98%</div>
+              <div className="text-4xl lg:text-5xl font-black text-[var(--primary)] group-hover:scale-110 transition-transform">98%</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">CASE VICTORY</div>
             </div>
             <div className="text-center group">
-              <div className="text-4xl lg:text-5xl font-black text-[#14203E] group-hover:scale-110 transition-transform">8+</div>
+              <div className="text-4xl lg:text-5xl font-black text-[var(--primary)] group-hover:scale-110 transition-transform">8+</div>
               <div className="text-gray-500 text-[10px] font-bold mt-2">PRACTICE AREAS</div>
             </div>
           </div>

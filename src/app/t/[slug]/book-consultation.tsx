@@ -60,7 +60,7 @@ export function BookConsultation({ slug }: { slug: string }) {
             href={done.meetingLink}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#c9a227] px-4 py-2 text-xs font-semibold text-[#0b0f17] hover:bg-[#d8b33a]"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[var(--secondary)] px-4 py-2 text-xs font-semibold text-[#0b0f17] hover:bg-[#d8b33a]"
           >
             Join meeting
           </a>
@@ -87,7 +87,7 @@ export function BookConsultation({ slug }: { slug: string }) {
         {days.map((d) => (
           <div key={d.date} className="rounded-2xl border border-white/10 bg-white/5 p-4">
             <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
-              <Calendar className="h-4 w-4 text-[#c9a227]" />
+              <Calendar className="h-4 w-4 text-[var(--secondary)]" />
               {new Date(d.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
             </div>
             <div className="flex flex-wrap gap-2">
@@ -97,7 +97,7 @@ export function BookConsultation({ slug }: { slug: string }) {
                   onClick={() => setSelected(s)}
                   className="inline-flex items-center gap-1.5 rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs font-semibold text-white transition hover:bg-white/15"
                 >
-                  <Clock className="h-3.5 w-3.5 text-[#c9a227]" />
+                  <Clock className="h-3.5 w-3.5 text-[var(--secondary)]" />
                   {new Date(s.startTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} – {new Date(s.endTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   <span className="ml-1 text-[10px] font-normal text-white/60">({s.seatsLeft} left)</span>
                 </button>
@@ -130,7 +130,7 @@ export function BookConsultation({ slug }: { slug: string }) {
         ))}
       </select>
       {error && <div className="rounded-lg bg-rose-500/20 px-3 py-2 text-sm text-rose-200">{error}</div>}
-      <button disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#14203E] hover:bg-white/90 disabled:opacity-60">
+      <button disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[var(--primary)] hover:bg-white/90 disabled:opacity-60">
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         Confirm booking
       </button>

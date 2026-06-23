@@ -108,7 +108,7 @@ export function ImageUpload({
                       onError={() => setPreviewFailed(true)}
                     />
                   ) : (
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[#14203E] text-[10px] font-black uppercase tracking-widest text-white">
+                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--primary)] text-[10px] font-black uppercase tracking-widest text-white">
                       ICO
                     </div>
                   )}
@@ -123,7 +123,7 @@ export function ImageUpload({
               />
             ) : (
               <div className="flex h-40 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                <div className="rounded-2xl bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[#14203E] shadow-lg">
+                <div className="rounded-2xl bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[var(--primary)] shadow-lg">
                   Preview unavailable
                 </div>
               </div>
@@ -155,7 +155,7 @@ export function ImageUpload({
                {previewType === 'icon' ? 'Processing favicon...' : 'Uploading...'}
              </span>
              {previewType === 'icon' && (
-               <span className="text-[9px] font-black uppercase tracking-[0.22em] text-[#14203E]">
+               <span className="text-[9px] font-black uppercase tracking-[0.22em] text-[var(--primary)]">
                  ETA 5-10s
                </span>
              )}

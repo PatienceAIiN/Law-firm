@@ -10,7 +10,7 @@ export function OpenWorkspace({ variant = 'inline' }: { variant?: 'inline' | 'ca
 
   const buttonClass =
     variant === 'card'
-      ? 'mx-auto mt-10 inline-flex items-center gap-2 rounded-xl bg-[#14203E] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1d2c52]'
+      ? 'mx-auto mt-10 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[var(--accent)]'
       : 'inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10'
 
   return (
@@ -108,7 +108,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#14203E]/70 dark:text-white/70">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[var(--primary)]/70 dark:text-white/70">
             <Mail className="h-4 w-4" /> Open your workspace
           </div>
           <button onClick={onClose} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
@@ -126,16 +126,16 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@firm.com"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
             />
             {error && <Banner kind="error">{error}</Banner>}
             <label className="flex items-center gap-3 cursor-pointer select-none group">
               <span
                 className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all ${
                   remember
-                    ? 'border-[#14203E] bg-[#14203E]'
+                    ? 'border-[var(--primary)] bg-[var(--primary)]'
                     : 'border-slate-300 bg-white dark:border-white/30 dark:bg-white/5'
-                } group-hover:border-[#14203E]`}
+                } group-hover:border-[var(--primary)]`}
                 onClick={() => setRemember(!remember)}
               >
                 {remember && (
@@ -147,7 +147,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
               <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="sr-only" />
               <span className="text-sm text-slate-600 dark:text-slate-300">Remember me — skip OTP next time</span>
             </label>
-            <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+            <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {busy ? 'Sending…' : 'Send code'}
             </button>
@@ -173,10 +173,10 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
               required
               autoFocus
               placeholder="123456"
-              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center font-mono text-lg tracking-[0.6em] text-slate-900 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center font-mono text-lg tracking-[0.6em] text-slate-900 outline-none focus:border-[var(--primary)] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
             />
             {error && <Banner kind="error">{error}</Banner>}
-            <button disabled={busy || code.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+            <button disabled={busy || code.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
               {busy ? 'Verifying…' : 'Verify & open'}
             </button>
@@ -199,7 +199,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
                     className="flex w-full items-center justify-between rounded-lg border border-slate-200 px-4 py-3 text-left hover:bg-slate-50 disabled:opacity-60 dark:border-white/10 dark:hover:bg-white/5"
                   >
                     <span>
-                      <p className="text-sm font-semibold text-[#14203E] dark:text-white">{w.name}</p>
+                      <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{w.name}</p>
                       <p className="text-xs text-slate-500">/t/{w.slug}</p>
                     </span>
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4 text-slate-400" />}

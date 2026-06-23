@@ -41,7 +41,7 @@ export function IconPicker({ value, onChange, label }: IconPickerProps) {
            <Icon className="w-5 h-5" />
         </div>
         <div className="text-left">
-           <div className="text-[10px] font-black uppercase tracking-widest text-[#14203E]">Selected Icon</div>
+           <div className="text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">Selected Icon</div>
            <div className="text-xs font-bold text-navy-900">{value || 'None'}</div>
         </div>
       </button>

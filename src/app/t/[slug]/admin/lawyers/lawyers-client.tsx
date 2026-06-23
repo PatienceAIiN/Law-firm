@@ -21,10 +21,10 @@ export function LawyersClient({ slug, items }: { slug: string; items: A[] }) {
           After activation they can sign in at <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/t/{slug}/lawyer/login</code>.
         </p>
         <form onSubmit={onCreate} className="grid gap-3 sm:grid-cols-2">
-          <input name="name" required placeholder="Full name" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="title" placeholder="Title (e.g. Senior Advocate)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="email" type="email" required placeholder="Email" className="sm:col-span-2 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+          <input name="name" required placeholder="Full name" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="title" placeholder="Title (e.g. Senior Advocate)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="email" type="email" required placeholder="Email" className="sm:col-span-2 rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Send invite
           </button>
@@ -38,7 +38,7 @@ export function LawyersClient({ slug, items }: { slug: string; items: A[] }) {
             {items.map((a) => (
               <li key={a.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#14203E] dark:text-white">{a.name}</p>
+                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{a.name}</p>
                   <p className="text-xs text-slate-500">
                     {a.email} ·{' '}
                     {a.isActive

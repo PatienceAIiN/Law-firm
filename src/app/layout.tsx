@@ -36,7 +36,7 @@ function resolveThemeIconType(theme: Awaited<ReturnType<typeof getSiteTheme>>) {
 }
 
 export const viewport: import('next').Viewport = {
-  themeColor: '#14203E',
+  themeColor: 'var(--primary)',
 }
 
 export async function generateMetadata(): Promise<Metadata> {

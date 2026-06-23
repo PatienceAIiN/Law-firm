@@ -24,7 +24,7 @@ export default async function TenantInquiriesPage({ params }: { params: Promise<
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Inquiries</h2>
+      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Inquiries</h2>
       <div className="rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#11151f]">
         {items.length === 0 ? (
           <p className="px-4 py-8 text-center text-sm text-slate-500">No inquiries from your site yet.</p>
@@ -33,7 +33,7 @@ export default async function TenantInquiriesPage({ params }: { params: Promise<
             {items.map((i) => (
               <li key={i.id} className="px-4 py-4">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-semibold text-[#14203E] dark:text-white">
+                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">
                     {i.fullName} <span className="ml-2 text-xs font-normal text-slate-500">{i.email}</span>
                   </p>
                   <span className="text-xs text-slate-400">{new Date(i.createdAt).toLocaleDateString()}</span>

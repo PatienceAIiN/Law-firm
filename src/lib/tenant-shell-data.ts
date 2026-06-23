@@ -14,12 +14,22 @@ export type TenantPublicData = {
 export async function loadTenantPublicShell(slug: string): Promise<TenantPublicData> {
   const tenant = await getTenantBySlug(slug)
   if (!tenant) notFound()
-  const [brand, practiceAreas, aboutProfile] = await Promise.all([
+  const [brand, practiceAreas, aboutProfile, siteTheme] = await Promise.all([
     getTenantSettingJson<any>(tenant.id, 'brand_config'),
     prisma.practiceArea.findMany({ where: { tenantId: tenant.id, isActive: true }, orderBy: { order: 'asc' } }),
     prisma.aboutProfile.findFirst({ where: { tenantId: tenant.id } }),
+    getTenantSettingJson<any>(tenant.id, 'site_theme')
   ])
-  const brandData = brand || { firm_name: tenant.name, firm_full_name: tenant.name }
+  const theme = siteTheme || {}
+  const brandData = {
+    firm_name: theme.siteTitle || tenant.name,
+    firm_full_name: theme.siteTitle || tenant.name,
+    logo_text: theme.siteTitle || tenant.name,
+    use_image_logo: !!theme.logoUrl,
+    logo_image_url: theme.logoUrl,
+    ...(brand || {})
+  }
+  
   const officeDetails = (() => {
     try { return aboutProfile?.officeDetails ? JSON.parse(aboutProfile.officeDetails) : { email: tenant.ownerEmail } }
     catch { return { email: tenant.ownerEmail } }

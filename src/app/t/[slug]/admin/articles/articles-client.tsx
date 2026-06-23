@@ -84,10 +84,10 @@ export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
             {uploadError && <p className="text-xs text-rose-600">{uploadError}</p>}
           </div>
 
-          <input name="title" required placeholder="Article title" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="excerpt" placeholder="Short summary (shown on listing)" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <textarea name="content" rows={5} placeholder="Write your article…" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending || uploading} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+          <input name="title" required placeholder="Article title" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="excerpt" placeholder="Short summary (shown on listing)" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <textarea name="content" rows={5} placeholder="Write your article…" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending || uploading} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Publish article
           </button>
@@ -107,7 +107,7 @@ export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
                   <div className="h-12 w-16 shrink-0 rounded bg-slate-100 dark:bg-white/5" />
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-[#14203E] dark:text-white">{b.title}</p>
+                  <p className="truncate text-sm font-semibold text-[var(--primary)] dark:text-white">{b.title}</p>
                   <p className="truncate text-xs text-slate-500">{b.slug} · {b.status}</p>
                 </div>
                 <form action={async () => { await deleteBlogPost(slug, b.id) }}>

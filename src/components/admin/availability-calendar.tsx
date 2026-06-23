@@ -230,14 +230,14 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-black text-[#14203E] uppercase tracking-tighter">Availability Calendar</h2>
+          <h2 className="text-2xl font-black text-[var(--primary)] uppercase tracking-tighter">Availability Calendar</h2>
           <p className="text-xs font-bold uppercase tracking-widest text-gray-400">Manage consultation slots by day</p>
         </div>
         <div className="flex items-center gap-3">
           <button onClick={() => loadMonth(shiftMonth(month, -1))} className="p-3 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50">
             <ChevronLeft className="w-4 h-4" />
           </button>
-          <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm font-black text-[#14203E] uppercase tracking-widest">
+          <div className="px-4 py-3 rounded-2xl bg-white border border-gray-100 text-sm font-black text-[var(--primary)] uppercase tracking-widest">
             {monthLabel(month)}
           </div>
           <button onClick={() => loadMonth(shiftMonth(month, 1))} className="p-3 rounded-2xl bg-white border border-gray-100 hover:bg-gray-50">
@@ -272,12 +272,12 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
               )}
             >
               <div className="flex items-start justify-between mb-3">
-                <div className="text-lg font-black text-[#14203E]">{Number(date.slice(-2))}</div>
-                <CalendarIcon className="w-4 h-4 text-[#14203E]" />
+                <div className="text-lg font-black text-[var(--primary)]">{Number(date.slice(-2))}</div>
+                <CalendarIcon className="w-4 h-4 text-[var(--primary)]" />
               </div>
               {day ? (
                 <div className="space-y-2">
-                  <div className="text-[10px] font-black uppercase tracking-widest text-[#14203E]">
+                  <div className="text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">
                     {day.totalSlots} slots
                   </div>
                   <div className="text-[10px] font-bold text-gray-400">
@@ -303,15 +303,15 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
           <div className="grid grid-cols-3 gap-4">
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total Slots</div>
-              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.totalSlots || 0}</div>
+              <div className="text-2xl font-black text-[var(--primary)]">{selectedDay?.totalSlots || 0}</div>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Available Seats</div>
-              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.availableSlots || 0}</div>
+              <div className="text-2xl font-black text-[var(--primary)]">{selectedDay?.availableSlots || 0}</div>
             </div>
             <div className="rounded-2xl bg-gray-50 p-4">
               <div className="text-[10px] font-black uppercase tracking-widest text-gray-400">Booked Seats</div>
-              <div className="text-2xl font-black text-[#14203E]">{selectedDay?.bookedSlots || 0}</div>
+              <div className="text-2xl font-black text-[var(--primary)]">{selectedDay?.bookedSlots || 0}</div>
             </div>
           </div>
 
@@ -329,7 +329,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                 <div key={slot.id} className="rounded-3xl border border-gray-100 p-4 bg-white space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="font-black text-[#14203E] uppercase tracking-tighter">
+                      <div className="font-black text-[var(--primary)] uppercase tracking-tighter">
                         {slot.startTime} - {slot.endTime}
                       </div>
                       <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -396,7 +396,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                       />
                       <button
                         onClick={() => updateSlot(slot.id, draft)}
-                        className="md:col-span-2 w-full bg-[#14203E] text-white p-3 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
+                        className="md:col-span-2 w-full bg-[var(--primary)] text-white p-3 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2"
                       >
                         <Save className="w-4 h-4" />
                         Save Slot
@@ -405,7 +405,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                   ) : (
                     <div className="flex flex-wrap gap-2">
                       {slot.allowedModes.map((mode) => (
-                        <span key={mode} className="px-3 py-1 rounded-full bg-gray-50 text-[10px] font-black uppercase tracking-widest text-[#14203E]">
+                        <span key={mode} className="px-3 py-1 rounded-full bg-gray-50 text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">
                           {mode === 'PHYSICAL' ? 'In-Person' : 'Virtual Meeting'}
                         </span>
                       ))}
@@ -442,7 +442,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                   className={cn(
                     'px-3 py-2 rounded-full text-[10px] font-black uppercase tracking-widest border',
                     newSlot.allowedModes.includes(mode)
-                      ? 'bg-[#14203E] text-white border-[#14203E]'
+                      ? 'bg-[var(--primary)] text-white border-[var(--primary)]'
                       : 'bg-white text-gray-400 border-gray-100'
                   )}
                 >
@@ -450,7 +450,7 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
                 </button>
               ))}
             </div>
-            <button onClick={submitNewSlot} className="w-full bg-[#F6F0E8] text-[#14203E] p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2">
+            <button onClick={submitNewSlot} className="w-full bg-[#F6F0E8] text-[var(--primary)] p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" />
               Add Slot
             </button>

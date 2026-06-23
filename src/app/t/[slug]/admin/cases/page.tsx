@@ -28,7 +28,7 @@ export default async function TenantCasesPage({ params }: { params: Promise<{ sl
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Cases</h2>
+      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Cases</h2>
       <TenantCasesClient
           slug={slug}
           cases={cases.map((c) => ({

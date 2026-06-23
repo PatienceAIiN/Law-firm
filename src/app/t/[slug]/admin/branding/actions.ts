@@ -1,31 +1,33 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
+import { getTenantBySlug } from '@/lib/tenant'
 import { setTenantSettingJson } from '@/lib/tenant-settings'
+import { revalidatePath } from 'next/cache'
 
-export async function updateTenantBrand(slug: string, formData: FormData) {
+export async function updateBranding(slug: string, formData: FormData) {
   const session = await getServerSession(tenantAdminAuthOptions)
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) throw new Error('Unauthorized')
 
-  let logoStyle: any = null
-  const styleRaw = formData.get('logo_style')
-  if (typeof styleRaw === 'string' && styleRaw.trim()) {
-    try { logoStyle = JSON.parse(styleRaw) } catch { logoStyle = null }
+  const tenant = await getTenantBySlug(slug)
+  if (!tenant) throw new Error('Tenant not found')
+
+  const themeConfig = {
+    primaryColor: formData.get('primaryColor') as string,
+    secondaryColor: formData.get('secondaryColor') as string,
+    accentColor: formData.get('accentColor') as string,
+    navbarColor: formData.get('navbarColor') as string,
+    footerColor: formData.get('footerColor') as string,
+    borderRadius: formData.get('borderRadius') as string,
+    fontFamily: formData.get('fontFamily') as string,
+    logoUrl: formData.get('logoUrl') as string,
+    faviconUrl: formData.get('faviconUrl') as string,
+    siteTitle: formData.get('siteTitle') as string,
   }
 
-  const brand = {
-    logo_text: (formData.get('logo_text') as string) || '',
-    firm_name: (formData.get('firm_name') as string) || '',
-    firm_full_name: (formData.get('firm_full_name') as string) || '',
-    logo_image_url: (formData.get('logo_image_url') as string) || '',
-    use_image_logo: formData.get('use_image_logo') === 'on',
-    logo_style: logoStyle || undefined,
-  }
+  await setTenantSettingJson(tenant.id, 'site_theme', themeConfig)
 
-  await setTenantSettingJson(u.tenantId, 'brand_config', brand)
-  revalidatePath(`/t/${slug}`)
-  revalidatePath(`/t/${slug}/admin`)
+  revalidatePath(`/t/${slug}`, 'layout')
 }

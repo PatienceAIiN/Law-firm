@@ -61,7 +61,7 @@ export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobi
                 href={item.href}
                 className={cn(
                   'text-[18px] transition-colors',
-                  active ? 'font-semibold text-[#14203E] dark:text-white' : 'text-[#14203E]/80 hover:text-[#14203E] dark:text-white/70 dark:hover:text-white',
+                  active ? 'font-semibold text-[var(--primary)] dark:text-white' : 'text-[var(--primary)]/80 hover:text-[var(--primary)] dark:text-white/70 dark:hover:text-white',
                 )}
               >
                 {item.name}
@@ -74,17 +74,17 @@ export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobi
         <div className="flex items-center gap-3">
           <Link
             href={lawyerLoginHref}
-            className="hidden h-[49px] items-center justify-center rounded-[10px] bg-[#F6F0E8] px-6 text-[18px] font-medium text-[#14203E] transition-colors hover:bg-[#efe6d8] dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:inline-flex"
+            className="hidden h-[49px] items-center justify-center rounded-[10px] bg-[#F6F0E8] px-6 text-[18px] font-medium text-[var(--primary)] transition-colors hover:bg-[#efe6d8] dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:inline-flex"
           >
             Adv. Portal
           </Link>
           <TrackCaseButton
             label="Track Case"
-            className="hidden h-[49px] items-center justify-center rounded-[10px] bg-[#14203E] px-6 text-[18px] font-medium text-white transition-colors hover:bg-[#1d2c52] sm:inline-flex"
+            className="hidden h-[49px] items-center justify-center rounded-[10px] bg-[var(--primary)] px-6 text-[18px] font-medium text-white transition-colors hover:bg-[var(--accent)] sm:inline-flex"
           />
           <button
             onClick={onToggleMobile}
-            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-[#14203E] hover:bg-[#F6F0E8] lg:hidden"
+            className="flex h-10 w-10 items-center justify-center rounded-[10px] text-[var(--primary)] hover:bg-[#F6F0E8] lg:hidden"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
           >
             {mobileOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -101,14 +101,14 @@ export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobi
                 key={`m-${item.name}-${item.href}`}
                 href={item.href}
                 onClick={onToggleMobile}
-                className="block rounded-[10px] px-4 py-3 text-[17px] text-[#14203E] hover:bg-[#F6F0E8]"
+                className="block rounded-[10px] px-4 py-3 text-[17px] text-[var(--primary)] hover:bg-[#F6F0E8]"
               >
                 {item.name}
               </Link>
             ))}
             <div className="flex gap-3 pt-2">
-              <Link href="/lawyer/login" onClick={onToggleMobile} className="flex-1 rounded-[10px] bg-[#F6F0E8] py-3 text-center text-[16px] font-medium text-[#14203E]">Adv. Portal</Link>
-              <TrackCaseButton label="Track Case" className="flex-1 rounded-[10px] bg-[#14203E] py-3 text-center text-[16px] font-medium text-white" />
+              <Link href="/lawyer/login" onClick={onToggleMobile} className="flex-1 rounded-[10px] bg-[#F6F0E8] py-3 text-center text-[16px] font-medium text-[var(--primary)]">Adv. Portal</Link>
+              <TrackCaseButton label="Track Case" className="flex-1 rounded-[10px] bg-[var(--primary)] py-3 text-center text-[16px] font-medium text-white" />
             </div>
           </div>
         </div>

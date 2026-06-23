@@ -28,13 +28,13 @@ export default async function TenantHomePage({ params }: { params: Promise<{ slu
       <section className="relative overflow-hidden rounded-2xl">
         <VideoCover src={COVER_VIDEOS.home} overlay="medium" />
         <div className="relative z-10 mx-auto max-w-5xl px-6 py-24 text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[#14203E]/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[#14203E] backdrop-blur">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[var(--primary)]/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[var(--primary)] backdrop-blur">
             {brand.firm_name || tenant.name}
           </div>
-          <h1 className="mt-6 text-5xl font-bold tracking-tight text-[#14203E] dark:text-white">{brand.firm_full_name || tenant.name}</h1>
+          <h1 className="mt-6 text-5xl font-bold tracking-tight text-[var(--primary)] dark:text-white">{brand.firm_full_name || tenant.name}</h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-700 dark:text-slate-200">Trusted legal counsel — your dedicated workspace.</p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href={`/t/${tenant.slug}/book`} className="inline-flex items-center gap-2 rounded-xl bg-[#14203E] px-6 py-3 text-sm font-semibold text-white hover:bg-[#1d2c52]">
+            <Link href={`/t/${tenant.slug}/book`} className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white hover:bg-[var(--accent)]">
               Consult <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -48,10 +48,10 @@ export default async function TenantHomePage({ params }: { params: Promise<{ slu
             className="group block rounded-2xl border border-[#F4E8D8] bg-white p-7 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md dark:border-white/10 dark:bg-[#11151f]"
           >
             <div className="flex items-center justify-between">
-              <Quote className="h-7 w-7 text-[#c9a227]" />
+              <Quote className="h-7 w-7 text-[var(--secondary)]" />
               <div className="flex">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-[#c9a227] text-[#c9a227]" />
+                  <Star key={i} className="h-4 w-4 fill-[var(--secondary)] text-[var(--secondary)]" />
                 ))}
               </div>
             </div>
@@ -60,10 +60,10 @@ export default async function TenantHomePage({ params }: { params: Promise<{ slu
             </blockquote>
             <div className="mt-4 flex items-center justify-between">
               <p className="text-sm">
-                <span className="font-semibold text-[#14203E] dark:text-white">{testimonial.name}</span>
+                <span className="font-semibold text-[var(--primary)] dark:text-white">{testimonial.name}</span>
                 {testimonial.role && <span className="text-slate-500"> · {testimonial.role}</span>}
               </p>
-              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#14203E] dark:text-white">
+              <span className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--primary)] dark:text-white">
                 See more from clients <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-1" />
               </span>
             </div>

@@ -1,11 +1,11 @@
-import { notFound, redirect } from 'next/navigation'
+import { redirect, notFound } from 'next/navigation'
 import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { getTenantBySlug } from '@/lib/tenant'
-import { getTenantSettingJson } from '@/lib/tenant-settings'
-import { BrandLogoForm } from '@/components/admin/brand-logo-form'
 import { TenantAdminShell } from '@/components/tenant/admin-shell'
-import { updateTenantBrand } from './actions'
+import { getTenantSettingJson } from '@/lib/tenant-settings'
+import { DEFAULT_THEME } from '@/lib/theme'
+import { BrandingClient } from './branding-client'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,22 +18,18 @@ export default async function TenantBrandingPage({ params }: { params: Promise<{
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) redirect(`/t/${slug}/admin/login`)
 
-  const brand = (await getTenantSettingJson<any>(tenant.id, 'brand_config')) || { firm_name: tenant.name, logo_text: tenant.name.slice(0, 3).toUpperCase() }
-
-  const onUpdate = async (formData: FormData) => {
-    'use server'
-    await updateTenantBrand(slug, formData)
-  }
-
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
+
+  const tenantTheme = await getTenantSettingJson(tenant.id, 'site_theme') || {}
+  const theme = { ...DEFAULT_THEME, ...tenantTheme }
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-2 text-xl font-bold text-[#14203E] dark:text-white">Branding</h2>
-      <p className="mb-4 text-sm text-slate-500">Upload a logo or set styled text. Changes show on your public site at <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/t/{slug}</code>.</p>
-      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
-        <BrandLogoForm brand={brand} updateBrand={onUpdate} />
+      <div className="mb-6">
+        <h2 className="text-xl font-bold text-[var(--primary)] dark:text-white">Workspace Branding</h2>
+        <p className="text-sm text-slate-500">Configure colors, fonts, and logos for your portal.</p>
       </div>
+      <BrandingClient slug={slug} theme={theme} />
     </TenantAdminShell>
   )
 }

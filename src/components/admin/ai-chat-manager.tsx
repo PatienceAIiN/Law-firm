@@ -56,7 +56,7 @@ export function AiChatManager({ initialConversations }: AiChatManagerProps) {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search conversation id or message"
-            className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-[#0f172a] outline-none transition-colors focus:border-[#14203E]"
+            className="w-full rounded-2xl border border-slate-200 bg-white py-3 pl-11 pr-4 text-sm font-medium text-[#0f172a] outline-none transition-colors focus:border-[var(--primary)]"
           />
         </div>
 
@@ -79,7 +79,7 @@ export function AiChatManager({ initialConversations }: AiChatManagerProps) {
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.24em] text-[#0f172a]">
-                      <Hash className="h-3.5 w-3.5 text-[#14203E]" />
+                      <Hash className="h-3.5 w-3.5 text-[var(--primary)]" />
                       {conversation.id}
                     </div>
                     <p className="mt-2 line-clamp-2 text-sm font-semibold text-slate-700">{firstLine}</p>
@@ -112,7 +112,7 @@ export function AiChatManager({ initialConversations }: AiChatManagerProps) {
           <div className="space-y-5">
             <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">Conversation</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">Conversation</p>
                 <h2 className="mt-1 text-2xl font-black uppercase tracking-tighter text-[#0f172a]">
                   {selectedConversation.id}
                 </h2>
@@ -120,7 +120,7 @@ export function AiChatManager({ initialConversations }: AiChatManagerProps) {
               <button
                 type="button"
                 onClick={() => navigator.clipboard.writeText(selectedConversation.id)}
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[#14203E] hover:text-[#14203E]"
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
               >
                 <Copy className="h-3.5 w-3.5" />
                 Copy ID
@@ -149,7 +149,7 @@ export function AiChatManager({ initialConversations }: AiChatManagerProps) {
                   className={cn(
                     'max-w-4xl rounded-[24px] border p-4',
                     message.role === 'user'
-                      ? 'ml-auto border-[#14203E]/10 bg-[#14203E] text-white'
+                      ? 'ml-auto border-[var(--primary)]/10 bg-[var(--primary)] text-white'
                       : 'border-slate-200 bg-slate-50 text-slate-800'
                   )}
                 >

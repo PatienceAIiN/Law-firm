@@ -411,7 +411,7 @@ export function SiteEditor({
                     type="button"
                     onClick={() => handleNavMove(index, -1)}
                     disabled={index === 0}
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Move link up"
                   >
                     <ArrowUp className="h-4 w-4" />
@@ -420,7 +420,7 @@ export function SiteEditor({
                     type="button"
                     onClick={() => handleNavMove(index, 1)}
                     disabled={index === navItems.length - 1}
-                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[#14203E] disabled:cursor-not-allowed disabled:opacity-40"
+                    className="rounded-xl border border-slate-200 bg-white p-3 text-slate-500 transition-all hover:text-[var(--primary)] disabled:cursor-not-allowed disabled:opacity-40"
                     aria-label="Move link down"
                   >
                     <ArrowDown className="h-4 w-4" />
@@ -609,7 +609,7 @@ export function SiteEditor({
               { key: 'preferEmbeddedView', label: 'Prefer Embedded Meeting View' },
               { key: 'sameTabOnly', label: 'Force Same Tab Flow' },
             ].map((item) => (
-              <label key={item.key} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 text-xs font-black uppercase tracking-widest text-[#14203E]">
+              <label key={item.key} className="flex items-center gap-3 rounded-2xl bg-gray-50 p-4 text-xs font-black uppercase tracking-widest text-[var(--primary)]">
                 <input
                   type="checkbox"
                   name={item.key}
@@ -696,7 +696,7 @@ export function SiteEditor({
                       }
                       await updateAdminUser(formData)
                     })}
-                    className="rounded-2xl bg-[#14203E] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white"
+                    className="rounded-2xl bg-[var(--primary)] px-5 py-3 text-[10px] font-black uppercase tracking-widest text-white"
                   >
                     Save User
                   </button>

@@ -21,7 +21,7 @@ export default async function TenantArticlesPage({ params }: { params: Promise<{
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Articles</h2>
+      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Articles</h2>
       <ArticlesClient slug={slug} items={items.map((b) => ({ id: b.id, title: b.title, slug: b.slug, status: b.status }))} />
     </TenantAdminShell>
   )

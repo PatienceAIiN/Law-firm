@@ -15,7 +15,7 @@ export function ContactInfo({ contact, content, officeHours = [] }: { contact?: 
     <div className="h-full space-y-6">
       <div className="relative h-full overflow-hidden rounded-[2.5rem] border border-gray-100 bg-gradient-to-b from-white via-slate-50 to-white p-10 shadow-sm">
         <div className="pointer-events-none absolute -left-16 -top-16 h-32 w-32 rounded-full bg-[#F6F0E8]/5" />
-        <h3 className="mb-4 text-3xl font-black uppercase tracking-tighter text-[#14203E]">
+        <h3 className="mb-4 text-3xl font-black uppercase tracking-tighter text-[var(--primary)]">
           Get in Touch
         </h3>
         <p className="max-w-md text-sm leading-7 text-slate-600">
@@ -24,8 +24,8 @@ export function ContactInfo({ contact, content, officeHours = [] }: { contact?: 
 
         <div className="mt-8 rounded-[2rem] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white p-6">
           <div className="mb-4 flex items-center gap-3">
-            <Clock className="h-5 w-5 text-[#14203E]" />
-            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-[#14203E]">
+            <Clock className="h-5 w-5 text-[var(--primary)]" />
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-[var(--primary)]">
               {section.officeHoursHeading || 'Office Hours'}
             </h4>
           </div>
@@ -36,7 +36,7 @@ export function ContactInfo({ contact, content, officeHours = [] }: { contact?: 
               const value = separatorIndex >= 0 ? entry.slice(separatorIndex + 1).trim() : ''
               return (
                 <div key={`${entry}-${index}`} className="flex items-start justify-between gap-4 border-b border-white/70 py-2 last:border-0">
-                  <span className="text-sm font-bold text-[#14203E]">{label}</span>
+                  <span className="text-sm font-bold text-[var(--primary)]">{label}</span>
                   <span className="text-sm text-slate-600">{value ? value : 'Closed'}</span>
                 </div>
               )
@@ -47,7 +47,7 @@ export function ContactInfo({ contact, content, officeHours = [] }: { contact?: 
         {contact?.mapEmbedUrl && (
           <div className="mt-8 overflow-hidden rounded-2xl border border-gray-100 bg-white">
             <div className="flex items-center gap-2 border-b border-gray-100 bg-white px-4 py-3 text-[10px] font-black uppercase tracking-widest text-slate-400">
-              <MapPin className="h-4 w-4 text-[#14203E]" />
+              <MapPin className="h-4 w-4 text-[var(--primary)]" />
               Office Location
             </div>
             <iframe

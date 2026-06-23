@@ -32,13 +32,13 @@ export function ContactForm({ content }: { content?: any }) {
         <div className="w-20 h-20 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-8 border border-green-100 shadow-sm">
           <CheckCircle2 className="w-10 h-10 text-green-600" />
         </div>
-        <h3 className="text-3xl font-black text-[#14203E] mb-4 uppercase tracking-tighter">{section.successTitle || 'MESSAGE RECEIVED'}</h3>
+        <h3 className="text-3xl font-black text-[var(--primary)] mb-4 uppercase tracking-tighter">{section.successTitle || 'MESSAGE RECEIVED'}</h3>
         <p className="text-gray-500 font-medium mb-8 leading-relaxed mb-10">
           {section.successMessage || 'Thank you for reaching out. A senior associate will review your inquiry and contact you within 24 hours.'}
         </p>
         <Button 
           onClick={() => setIsSubmitted(false)}
-          className="bg-[#14203E] hover:bg-[#F6F0E8] text-white px-8 py-6 rounded-2xl font-bold transition-all"
+          className="bg-[var(--primary)] hover:bg-[#F6F0E8] text-white px-8 py-6 rounded-2xl font-bold transition-all"
         >
           {section.resetText || 'Send Another Inquiry'}
         </Button>
@@ -50,7 +50,7 @@ export function ContactForm({ content }: { content?: any }) {
     <div className="relative h-full overflow-hidden rounded-[2.5rem] border border-gray-100 bg-gradient-to-b from-white via-slate-50 to-white p-10 shadow-2xl">
       <div className="absolute top-0 right-0 h-32 w-32 rounded-full bg-[#F6F0E8]/5 -mr-16 -mt-16"></div>
       
-      <h2 className="text-3xl font-black text-[#14203E] mb-8 uppercase tracking-tighter">{section.title || 'LEGAL INQUIRY FORM'}</h2>
+      <h2 className="text-3xl font-black text-[var(--primary)] mb-8 uppercase tracking-tighter">{section.title || 'LEGAL INQUIRY FORM'}</h2>
       
       <form onSubmit={handleSubmit} className="space-y-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -132,7 +132,7 @@ export function ContactForm({ content }: { content?: any }) {
         <Button
           type="submit"
           disabled={isLoading}
-          className="w-full h-16 bg-[#14203E] hover:bg-[#F6F0E8] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl transition-all disabled:opacity-50"
+          className="w-full h-16 bg-[var(--primary)] hover:bg-[#F6F0E8] text-white rounded-2xl font-black uppercase tracking-widest shadow-xl transition-all disabled:opacity-50"
         >
           {isLoading ? (
             <Loader2 className="w-5 h-5 animate-spin" />

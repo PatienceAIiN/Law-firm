@@ -50,13 +50,13 @@ export function Hero({ data, profile, metrics }: HeroProps) {
             </div>
           )}
 
-          <div className="inline-flex items-center rounded-full border border-[#F4E8D8]/20 bg-[#F6F0E8]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">
+          <div className="inline-flex items-center rounded-full border border-[#F4E8D8]/20 bg-[#F6F0E8]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">
             {badge}
           </div>
 
-          <h1 className="mx-auto mt-5 max-w-5xl text-4xl font-black uppercase tracking-tighter text-[#14203E] sm:text-5xl lg:text-7xl">
-            <span className="text-[#14203E]">{title.split(' ').slice(0, 2).join(' ')}</span>{' '}
-            <span className="text-[#14203E]">{title.split(' ').slice(2).join(' ')}</span>
+          <h1 className="mx-auto mt-5 max-w-5xl text-4xl font-black uppercase tracking-tighter text-[var(--primary)] sm:text-5xl lg:text-7xl">
+            <span className="text-[var(--primary)]">{title.split(' ').slice(0, 2).join(' ')}</span>{' '}
+            <span className="text-[var(--primary)]">{title.split(' ').slice(2).join(' ')}</span>
           </h1>
 
           <p className="mx-auto mt-4 max-w-3xl text-base leading-8 text-slate-600 sm:text-lg">
@@ -64,13 +64,13 @@ export function Hero({ data, profile, metrics }: HeroProps) {
           </p>
 
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-            <Button asChild size="lg" className="h-12 rounded-2xl bg-[#14203E] px-8 font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[#14203E]">
+            <Button asChild size="lg" className="h-12 rounded-2xl bg-[var(--primary)] px-8 font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[var(--primary)]">
               <Link href="/practice-areas">
                 Explore Practice Areas
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button asChild variant="outline" size="lg" className="h-12 rounded-2xl border-gray-200 px-8 font-black uppercase tracking-widest text-[#14203E] hover:bg-slate-50">
+            <Button asChild variant="outline" size="lg" className="h-12 rounded-2xl border-gray-200 px-8 font-black uppercase tracking-widest text-[var(--primary)] hover:bg-slate-50">
               <Link href={ctaSecondaryLink}>{ctaSecondaryText}</Link>
             </Button>
           </div>
@@ -81,8 +81,8 @@ export function Hero({ data, profile, metrics }: HeroProps) {
                 const Icon = ICON_MAP[m.icon || 'Award'] || Award
                 return (
                   <div key={m.id} className="rounded-[24px] border border-gray-200 bg-gradient-to-br from-white via-slate-50 to-white p-5 text-left shadow-sm">
-                    <Icon className="h-5 w-5 text-[#14203E]" />
-                    <div className="mt-4 text-3xl font-black tracking-tighter text-[#14203E]">{m.value}</div>
+                    <Icon className="h-5 w-5 text-[var(--primary)]" />
+                    <div className="mt-4 text-3xl font-black tracking-tighter text-[var(--primary)]">{m.value}</div>
                     <div className="mt-1 text-[10px] font-black uppercase tracking-[0.24em] text-slate-500">{m.label}</div>
                   </div>
                 )

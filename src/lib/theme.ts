@@ -16,11 +16,11 @@ export interface SiteTheme {
 }
 
 export const DEFAULT_THEME: SiteTheme = {
-  primaryColor: '#14203E', // Navy 900
-  secondaryColor: '#14203E', // Gold
+  primaryColor: 'var(--primary)', // Navy 900
+  secondaryColor: 'var(--primary)', // Gold
   accentColor: '#112240', // Lighter Navy
   navbarColor: '#ffffff',
-  footerColor: '#14203E',
+  footerColor: 'var(--primary)',
   borderRadius: '0.75rem',
   fontFamily: 'sans',
   logoUrl: '',

@@ -22,7 +22,7 @@ export default async function TenantPracticeAreasPage({ params }: { params: Prom
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Practice areas</h2>
+      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Practice areas</h2>
       <PracticeAreasClient slug={slug} items={items.map((p) => ({ id: p.id, title: p.title, slug: p.slug, description: p.description }))} />
     </TenantAdminShell>
   )

@@ -23,7 +23,7 @@ export default async function TenantArticlesPage({ params }: { params: Promise<{
   return (
     <MarketingShell brand={shell.brand} navigation={shell.navigation} officeDetails={shell.officeDetails} practiceAreas={shell.practiceAreas} tenantSlug={shell.tenant.slug}>
       <section className="mx-auto max-w-6xl px-6 py-16">
-        <h1 className="text-4xl font-bold text-[#14203E] dark:text-white">Articles</h1>
+        <h1 className="text-4xl font-bold text-[var(--primary)] dark:text-white">Articles</h1>
         <p className="mt-2 text-slate-600 dark:text-slate-300">Insights from {shell.brand.firm_name || shell.tenant.name}.</p>
         <TenantArticlesClient articles={articles} />
       </section>

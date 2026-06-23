@@ -57,7 +57,7 @@ export function WelcomeGreeting() {
       }`}
     >
       {/* Soft radial glow */}
-      <div className="absolute inset-0 bg-[#14203E]/40 backdrop-blur-sm" />
+      <div className="absolute inset-0 bg-[var(--primary)]/40 backdrop-blur-sm" />
 
       <div
         className={`relative flex flex-col items-center gap-3 transition-all duration-500 ${
@@ -79,7 +79,7 @@ export function WelcomeGreeting() {
         {/* Hi text */}
         <div className="text-center">
           <p className="text-4xl font-black text-white uppercase tracking-widest">Hi There</p>
-          <p className="text-[#14203E] font-bold text-sm uppercase tracking-[0.3em] mt-1">
+          <p className="text-[var(--primary)] font-bold text-sm uppercase tracking-[0.3em] mt-1">
             Welcome to Our Law Firm
           </p>
         </div>

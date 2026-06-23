@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { signOut } from 'next-auth/react'
 import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X } from 'lucide-react'
 import Link from 'next/link'
@@ -29,12 +29,23 @@ export function TenantLawyerClient({
 }) {
   const [tab, setTab] = useState<'cases' | 'password' | 'access' | 'bookings'>('cases')
 
+  useEffect(() => {
+    const tabLabels: Record<string, string> = {
+      cases: 'My Cases',
+      bookings: 'History / Bookings',
+      password: 'Change Password',
+      access: 'Access Log',
+    }
+    const tabName = tabLabels[tab] || 'Portal'
+    document.title = `${tabName} | ${advocate.name} | Advocate Portal | ${tenant.name}`
+  }, [tab, advocate.name, tenant.name])
+
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
       <header className="border-b border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f]">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <div>
-            <h1 className="text-lg font-bold text-[#14203E] dark:text-white">{advocate.name}</h1>
+            <h1 className="text-lg font-bold text-[var(--primary)] dark:text-white">{advocate.name}</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">{advocate.title} · {tenant.name}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -77,8 +88,8 @@ export function TenantLawyerClient({
                 onClick={() => setTab(t.id as any)}
                 className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
-                    ? 'bg-white text-[#14203E] shadow dark:bg-[#11151f] dark:text-white'
-                    : 'text-slate-600 hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white'
+                    ? 'bg-white text-[var(--primary)] shadow dark:bg-[#11151f] dark:text-white'
+                    : 'text-slate-600 hover:text-[var(--primary)] dark:text-slate-300 dark:hover:text-white'
                 }`}
               >
                 <Icon className="h-4 w-4" /> {t.label}
@@ -124,13 +135,13 @@ function InstantMeetingCard({ slug }: { slug: string }) {
     }
   }
   return (
-    <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-[#14203E]/15 bg-[#14203E] p-5 text-white sm:flex-row sm:items-center">
+    <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-[var(--primary)]/15 bg-[var(--primary)] p-5 text-white sm:flex-row sm:items-center">
       <div>
         <div className="text-sm font-bold">Start an instant video meeting</div>
         <div className="text-xs text-white/60">Opens a secure room you host — share the link with your client.</div>
         {error && <div className="mt-2 rounded-lg bg-rose-500/20 px-2 py-1 text-xs text-rose-200">{error}</div>}
       </div>
-      <button onClick={start} disabled={busy} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#14203E] hover:bg-white/90 disabled:opacity-60">
+      <button onClick={start} disabled={busy} className="inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[var(--primary)] hover:bg-white/90 disabled:opacity-60">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />} Start Meeting
       </button>
     </div>
@@ -162,7 +173,7 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
       <div className="flex justify-end">
         <button
           onClick={() => setModalOpen(true)}
-          className="inline-flex items-center gap-2 rounded-xl bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52]"
+          className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)]"
         >
           <Plus className="h-4 w-4" /> Add Case
         </button>
@@ -175,7 +186,7 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
           <ul className="divide-y divide-slate-200 dark:divide-white/10">
             {cases.map((c) => (
               <li key={c.id} className="py-3">
-                <p className="text-sm font-semibold text-[#14203E] dark:text-white">{c.title}</p>
+                <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{c.title}</p>
                 <p className="mt-0.5 text-xs text-slate-500">#{c.caseNumber} · {c.clientName} · {c.status}</p>
               </li>
             ))}
@@ -187,7 +198,7 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={() => setModalOpen(false)}>
           <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f]" onClick={e => e.stopPropagation()}>
             <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-lg font-bold text-[#14203E] dark:text-white">Add New Case</h2>
+              <h2 className="text-lg font-bold text-[var(--primary)] dark:text-white">Add New Case</h2>
               <button onClick={() => setModalOpen(false)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
                 <X className="h-4 w-4" />
               </button>
@@ -197,35 +208,35 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Number *</label>
-                  <input name="caseNumber" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="caseNumber" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Type</label>
-                  <input name="caseType" defaultValue="Civil" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="caseType" defaultValue="Civil" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Title / Description *</label>
-                  <input name="title" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="title" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Court *</label>
-                  <input name="court" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="court" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div className="col-span-2">
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Name *</label>
-                  <input name="clientName" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="clientName" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Email</label>
-                  <input name="clientEmail" type="email" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="clientEmail" type="email" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
                 <div>
                   <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Phone</label>
-                  <input name="clientPhone" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                  <input name="clientPhone" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
                 </div>
               </div>
               {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
-              <button disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+              <button disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
                 {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                 {busy ? 'Saving...' : 'Add Case'}
               </button>
@@ -274,11 +285,11 @@ function PasswordTab({ basePath }: { basePath: string }) {
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Change password</h3>
           <p className="mt-1 text-sm text-slate-500">At least 8 characters.</p>
         </div>
-        <PasswordInput placeholder="Current password" value={currentPassword} onChange={(e) => setCurrent(e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
-        <PasswordInput placeholder="New password" value={newPassword} onChange={(e) => setNew(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
-        <PasswordInput placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirm(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="Current password" value={currentPassword} onChange={(e) => setCurrent(e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="New password" value={newPassword} onChange={(e) => setNew(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirm(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
         {status && <div className={`rounded-lg px-3 py-2 text-sm ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{status.message}</div>}
-        <button type="submit" disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+        <button type="submit" disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
           {loading ? 'Updating…' : 'Update password'}
         </button>

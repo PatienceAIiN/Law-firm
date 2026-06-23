@@ -44,7 +44,7 @@ export function TeamSection({ content, members = [] }: TeamSectionProps) {
     <section className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[#14203E]/5 border border-slate-200 text-[#14203E] text-sm font-medium">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--primary)]/5 border border-slate-200 text-[var(--primary)] text-sm font-medium">
             <span>{section.badge || 'Our Leadership'}</span>
           </div>
 

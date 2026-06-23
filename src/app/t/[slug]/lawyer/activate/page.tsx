@@ -42,8 +42,8 @@ export default async function LawyerActivatePage({
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#FFFCF8] px-4 py-12 dark:bg-[#0b0f17]">
       <div className="w-full max-w-md rounded-2xl border border-[#F4E8D8] bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#11151f]">
-        <p className="text-xs font-semibold uppercase tracking-widest text-[#14203E]/70 dark:text-white/70">{tenant.name}</p>
-        <h1 className="mt-1 text-2xl font-bold text-[#14203E] dark:text-white">Activate your lawyer account</h1>
+        <p className="text-xs font-semibold uppercase tracking-widest text-[var(--primary)]/70 dark:text-white/70">{tenant.name}</p>
+        <h1 className="mt-1 text-2xl font-bold text-[var(--primary)] dark:text-white">Activate your lawyer account</h1>
         {status === 'ok' && advocate ? (
           <>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">

@@ -39,7 +39,7 @@ export function TenantAdminClient({
       <header className="border-b border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f]">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-4">
           <div>
-            <h1 className="text-lg font-bold text-[#14203E] dark:text-white">{tenant.name}</h1>
+            <h1 className="text-lg font-bold text-[var(--primary)] dark:text-white">{tenant.name}</h1>
             <p className="text-xs text-slate-500 dark:text-slate-400">Admin panel · {currentUser.email}</p>
           </div>
           <div className="flex items-center gap-2">
@@ -104,8 +104,8 @@ export function TenantAdminClient({
                 onClick={() => setTab(t.id as any)}
                 className={`flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium transition ${
                   active
-                    ? 'bg-white text-[#14203E] shadow dark:bg-[#11151f] dark:text-white'
-                    : 'text-slate-600 hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white'
+                    ? 'bg-white text-[var(--primary)] shadow dark:bg-[#11151f] dark:text-white'
+                    : 'text-slate-600 hover:text-[var(--primary)] dark:text-slate-300 dark:hover:text-white'
                 }`}
               >
                 <Icon className="h-4 w-4" /> {t.label}
@@ -140,9 +140,9 @@ function PracticeTab({ tenantSlug, items }: { tenantSlug: string; items: PA[] })
     <div className="space-y-4">
       <Card>
         <form onSubmit={onCreate} className="grid gap-3 sm:grid-cols-[1fr_2fr_auto]">
-          <input name="title" required placeholder="Title (e.g. Corporate Law)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="description" placeholder="Short description" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+          <input name="title" required placeholder="Title (e.g. Corporate Law)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="description" placeholder="Short description" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             <Plus className="h-4 w-4" /> Add
           </button>
         </form>
@@ -155,7 +155,7 @@ function PracticeTab({ tenantSlug, items }: { tenantSlug: string; items: PA[] })
             {items.map((p) => (
               <li key={p.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#14203E] dark:text-white">{p.title}</p>
+                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{p.title}</p>
                   <p className="text-xs text-slate-500">{p.slug}</p>
                 </div>
                 <form action={async () => { await deletePracticeArea(tenantSlug, p.id) }}>
@@ -182,9 +182,9 @@ function BlogTab({ tenantSlug, items }: { tenantSlug: string; items: BP[] }) {
     <div className="space-y-4">
       <Card>
         <form onSubmit={onCreate} className="space-y-3">
-          <input name="title" required placeholder="Article title" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <textarea name="content" rows={4} placeholder="Write your article…" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+          <input name="title" required placeholder="Article title" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <textarea name="content" rows={4} placeholder="Write your article…" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             <Plus className="h-4 w-4" /> Publish article
           </button>
         </form>
@@ -197,7 +197,7 @@ function BlogTab({ tenantSlug, items }: { tenantSlug: string; items: BP[] }) {
             {items.map((b) => (
               <li key={b.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#14203E] dark:text-white">{b.title}</p>
+                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{b.title}</p>
                   <p className="text-xs text-slate-500">{b.slug} · {b.status}</p>
                 </div>
                 <form action={async () => { await deleteBlogPost(tenantSlug, b.id) }}>
@@ -225,11 +225,11 @@ function AdvocateTab({ tenantSlug, items }: { tenantSlug: string; items: AV[] })
       <Card>
         <p className="mb-3 text-xs text-slate-500">Lawyers you create here can sign in at <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/t/{tenantSlug}/lawyer/login</code></p>
         <form onSubmit={onCreate} className="grid gap-3 sm:grid-cols-2">
-          <input name="name" required placeholder="Full name" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="title" placeholder="Title (e.g. Senior Advocate)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="email" type="email" required placeholder="Email" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="password" type="password" minLength={8} required placeholder="Initial password (≥ 8 chars)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+          <input name="name" required placeholder="Full name" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="title" placeholder="Title (e.g. Senior Advocate)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="email" type="email" required placeholder="Email" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="password" type="password" minLength={8} required placeholder="Initial password (≥ 8 chars)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             <Plus className="h-4 w-4" /> Create lawyer
           </button>
         </form>
@@ -242,7 +242,7 @@ function AdvocateTab({ tenantSlug, items }: { tenantSlug: string; items: AV[] })
             {items.map((a) => (
               <li key={a.id} className="flex items-center justify-between py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[#14203E] dark:text-white">{a.name}</p>
+                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{a.name}</p>
                   <p className="text-xs text-slate-500">{a.email} · {a.isActive ? 'active' : 'inactive'}</p>
                 </div>
                 <form action={async () => { await deleteAdvocate(tenantSlug, a.id) }}>
@@ -267,7 +267,7 @@ function InquiriesTab({ items }: { items: IQ[] }) {
           {items.map((i) => (
             <li key={i.id} className="py-4">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-semibold text-[#14203E] dark:text-white">{i.fullName} <span className="ml-2 text-xs font-normal text-slate-500">{i.email}</span></p>
+                <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{i.fullName} <span className="ml-2 text-xs font-normal text-slate-500">{i.email}</span></p>
                 <span className="text-xs text-slate-400">{new Date(i.createdAt).toLocaleDateString()}</span>
               </div>
               <p className="mt-1 text-xs font-medium text-slate-500">{i.subject}</p>

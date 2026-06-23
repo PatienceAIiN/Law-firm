@@ -40,7 +40,7 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
   const [fontFamily, setFontFamily] = useState(style.fontFamily || 'inherit')
   const [fontWeight, setFontWeight] = useState(style.fontWeight || '700')
   const [fontStyle, setFontStyle] = useState(style.fontStyle || 'normal')
-  const [color, setColor] = useState(style.color || '#14203E')
+  const [color, setColor] = useState(style.color || 'var(--primary)')
   const [letterSpacing, setLetterSpacing] = useState(style.letterSpacing || '-0.02em')
   const [logoText, setLogoText] = useState(brand.logo_text || '')
   const [firmName, setFirmName] = useState(brand.firm_name || '')
@@ -65,14 +65,14 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
         <button
           type="button"
           onClick={() => setUseImage(false)}
-          className={`flex-1 rounded-xl px-3 py-2 ${!useImage ? 'bg-white shadow text-[#14203E]' : 'text-gray-500'}`}
+          className={`flex-1 rounded-xl px-3 py-2 ${!useImage ? 'bg-white shadow text-[var(--primary)]' : 'text-gray-500'}`}
         >
           Styled Text
         </button>
         <button
           type="button"
           onClick={() => setUseImage(true)}
-          className={`flex-1 rounded-xl px-3 py-2 ${useImage ? 'bg-white shadow text-[#14203E]' : 'text-gray-500'}`}
+          className={`flex-1 rounded-xl px-3 py-2 ${useImage ? 'bg-white shadow text-[var(--primary)]' : 'text-gray-500'}`}
         >
           Upload Image
         </button>
@@ -190,7 +190,7 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
       <button
         type="submit"
         disabled={pending}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#14203E] p-5 font-black uppercase tracking-widest text-white hover:bg-black disabled:opacity-60"
+        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] p-5 font-black uppercase tracking-widest text-white hover:bg-black disabled:opacity-60"
       >
         <Save className="h-5 w-5" />
         {pending ? 'Saving…' : 'Save Identity'}

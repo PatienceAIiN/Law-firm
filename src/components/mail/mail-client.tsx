@@ -181,7 +181,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
     return (
       <div className="rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center">
         <Plug className="w-10 h-10 text-amber-500 mx-auto mb-3" />
-        <h2 className="text-lg font-bold text-[#14203E]">Gmail not configured</h2>
+        <h2 className="text-lg font-bold text-[var(--primary)]">Gmail not configured</h2>
         <p className="text-sm text-gray-600 mt-2 max-w-md mx-auto">
           Add <code className="bg-white px-1 rounded">GOOGLE_CLIENT_ID</code> and <code className="bg-white px-1 rounded">GOOGLE_CLIENT_SECRET</code> to your
           environment (Gmail API enabled, redirect URI <code className="bg-white px-1 rounded">/api/admin/mail/callback</code>), then reload.
@@ -194,9 +194,9 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
     return (
       <div className="rounded-2xl border border-[#F4E8D8] bg-[#FFFCF8] p-10 text-center">
         <Mail className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
-        <h2 className="text-lg font-bold text-[#14203E]">Connect your Gmail</h2>
+        <h2 className="text-lg font-bold text-[var(--primary)]">Connect your Gmail</h2>
         <p className="text-sm text-gray-500 mt-2 mb-5">Sign in with Google to manage email inside the portal.</p>
-        <a href={`${basePath}/connect`} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[#14203E] text-white text-sm font-semibold hover:bg-[#1d2c52]">
+        <a href={`${basePath}/connect`} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:bg-[var(--accent)]">
           <Plug className="w-4 h-4" /> Connect Gmail
         </a>
       </div>
@@ -206,8 +206,8 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
   if (postConnect || !status) {
     return (
       <div className="rounded-2xl border border-[#F4E8D8] bg-[#FFFCF8] p-10 text-center dark:border-white/10 dark:bg-white/5">
-        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#14203E] dark:text-white/80" />
-        <h2 className="text-lg font-bold text-[#14203E] dark:text-white">
+        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[var(--primary)] dark:text-white/80" />
+        <h2 className="text-lg font-bold text-[var(--primary)] dark:text-white">
           {postConnect ? 'Finishing Gmail setup…' : 'Loading mailbox…'}
         </h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
@@ -222,7 +222,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
     <div className="rounded-2xl border border-[#F4E8D8] bg-white overflow-hidden">
       {/* Top bar */}
       <div className="flex items-center justify-between gap-3 border-b border-[#F4E8D8] px-4 py-3 bg-[#FFFCF8]">
-        <div className="flex items-center gap-2 text-sm text-[#14203E]">
+        <div className="flex items-center gap-2 text-sm text-[var(--primary)]">
           <Mail className="w-4 h-4 text-[#64748b]" />
           <span className="font-semibold">{status.email}</span>
         </div>
@@ -245,7 +245,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               <ExternalLink className="w-4 h-4 text-[#64748b]" />
             </a>
           )}
-          <button onClick={() => setCompose({ to: '', subject: '', body: '' })} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#14203E] text-white text-xs font-semibold hover:bg-[#1d2c52]">
+          <button onClick={() => setCompose({ to: '', subject: '', body: '' })} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--primary)] text-white text-xs font-semibold hover:bg-[var(--accent)]">
             <Plus className="w-3.5 h-3.5" /> Compose
           </button>
         </div>
@@ -266,7 +266,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               <button
                 key={f.id}
                 onClick={() => { setFolder(f.id); setSelected(null) }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${folder === f.id ? 'bg-[#14203E] text-white' : 'text-[#475569] hover:bg-[#F6F0E8]'}`}
+                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${folder === f.id ? 'bg-[var(--primary)] text-white' : 'text-[#475569] hover:bg-[#F6F0E8]'}`}
               >
                 <Icon className="w-4 h-4" /> {f.name}
               </button>
@@ -289,12 +289,12 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               className={`w-full text-left px-4 py-3 border-b border-[#F6F0E8] hover:bg-[#FFFCF8] ${selected?.id === m.id ? 'bg-[#FFFCF8]' : ''} ${m.unread ? 'bg-blue-50/40' : ''}`}
             >
               <div className="flex items-center justify-between gap-2">
-                <span className={`text-sm truncate ${m.unread ? 'font-bold text-[#14203E]' : 'text-[#475569]'}`}>
+                <span className={`text-sm truncate ${m.unread ? 'font-bold text-[var(--primary)]' : 'text-[#475569]'}`}>
                   {parseName(folder === 'SENT' ? m.to : m.from)}
                 </span>
                 <span className="text-[10px] text-gray-400 shrink-0">{m.date ? new Date(m.date).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : ''}</span>
               </div>
-              <div className={`text-xs truncate ${m.unread ? 'font-semibold text-[#14203E]' : 'text-gray-600'}`}>{m.subject || '(no subject)'}</div>
+              <div className={`text-xs truncate ${m.unread ? 'font-semibold text-[var(--primary)]' : 'text-gray-600'}`}>{m.subject || '(no subject)'}</div>
               <div className="text-xs text-gray-400 truncate">{m.snippet}</div>
             </button>
           ))}
@@ -308,7 +308,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
             <div className="p-5">
               <div className="flex items-start justify-between gap-3 mb-3">
                 <button onClick={() => setSelected(null)} className="lg:hidden p-1.5 rounded-lg hover:bg-[#FFFCF8]"><ArrowLeft className="w-4 h-4" /></button>
-                <h2 className="text-lg font-bold text-[#14203E] flex-1">{selected.subject || '(no subject)'}</h2>
+                <h2 className="text-lg font-bold text-[var(--primary)] flex-1">{selected.subject || '(no subject)'}</h2>
                 <div className="flex items-center gap-1.5">
                   <button onClick={() => setCompose({ to: parseName(selected.from).includes('@') ? selected.from : (selected.from.match(/<(.+)>/)?.[1] || ''), subject: `Re: ${selected.subject}`, body: '' })} title="Reply" className="p-2 rounded-lg hover:bg-[#FFFCF8]"><Send className="w-4 h-4 text-[#64748b]" /></button>
                   <button onClick={() => deleteMessage(selected.id)} title="Delete" className="p-2 rounded-lg hover:bg-red-50"><Trash2 className="w-4 h-4 text-red-500" /></button>
@@ -322,7 +322,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               {selected.html ? (
                 <iframe title="email-body" className="w-full min-h-[40vh] border-0" srcDoc={selected.html} sandbox="allow-same-origin" />
               ) : (
-                <pre className="whitespace-pre-wrap text-sm text-[#14203E] font-sans">{selected.text || selected.snippet}</pre>
+                <pre className="whitespace-pre-wrap text-sm text-[var(--primary)] font-sans">{selected.text || selected.snippet}</pre>
               )}
             </div>
           )}
@@ -333,7 +333,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
       {compose && (
         <div className="fixed inset-0 z-[120] flex items-end sm:items-center justify-center bg-black/40 p-0 sm:p-4">
           <div className="bg-white w-full sm:max-w-lg sm:rounded-2xl shadow-2xl border border-[#F4E8D8] overflow-hidden">
-            <div className="flex items-center justify-between px-4 py-3 bg-[#14203E] text-white">
+            <div className="flex items-center justify-between px-4 py-3 bg-[var(--primary)] text-white">
               <span className="text-sm font-semibold">New Message</span>
               <button onClick={closeCompose}><X className="w-4 h-4" /></button>
             </div>
@@ -348,7 +348,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
                 <div className="space-y-1.5">
                   {attachments.map((a, i) => (
                     <div key={i} className="flex items-center justify-between gap-2 rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] px-3 py-1.5 text-xs">
-                      <span className="flex items-center gap-2 truncate text-[#14203E]"><Paperclip className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{a.filename}</span></span>
+                      <span className="flex items-center gap-2 truncate text-[var(--primary)]"><Paperclip className="h-3.5 w-3.5 shrink-0" /> <span className="truncate">{a.filename}</span></span>
                       <span className="flex items-center gap-2 shrink-0">
                         <span className="text-[#64748b]">{a.size > 1048576 ? `${(a.size / 1048576).toFixed(1)} MB` : `${Math.ceil(a.size / 1024)} KB`}</span>
                         <button onClick={() => setAttachments((p) => p.filter((_, idx) => idx !== i))} className="text-red-500 hover:text-red-700"><X className="h-3.5 w-3.5" /></button>
@@ -360,12 +360,12 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               )}
 
               <div className="flex items-center justify-between gap-2">
-                <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg border border-[#F4E8D8] px-3 py-2 text-sm font-medium text-[#14203E] hover:bg-[#FFFCF8]">
+                <button onClick={() => fileRef.current?.click()} className="inline-flex items-center gap-1.5 rounded-lg border border-[#F4E8D8] px-3 py-2 text-sm font-medium text-[var(--primary)] hover:bg-[#FFFCF8]">
                   <Paperclip className="h-4 w-4" /> Attach
                 </button>
                 <div className="flex items-center gap-2">
                   <button onClick={closeCompose} className="px-4 py-2 rounded-lg border border-[#F4E8D8] text-sm">Cancel</button>
-                  <button onClick={sendMail} disabled={sending || !compose.to} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[#14203E] text-white text-sm font-semibold disabled:opacity-60">
+                  <button onClick={sendMail} disabled={sending || !compose.to} className="inline-flex items-center gap-2 px-5 py-2 rounded-lg bg-[var(--primary)] text-white text-sm font-semibold disabled:opacity-60">
                     {sending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />} Send
                   </button>
                 </div>
@@ -376,7 +376,7 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
       )}
 
       {toast && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[130] bg-[#14203E] text-white text-sm px-4 py-2 rounded-xl shadow-lg">{toast}</div>
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[130] bg-[var(--primary)] text-white text-sm px-4 py-2 rounded-xl shadow-lg">{toast}</div>
       )}
     </div>
   )

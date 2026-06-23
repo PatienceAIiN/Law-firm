@@ -14,14 +14,14 @@ export default function AdminLoginPage() {
 
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-12 h-12 bg-[#14203E] rounded-lg flex items-center justify-center shadow-md">
+          <div className="w-12 h-12 bg-[var(--primary)] rounded-lg flex items-center justify-center shadow-md">
             <span className="text-white font-bold text-xl">SA</span>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-[#14203E]">
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--primary)]">
           Admin Login
         </h2>
-        <p className="mt-2 text-center text-sm text-[#14203E]/70">
+        <p className="mt-2 text-center text-sm text-[var(--primary)]/70">
           Sign in to manage your law firm website
         </p>
       </div>

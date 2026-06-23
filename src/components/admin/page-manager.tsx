@@ -137,15 +137,15 @@ export function PageManager({ initialPages }: PageManagerProps) {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm lg:flex-row lg:items-center lg:justify-between">
         <div>
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">Custom Pages</p>
-          <h2 className="mt-2 text-2xl font-black uppercase tracking-tighter text-[#14203E]">
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">Custom Pages</p>
+          <h2 className="mt-2 text-2xl font-black uppercase tracking-tighter text-[var(--primary)]">
             Navbar, footer, and page content
           </h2>
         </div>
         <button
           type="button"
           onClick={startCreate}
-          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#14203E] px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-white transition-colors hover:bg-[#F6F0E8] hover:text-[#14203E]"
+          className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-white transition-colors hover:bg-[#F6F0E8] hover:text-[var(--primary)]"
         >
           <Plus className="h-4 w-4" />
           Add More Page
@@ -157,7 +157,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
           <div key={page.id} className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">{page.slug}</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">{page.slug}</p>
                 <h3 className="mt-2 text-xl font-black uppercase tracking-tighter text-[#0f172a]">{page.title}</h3>
               </div>
               <span className="rounded-full bg-slate-100 px-3 py-1 text-[9px] font-black uppercase tracking-[0.22em] text-slate-500">
@@ -189,7 +189,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
               <button
                 type="button"
                 onClick={() => setPreviewPage(page)}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[#14203E] hover:text-[#14203E]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
               >
                 <Eye className="h-4 w-4" />
                 Preview
@@ -197,7 +197,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
               <button
                 type="button"
                 onClick={() => startEdit(page)}
-                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[#14203E] hover:text-[#14203E]"
+                className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-slate-600 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
               >
                 <Edit3 className="h-4 w-4" />
                 Edit
@@ -298,7 +298,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
               <button
                 type="button"
                 onClick={() => setPreviewPage(draft)}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-slate-600 transition-colors hover:border-[#14203E] hover:text-[#14203E]"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl border border-slate-200 px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-slate-600 transition-colors hover:border-[var(--primary)] hover:text-[var(--primary)]"
               >
                 <LayoutGrid className="h-4 w-4" />
                 Preview
@@ -306,7 +306,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
               <button
                 type="button"
                 onClick={saveDraft}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[#14203E] px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-white transition-colors hover:bg-[#F6F0E8] hover:text-[#14203E]"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-2xl bg-[var(--primary)] px-5 py-3 text-[10px] font-black uppercase tracking-[0.24em] text-white transition-colors hover:bg-[#F6F0E8] hover:text-[var(--primary)]"
               >
                 <Save className="h-4 w-4" />
                 Save Page
@@ -335,7 +335,7 @@ export function PageManager({ initialPages }: PageManagerProps) {
             )}
 
             <div className="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#14203E]">{previewPage.slug}</p>
+              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">{previewPage.slug}</p>
               <h3 className="mt-3 text-3xl font-black uppercase tracking-tighter text-[#0f172a]">{previewPage.title}</h3>
               <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600">{previewPage.summary}</p>
               <div className="mt-6 space-y-4 text-sm leading-7 text-slate-700">
