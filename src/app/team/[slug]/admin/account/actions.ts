@@ -2,9 +2,10 @@
 
 import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
-import { getTenantBySlug } from '@/lib/tenant'
+import { getTenantBySlug, invalidateTenantCache } from '@/lib/tenant'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { invalidateCache } from '@/lib/redis'
 
 export async function requestDeleteOtp(slug: string) {
   const session = await getServerSession(tenantAdminAuthOptions)
@@ -63,6 +64,10 @@ export async function verifyDeleteOtpAndSoftDelete(slug: string, otp: string) {
 
   // Soft delete the tenant
   await prisma.tenant.update({ where: { id: tenant.id }, data: { status: 'deleted' } })
+
+  // Bust Redis caches so the site blocks access immediately
+  await invalidateTenantCache(slug)
+  await invalidateCache(`tenant_shell_v2:${tenant.id}`)
   
   return { success: true }
 }

@@ -1,5 +1,5 @@
 import { prisma } from './prisma'
-import { fetchWithCache } from './redis'
+import { fetchWithCache, invalidateCache } from './redis'
 
 export type TenantRecord = {
   id: string
@@ -19,8 +19,13 @@ export async function getTenantBySlug(slug: string): Promise<TenantRecord | null
       if (!t) return null
       return { id: t.id, slug: t.slug, name: t.name, ownerEmail: t.ownerEmail, status: t.status }
     },
-    86400 // Cache for 24 hours
+    60 // short TTL — status changes must surface fast
   )
+}
+
+/** Bust the Redis cache for a tenant so status changes take effect immediately. */
+export async function invalidateTenantCache(slug: string) {
+  await invalidateCache(`tenant:${slug.toLowerCase()}`)
 }
 
 export function normalizeSlug(input: string): string {

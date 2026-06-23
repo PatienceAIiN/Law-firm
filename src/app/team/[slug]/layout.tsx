@@ -58,6 +58,24 @@ export default async function TenantLayout({
   const tenant = await getTenantBySlug(slug)
   if (!tenant) notFound()
 
+  // Block access if workspace is deleted or suspended
+  if (tenant.status === 'deleted' || tenant.status === 'suspended') {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-slate-50 p-8 text-center dark:bg-[#0b0f17]">
+        <div className="max-w-md rounded-2xl bg-white p-8 shadow-sm dark:bg-[#11151f]">
+          <h1 className="text-xl font-bold text-slate-900 dark:text-white">
+            {tenant.status === 'deleted' ? 'Workspace Removed' : 'Workspace Suspended'}
+          </h1>
+          <p className="mt-3 text-sm text-slate-500">
+            {tenant.status === 'deleted'
+              ? 'This workspace has been deleted and is no longer available.'
+              : 'This workspace has been temporarily suspended. Please contact the administrator.'}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   const tenantTheme = await getTenantSettingJson(tenant.id, 'site_theme') || {}
   const theme = { ...DEFAULT_THEME, ...tenantTheme }
 
