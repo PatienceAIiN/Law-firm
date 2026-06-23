@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState } from 'react'
 import Link from 'next/link'
 import { Loader2, CheckCircle2, ArrowRight, Mail } from 'lucide-react'
 import { requestSignupOtp, verifySignupOtp, type RequestOtpResult, type VerifyOtpResult } from './actions'
@@ -9,7 +9,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 type Step = 'form' | 'otp' | 'done'
 
 export default function SignupPage() {
-  const [pending, startTransition] = useTransition()
+  const [pending, setPending] = useState(false)
   const [step, setStep] = useState<Step>('form')
   const [email, setEmail] = useState('')
   const [devOtp, setDevOtp] = useState<string | undefined>()
@@ -18,28 +18,39 @@ export default function SignupPage() {
   const [verifyError, setVerifyError] = useState('')
   const [success, setSuccess] = useState<VerifyOtpResult & { ok: true } | null>(null)
 
-  const submitForm = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setRequestError('')
-    const fd = new FormData(e.currentTarget)
-    startTransition(async () => {
+    setPending(true)
+    try {
+      const fd = new FormData(e.currentTarget)
       const r: RequestOtpResult = await requestSignupOtp(fd)
       if (!r.ok) { setRequestError(r.error); return }
       setEmail(r.email)
       setDevOtp(r.devOtp)
       setStep('otp')
-    })
+    } catch (err: any) {
+      setRequestError(err.message || 'An unexpected error occurred')
+    } finally {
+      setPending(false)
+    }
   }
 
-  const submitOtp = (e: React.FormEvent<HTMLFormElement>) => {
+  const submitOtp = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setVerifyError('')
-    const code = otp.replace(/\D/g, '')
-    startTransition(async () => {
+    setPending(true)
+    try {
+      const code = otp.replace(/\D/g, '')
       const r = await verifySignupOtp(email, code)
       if (!r.ok) { setVerifyError(r.error); return }
-      setSuccess(r); setStep('done')
-    })
+      setSuccess(r)
+      setStep('done')
+    } catch (err: any) {
+      setVerifyError(err.message || 'An unexpected error occurred')
+    } finally {
+      setPending(false)
+    }
   }
 
   const resend = () => {
