@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     icons: {
       icon: icon,
       shortcut: icon,
-    }
+    },
+    manifest: `/t/${slug}/api/manifest?type=client`,
   }
 }
 

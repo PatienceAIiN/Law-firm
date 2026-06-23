@@ -58,6 +58,10 @@ function hexToHsl(hex: string) {
 
 export const viewport: import('next').Viewport = {
   themeColor: 'var(--primary)',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
 }
 
 export async function generateMetadata(): Promise<Metadata> {
