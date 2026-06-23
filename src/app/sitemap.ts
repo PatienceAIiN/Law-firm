@@ -92,6 +92,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     posts.forEach((post) => {
+      if (!post.tenant) return
       routes.push({
         url: `${baseUrl}/team/${post.tenant.slug}/articles/${post.slug}`,
         lastModified: post.updatedAt,
@@ -107,6 +108,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
 
     practiceAreas.forEach((pa) => {
+      if (!pa.tenant) return
       routes.push({
         url: `${baseUrl}/team/${pa.tenant.slug}/practice-areas/${pa.slug}`,
         lastModified: pa.updatedAt,
