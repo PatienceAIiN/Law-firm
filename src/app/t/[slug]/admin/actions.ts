@@ -3,6 +3,7 @@
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
 import { revalidatePath } from 'next/cache'
+import { invalidateCache } from '@/lib/redis'
 import { getServerSession } from 'next-auth/next'
 import { prisma } from '@/lib/prisma'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
@@ -24,6 +25,7 @@ export async function createPracticeArea(slug: string, formData: FormData) {
   await prisma.practiceArea.create({
     data: { title, slug: slugified, description, tenantId, isActive: true, order: 0 },
   })
+  await invalidateCache(`tenant_shell:${tenant.id}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }
@@ -31,6 +33,7 @@ export async function createPracticeArea(slug: string, formData: FormData) {
 export async function deletePracticeArea(slug: string, id: string) {
   const { tenantId } = await requireTenant(slug)
   await prisma.practiceArea.deleteMany({ where: { id, tenantId } })
+  await invalidateCache(`tenant_shell:${tenantId}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }
@@ -109,6 +112,7 @@ export async function createBlogPost(slug: string, formData: FormData) {
       status: 'PUBLISHED', publishedAt: new Date(), tenantId,
     },
   })
+  await invalidateCache(`tenant_shell:${tenant.id}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }
@@ -116,6 +120,7 @@ export async function createBlogPost(slug: string, formData: FormData) {
 export async function deleteBlogPost(slug: string, id: string) {
   const { tenantId } = await requireTenant(slug)
   await prisma.blogPost.deleteMany({ where: { id, tenantId } })
+  await invalidateCache(`tenant_shell:${tenantId}`)
   revalidatePath(`/t/${slug}/admin`)
   revalidatePath(`/t/${slug}`)
 }

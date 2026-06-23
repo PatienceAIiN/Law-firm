@@ -126,8 +126,14 @@ export default function SaasLandingPage() {
         </Link>
       </section>
 
-      <footer className="border-t border-[#F4E8D8] py-8 text-center text-xs text-slate-500 dark:border-white/10">
-        © {new Date().getFullYear()} Barrister By Patience AI · A SaaS platform for modern law firms
+      <footer className="border-t border-[#F4E8D8] py-8 dark:border-white/10">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 text-xs text-slate-500 sm:flex-row">
+          <p>© {new Date().getFullYear()} Barrister By Patience AI · A SaaS platform for modern law firms</p>
+          <div className="flex items-center gap-4">
+            <Link href="/terms" className="hover:text-slate-800 dark:hover:text-slate-300">Terms of Service</Link>
+            <Link href="/privacy" className="hover:text-slate-800 dark:hover:text-slate-300">Privacy Policy</Link>
+          </div>
+        </div>
       </footer>
     </div>
   )

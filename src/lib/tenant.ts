@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { fetchWithCache } from './redis'
 
 export type TenantRecord = {
   id: string
@@ -10,9 +11,16 @@ export type TenantRecord = {
 
 export async function getTenantBySlug(slug: string): Promise<TenantRecord | null> {
   if (!slug) return null
-  const t = await prisma.tenant.findUnique({ where: { slug: slug.toLowerCase() } })
-  if (!t) return null
-  return { id: t.id, slug: t.slug, name: t.name, ownerEmail: t.ownerEmail, status: t.status }
+  const normalizedSlug = slug.toLowerCase()
+  return fetchWithCache(
+    `tenant:${normalizedSlug}`,
+    async () => {
+      const t = await prisma.tenant.findUnique({ where: { slug: normalizedSlug } })
+      if (!t) return null
+      return { id: t.id, slug: t.slug, name: t.name, ownerEmail: t.ownerEmail, status: t.status }
+    },
+    86400 // Cache for 24 hours
+  )
 }
 
 export function normalizeSlug(input: string): string {

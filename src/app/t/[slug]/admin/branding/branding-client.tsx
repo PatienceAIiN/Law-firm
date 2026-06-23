@@ -3,8 +3,10 @@
 import { useState, useTransition } from 'react'
 import { updateBranding } from './actions'
 import { Loader2, Save } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 export function BrandingClient({ slug, theme }: { slug: string; theme: any }) {
+  const router = useRouter()
   const [pending, start] = useTransition()
   const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null)
 
@@ -15,7 +17,8 @@ export function BrandingClient({ slug, theme }: { slug: string; theme: any }) {
     start(async () => {
       try {
         await updateBranding(slug, fd)
-        setStatus({ type: 'success', message: 'Branding updated successfully. Please refresh the page to see all changes.' })
+        setStatus({ type: 'success', message: 'Branding updated successfully.' })
+        router.refresh()
       } catch (err: any) {
         setStatus({ type: 'error', message: err.message || 'Failed to update branding' })
       }

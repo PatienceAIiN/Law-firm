@@ -1,4 +1,5 @@
 import { prisma } from './prisma'
+import { fetchWithCache, invalidateCache } from './redis'
 
 // Per-tenant settings live in the global SiteSetting table under prefixed keys
 // so the legacy unique-key constraint stays intact. New tenants never collide
@@ -8,12 +9,16 @@ export function tenantKey(tenantId: string, key: string): string {
 }
 
 export async function getTenantSettingValue(tenantId: string, key: string): Promise<string | null> {
-  // Prefer the tenant-specific prefixed key; fall back to a global row whose
-  // tenantId matches (legacy default-tenant rows store keys without a prefix).
-  const prefixed = await prisma.siteSetting.findUnique({ where: { key: tenantKey(tenantId, key) } })
-  if (prefixed) return prefixed.value
-  const legacy = await prisma.siteSetting.findFirst({ where: { tenantId, key } })
-  return legacy?.value || null
+  return fetchWithCache(
+    `tenant_setting:${tenantId}:${key}`,
+    async () => {
+      const prefixed = await prisma.siteSetting.findUnique({ where: { key: tenantKey(tenantId, key) } })
+      if (prefixed) return prefixed.value
+      const legacy = await prisma.siteSetting.findFirst({ where: { tenantId, key } })
+      return legacy?.value || null
+    },
+    86400
+  )
 }
 
 export async function setTenantSettingValue(tenantId: string, key: string, value: string): Promise<void> {
@@ -23,10 +28,12 @@ export async function setTenantSettingValue(tenantId: string, key: string, value
     update: { value },
     create: { key: k, value, tenantId },
   })
+  await invalidateCache(`tenant_setting:${tenantId}:${key}`)
 }
 
 export async function deleteTenantSetting(tenantId: string, key: string): Promise<void> {
   await prisma.siteSetting.deleteMany({ where: { key: tenantKey(tenantId, key) } })
+  await invalidateCache(`tenant_setting:${tenantId}:${key}`)
 }
 
 export async function getTenantSettingJson<T = any>(tenantId: string, key: string): Promise<T | null> {
