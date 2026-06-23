@@ -10,27 +10,65 @@ const SENTENCES = [
   'Run secure video consultations from the lawyer portal. The booking link goes to both sides.',
 ]
 
-export function AnimatedHeading({ text }: { text: string }) {
-  // Animate the heading word-by-word once on mount.
-  const words = text.split(' ')
+const HEADINGS = [
+  'One platform. Every part of your practice.',
+  'Cases, clients, billing — one workspace.',
+  'Your firm. Online. In sixty seconds.',
+  'Video consults, receipts, branded site — built in.',
+  'LawAI that knows your workspace only.',
+]
+
+export function AnimatedHeading({ text }: { text?: string }) {
+  const items = text ? [text, ...HEADINGS] : HEADINGS
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const id = setInterval(() => setI((n) => (n + 1) % items.length), 3800)
+    return () => clearInterval(id)
+  }, [items.length])
+
   return (
-    <h1 className="mt-6 text-5xl font-bold leading-tight tracking-tight md:text-6xl">
-      {words.map((w, i) => (
-        <span
-          key={i}
-          className="inline-block opacity-0 [animation-fill-mode:forwards]"
-          style={{ animation: `saas-hero-word 600ms ease-out forwards`, animationDelay: `${80 * i}ms` }}
-        >
-          {w}&nbsp;
-        </span>
-      ))}
+    <div className="relative mx-auto mt-6 h-[140px] max-w-5xl md:h-[200px]">
+      {items.map((s, idx) => {
+        const active = idx === i
+        const prev = idx === (i - 1 + items.length) % items.length
+        return (
+          <h1
+            key={idx}
+            aria-hidden={!active}
+            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-center text-4xl font-bold leading-tight tracking-tight text-transparent transition-all duration-700 ease-out md:text-6xl ${
+              active
+                ? 'translate-y-0 scale-100 opacity-100 blur-0 animate-gradient-x'
+                : prev
+                  ? '-translate-y-4 scale-95 opacity-0 blur-md'
+                  : 'translate-y-6 scale-95 opacity-0 blur-md'
+            }`}
+          >
+            {s.split(' ').map((w, wi) => (
+              <span
+                key={wi}
+                className={active ? 'inline-block' : 'inline-block'}
+                style={
+                  active
+                    ? {
+                        animation: 'saas-hero-word 600ms ease-out backwards',
+                        animationDelay: `${60 * wi}ms`,
+                      }
+                    : undefined
+                }
+              >
+                {w}&nbsp;
+              </span>
+            ))}
+          </h1>
+        )
+      })}
       <style>{`
         @keyframes saas-hero-word {
           0% { opacity: 0; transform: translateY(14px); filter: blur(6px); }
           100% { opacity: 1; transform: translateY(0); filter: blur(0); }
         }
       `}</style>
-    </h1>
+    </div>
   )
 }
 
