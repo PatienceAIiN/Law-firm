@@ -38,6 +38,13 @@ services:
         sync: false
       - key: ZOOM_CLIENT_SECRET
         sync: false
+      # LiveKit (https://cloud.livekit.io)
+      - key: LIVEKIT_API_KEY
+        sync: false
+      - key: LIVEKIT_API_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_LIVEKIT_URL
+        sync: false
 
 databases:
   - name: law-firm-db

@@ -60,6 +60,20 @@
       radial-gradient(circle at top right, rgba(10, 25, 47, 0.06), transparent 26%),
       linear-gradient(180deg, #ffffff 0%, #fbfcfe 100%);
     background-attachment: fixed;
+    color: #14203E;
+  }
+  .dark body {
+    background:
+      radial-gradient(circle at top left, rgba(201, 162, 39, 0.10), transparent 28%),
+      radial-gradient(circle at top right, rgba(20, 32, 62, 0.30), transparent 26%),
+      linear-gradient(180deg, #0b0f17 0%, #11151f 100%);
+    color: #e2e8f0;
+  }
+  /* Make stray light-on-light text legible by inheriting the foreground. */
+  @media (prefers-color-scheme: light) {
+    .text-white\/50, .text-white\/40, .text-white\/30 {
+      /* leave intact — only matters where the surface is dark */
+    }
   }
 }
 

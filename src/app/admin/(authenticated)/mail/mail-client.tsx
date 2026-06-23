@@ -60,8 +60,45 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
 
   const loadStatus = useCallback(async () => {
     const res = await fetch(`${basePath}/status`)
+    if (res.status === 401) {
+      const loginPath = basePath.includes('/lawyer') ? '/lawyer/login' : '/admin/login'
+      const next = encodeURIComponent(typeof window !== 'undefined' ? window.location.pathname + window.location.search : fullPagePath)
+      if (typeof window !== 'undefined') window.location.href = `${loginPath}?callbackUrl=${next}`
+      return
+    }
     if (res.ok) setStatus(await res.json())
-  }, [])
+  }, [basePath, fullPagePath])
+
+  // If the OAuth callback just landed us here with ?connected=true, poll the
+  // status endpoint until it reports connected=true (Google may take a moment
+  // to propagate). Show a loading screen during the wait.
+  const [postConnect, setPostConnect] = useState(false)
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('connected') !== 'true') return
+    setPostConnect(true)
+    let cancelled = false
+    let attempts = 0
+    const tick = async () => {
+      attempts++
+      const res = await fetch(`${basePath}/status`).catch(() => null)
+      if (!cancelled && res?.ok) {
+        const data = await res.json()
+        setStatus(data)
+        if (data.connected) {
+          setPostConnect(false)
+          url.searchParams.delete('connected')
+          window.history.replaceState({}, '', url.toString())
+          return
+        }
+      }
+      if (!cancelled && attempts < 15) setTimeout(tick, 800)
+      else if (!cancelled) setPostConnect(false)
+    }
+    tick()
+    return () => { cancelled = true }
+  }, [basePath])
 
   const loadMessages = useCallback(async (silent = false) => {
     if (!silent) setLoading(true)
@@ -166,8 +203,18 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
     )
   }
 
-  if (!status) {
-    return <div className="flex items-center gap-2 text-gray-400 text-sm p-6"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>
+  if (postConnect || !status) {
+    return (
+      <div className="rounded-2xl border border-[#F4E8D8] bg-[#FFFCF8] p-10 text-center dark:border-white/10 dark:bg-white/5">
+        <Loader2 className="mx-auto mb-3 h-8 w-8 animate-spin text-[#14203E] dark:text-white/80" />
+        <h2 className="text-lg font-bold text-[#14203E] dark:text-white">
+          {postConnect ? 'Finishing Gmail setup…' : 'Loading mailbox…'}
+        </h2>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          {postConnect ? 'Securely authorizing your account with Google.' : 'Fetching your messages.'}
+        </p>
+      </div>
+    )
   }
 
   // ── Connected: Gmail-like 3-pane ────────────────────────────────────────────

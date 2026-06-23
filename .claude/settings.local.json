@@ -107,7 +107,8 @@
       "Bash(rm -f ~/pgdata/log)",
       "Bash(mkdir -p ~/pgdata/log)",
       "Bash(curl *)",
-      "Bash(psql *)"
+      "Bash(psql *)",
+      "Bash(git add *)"
     ]
   }
 }

@@ -11,40 +11,66 @@ datasource db {
 }
 
 // Models
+model Tenant {
+  id            String   @id @default(cuid())
+  slug          String   @unique
+  name          String
+  ownerEmail    String
+  status        String   @default("active")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  adminUsers      AdminUser[]
+  advocates       Advocate[]
+  practiceAreas   PracticeArea[]
+  blogPosts       BlogPost[]
+  siteSettings    SiteSetting[]
+  contactInquiries ContactSubmission[]
+  aboutProfile    AboutProfile?
+
+  @@map("tenants")
+}
+
 model AdminUser {
   id                    String   @id @default(cuid())
-  email                 String   @unique
+  email                 String
   name                  String
   password              String
   role                  String   @default("admin")
   isPasswordResetNeeded Boolean  @default(false)
+  tenantId              String?
+  tenant                Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
-  
+
+  @@unique([tenantId, email])
   @@map("admin_users")
 }
 
 model Advocate {
   id                String   @id @default(cuid())
-  email             String   @unique
+  email             String
   name              String
   password          String
-  title             String   // e.g., "Senior Advocate", "Advocate"
+  title             String
   bio               String?
   profileImage      String?
   phone             String?
-  expertise         String?  // JSON array or comma-separated
-  education         String?  // JSON array or comma-separated
+  expertise         String?
+  education         String?
   barCouncilId      String?
   registrationDate  DateTime?
   isActive          Boolean  @default(true)
+  tenantId          String?
+  tenant            Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
-  
+
   cases      CourtCase[]
   accessLogs AccessLog[]
   caseNotes  CaseNote[]
-  
+
+  @@unique([tenantId, email])
   @@map("advocates")
 }
 
@@ -82,44 +108,52 @@ model AboutProfile {
   title           String
   aboutContent    String
   profileImage    String?
-  socialLinks     String?  // JSON string
-  officeDetails   String?  // JSON string
+  socialLinks     String?
+  officeDetails   String?
+  tenantId        String?  @unique
+  tenant          Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
-  
+
   @@map("about_profile")
 }
 
 model PracticeArea {
   id            String   @id @default(cuid())
   title         String
-  slug          String   @unique
+  slug          String
   description   String
-  icon          String?  // Icon name from lucide
-  content       String?  // Detailed content for dedicated page
+  icon          String?
+  content       String?
   image         String?
   order         Int      @default(0)
   isActive      Boolean  @default(true)
+  tenantId      String?
+  tenant        Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
+  @@unique([tenantId, slug])
   @@map("practice_areas")
 }
 
 model BlogPost {
   id             String    @id @default(cuid())
   title          String
-  slug           String    @unique
+  slug           String
   excerpt        String?
   content        String
   coverImage     String?
-  status         String    @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  status         String    @default("DRAFT")
   seoTitle       String?
   seoDescription String?
   publishedAt    DateTime?
+  tenantId       String?
+  tenant         Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
-  
+
+  @@unique([tenantId, slug])
   @@map("blog_posts")
 }
 
@@ -131,9 +165,11 @@ model ContactSubmission {
   subject      String
   message      String
   serviceType  String?
-  status       String   @default("NEW") // NEW, READ, REPLIED, ARCHIVED
+  status       String   @default("NEW")
+  tenantId     String?
+  tenant       Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt    DateTime @default(now())
-  
+
   @@map("contact_submissions")
 }
 
@@ -141,11 +177,12 @@ model AvailabilityDay {
   id        String   @id @default(cuid())
   date      DateTime
   isActive  Boolean  @default(true)
+  tenantId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   slots     AvailabilitySlot[]
-  
+
   @@map("availability_days")
 }
 
@@ -177,14 +214,15 @@ model ConsultationBooking {
   phone         String
   subject       String
   notes         String?
-  meetingMode   String   // PHYSICAL, GOOGLE_MEET, ZOOM
+  meetingMode   String
   meetingLink   String?
-  status        String   @default("PENDING") // PENDING, CONFIRMED, CANCELLED, COMPLETED
+  status        String   @default("PENDING")
+  tenantId      String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
-  
+
   slot          AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  
+
   @@map("consultation_bookings")
 }
 
@@ -209,9 +247,10 @@ model Testimonial {
   image     String?
   isActive  Boolean  @default(true)
   order     Int      @default(0)
+  tenantId  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@map("testimonials")
 }
 
@@ -230,7 +269,9 @@ model Faq {
 model SiteSetting {
   id        String   @id @default(cuid())
   key       String   @unique
-  value     String   // JSON string for flexible settings
+  value     String
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -259,6 +300,7 @@ model TeamMember {
   linkedin       String?
   order          Int      @default(0)
   isActive       Boolean  @default(true)
+  tenantId       String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
@@ -300,9 +342,10 @@ model CourtCase {
   courtAppearanceDate DateTime?
   description     String?  // Case summary
   photoUrl        String?  // Case cover photo
-  emailControl    String   @default("NONE") // NONE, BILL_ONLY, DETAILS_ONLY, BOTH
+  emailControl    String   @default("NONE")
   sendReminder    Boolean  @default(true)
   reminderSentOn  DateTime?
+  tenantId        String?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -363,15 +406,16 @@ model Receipt {
   clientEmail String
   advocateId  String?
   createdByName String
-  items       String   // JSON array of { description, qty, rate, amount }
+  items       String
   currency    String   @default("INR")
   subtotal    Float    @default(0)
   taxRate     Float    @default(0)
   taxAmount   Float    @default(0)
   total       Float    @default(0)
   notes       String?
-  status      String   @default("DRAFT") // DRAFT, SENT
+  status      String   @default("DRAFT")
   sentAt      DateTime?
+  tenantId    String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
