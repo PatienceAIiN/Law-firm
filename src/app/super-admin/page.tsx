@@ -5,7 +5,7 @@ import { ExternalLink, ShieldCheck, Users, Mail, Briefcase, FileText, Activity, 
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { isSuperAdmin } from '@/lib/super-admin'
-import { setTenantStatus, deleteTenant } from './actions'
+import { setTenantStatus, deleteTenant, restoreTenant } from './actions'
 import { SuperAdminLogoutButton } from './logout-button'
 
 export const dynamic = 'force-dynamic'
@@ -59,6 +59,9 @@ export default async function SuperAdminDashboard() {
     select: { id: true, fullName: true, email: true, subject: true, createdAt: true, tenantId: true },
   })
   const tenantById = new Map(tenants.map((t) => [t.id, t]))
+  
+  const activeStats = tenantStats.filter(s => s.tenant.status !== 'deleted')
+  const deletedStats = tenantStats.filter(s => s.tenant.status === 'deleted')
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
@@ -81,7 +84,7 @@ export default async function SuperAdminDashboard() {
       <main className="mx-auto max-w-6xl space-y-8 px-4 py-8">
         {/* Tenants */}
         <section>
-          <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">Tenants ({tenants.length})</h2>
+          <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">Active Tenants ({activeStats.length})</h2>
           <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#11151f]">
             <table className="min-w-full text-sm">
               <thead className="bg-slate-50 text-xs uppercase text-slate-500 dark:bg-white/5">
@@ -100,7 +103,7 @@ export default async function SuperAdminDashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200 dark:divide-white/10">
-                {tenantStats.map(({ tenant, adminCount, advocateCount, paCount, blogCount, inqCount, lastLogin }) => (
+                {activeStats.map(({ tenant, adminCount, advocateCount, paCount, blogCount, inqCount, lastLogin }) => (
                   <tr key={tenant.id}>
                     <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">{tenant.name}</td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-500">{tenant.slug}</td>
@@ -132,10 +135,10 @@ export default async function SuperAdminDashboard() {
                           </button>
                         </form>
                         {tenant.slug !== 'default' && (
-                          <form action={async () => { 'use server'; await deleteTenant(tenant.id) }}>
+                          <form action={async () => { 'use server'; await setTenantStatus(tenant.id, 'deleted') }}>
                             <button
                               type="submit"
-                              title="Delete tenant and all its data"
+                              title="Delete tenant"
                               className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50"
                             >
                               <Trash2 className="h-3.5 w-3.5" />
@@ -146,13 +149,63 @@ export default async function SuperAdminDashboard() {
                     </td>
                   </tr>
                 ))}
-                {tenantStats.length === 0 && (
-                  <tr><td colSpan={11} className="px-4 py-8 text-center text-sm text-slate-500">No tenants yet.</td></tr>
+                {activeStats.length === 0 && (
+                  <tr><td colSpan={11} className="px-4 py-8 text-center text-sm text-slate-500">No active tenants.</td></tr>
                 )}
               </tbody>
             </table>
           </div>
         </section>
+
+        {deletedStats.length > 0 && (
+          <section>
+            <h2 className="mb-4 text-base font-bold text-slate-900 dark:text-white">Deleted Workspaces ({deletedStats.length})</h2>
+            <div className="overflow-x-auto rounded-2xl border border-rose-200 bg-rose-50/50 shadow-sm dark:border-rose-900/30 dark:bg-rose-900/10">
+              <table className="min-w-full text-sm">
+                <thead className="bg-rose-100/50 text-xs uppercase text-rose-700 dark:bg-rose-900/20 dark:text-rose-400">
+                  <tr>
+                    <th className="px-4 py-3 text-left">Name</th>
+                    <th className="px-4 py-3 text-left">Slug</th>
+                    <th className="px-4 py-3 text-left">Owner</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-rose-200 dark:divide-rose-900/30">
+                  {deletedStats.map(({ tenant }) => (
+                    <tr key={tenant.id}>
+                      <td className="px-4 py-3 font-semibold text-rose-900 dark:text-rose-300">{tenant.name}</td>
+                      <td className="px-4 py-3 font-mono text-xs text-rose-700 dark:text-rose-400">{tenant.slug}</td>
+                      <td className="px-4 py-3 text-xs text-rose-700 dark:text-rose-400">{tenant.ownerEmail}</td>
+                      <td className="px-4 py-3 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <form action={async () => { 'use server'; await restoreTenant(tenant.id) }}>
+                            <button
+                              type="submit"
+                              title="Restore workspace"
+                              className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-3 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:hover:bg-emerald-900/50"
+                            >
+                              Restore
+                            </button>
+                          </form>
+                          <form action={async () => { 'use server'; await deleteTenant(tenant.id) }}>
+                            <button
+                              type="submit"
+                              title="Permanently Delete"
+                              className="inline-flex items-center gap-1 rounded-md bg-rose-100 px-3 py-1.5 text-xs font-medium text-rose-700 hover:bg-rose-200 dark:bg-rose-900/30 dark:text-rose-400 dark:hover:bg-rose-900/50"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                              Permanently Delete
+                            </button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
 
         {/* Activity */}
         <section className="grid gap-6 md:grid-cols-2">

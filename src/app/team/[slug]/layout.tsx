@@ -11,7 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const tenantTheme = await getTenantSettingJson(tenant.id, 'site_theme') || {}
   const theme = { ...DEFAULT_THEME, ...tenantTheme }
   
-  const icon = theme.faviconUrl || '/favicon.png'
+  const icon = theme.logoUrl || '/favicon.png'
   
   return {
     title: {

@@ -26,7 +26,6 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     borderRadius: theme.borderRadius || DEFAULTS.borderRadius,
     fontFamily: theme.fontFamily || DEFAULTS.fontFamily,
     logoUrl: theme.logoUrl || '',
-    faviconUrl: theme.faviconUrl || '',
   }
 
   const [primaryColor, setPrimary] = useState(initial.primaryColor)
@@ -35,7 +34,6 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
   const [borderRadius, setRadius] = useState(initial.borderRadius)
   const [fontFamily, setFont] = useState(initial.fontFamily)
   const [logoUrl, setLogoUrl] = useState(initial.logoUrl)
-  const [faviconUrl, setFavicon] = useState(initial.faviconUrl)
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
 
@@ -52,10 +50,7 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     try {
       const fd = new FormData(); fd.set('file', file)
       const url = await uploadImage(fd)
-      // Use the same PNG/SVG for both logo and favicon. PNGs work as favicons
-      // in all modern browsers; saves having to ship sharp for conversion.
       setLogoUrl(url)
-      setFavicon(url)
     } catch (err: any) { setUploadError(err?.message || 'Upload failed') }
     finally { setUploading(false); e.target.value = '' }
   }
@@ -67,7 +62,6 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     setRadius(initial.borderRadius)
     setFont(initial.fontFamily)
     setLogoUrl(initial.logoUrl)
-    setFavicon(initial.faviconUrl)
     setStatus(null)
   }
 
@@ -83,7 +77,6 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     fd.set('borderRadius', borderRadius)
     fd.set('fontFamily', fontFamily)
     fd.set('logoUrl', logoUrl)
-    fd.set('faviconUrl', faviconUrl)
     // Site title always reflects the firm name; no separate field.
     fd.set('siteTitle', firmName)
     start(async () => {
@@ -142,13 +135,13 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
         </div>
 
         <div className="rounded-xl border border-dashed border-slate-300 p-4">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Logo &amp; favicon (one PNG/SVG, ≤ 2 MB)</label>
-          <p className="mb-3 text-xs text-slate-500">Upload one image — we use it as both your logo and favicon (browsers accept PNG favicons).</p>
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Logo (PNG/SVG, ≤ 2 MB)</label>
+          <p className="mb-3 text-xs text-slate-500">Upload your logo. We will automatically use it as your browser icon too.</p>
           {logoUrl ? (
             <div className="flex items-center gap-3">
               <img src={logoUrl} alt="Logo" className="h-12 w-12 rounded-md border border-slate-200 object-contain" />
               <code className="truncate text-xs text-slate-500">{logoUrl}</code>
-              <button type="button" onClick={() => { setLogoUrl(''); setFavicon('') }} className="ml-auto inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50">
+              <button type="button" onClick={() => { setLogoUrl('') }} className="ml-auto inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50">
                 <X className="h-3 w-3" /> Remove
               </button>
             </div>

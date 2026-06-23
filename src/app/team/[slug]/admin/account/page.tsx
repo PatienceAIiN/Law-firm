@@ -4,6 +4,7 @@ import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { getTenantBySlug } from '@/lib/tenant'
 import { TenantAdminShell } from '@/components/tenant/admin-shell'
 import { ChangePasswordCard } from './change-password-card'
+import { DeleteAccountCard } from './delete-account-card'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,6 +27,7 @@ export default async function TenantAdminAccountPage({ params }: { params: Promi
       <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Account</h2>
       <p className="mb-4 text-sm text-slate-500">Signed in as <strong>{currentUser.email}</strong>. Change your password below.</p>
       <ChangePasswordCard slug={slug} />
+      <DeleteAccountCard slug={slug} tenantName={tenant.name} />
     </TenantAdminShell>
   )
 }

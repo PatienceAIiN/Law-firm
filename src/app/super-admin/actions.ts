@@ -11,9 +11,9 @@ async function requireSuperAdmin() {
   if (!isSuperAdmin(session?.user?.email)) throw new Error('Unauthorized')
 }
 
-export async function setTenantStatus(tenantId: string, status: 'active' | 'suspended') {
+export async function setTenantStatus(tenantId: string, status: 'active' | 'suspended' | 'deleted') {
   await requireSuperAdmin()
-  if (!['active', 'suspended'].includes(status)) throw new Error('Invalid status')
+  if (!['active', 'suspended', 'deleted'].includes(status)) throw new Error('Invalid status')
   await prisma.tenant.update({ where: { id: tenantId }, data: { status } })
   revalidatePath('/super-admin')
 }
@@ -22,5 +22,11 @@ export async function deleteTenant(tenantId: string) {
   await requireSuperAdmin()
   // Cascade is configured on Tenant relations so child rows go with it.
   await prisma.tenant.delete({ where: { id: tenantId } })
+  revalidatePath('/super-admin')
+}
+
+export async function restoreTenant(tenantId: string) {
+  await requireSuperAdmin()
+  await prisma.tenant.update({ where: { id: tenantId }, data: { status: 'active' } })
   revalidatePath('/super-admin')
 }

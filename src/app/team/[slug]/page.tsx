@@ -12,7 +12,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params
   const shell = await loadTenantPublicShell(slug)
   const title = shell.brand?.firm_full_name || shell.brand?.firm_name || shell.tenant.name
-  return { title }
+  // Use the tenant's uploaded logo as the browser-tab icon when set.
+  const icon = shell.brand?.logo_image_url || undefined
+  return icon ? { title: { absolute: title }, icons: { icon, shortcut: icon, apple: icon } } : { title: { absolute: title } }
 }
 
 export default async function TenantHomePage({ params }: { params: Promise<{ slug: string }> }) {
