@@ -112,8 +112,11 @@ export default async function SuperAdminDashboard() {
                     <td className="px-4 py-3 text-xs text-slate-500">{lastLogin ? new Date(lastLogin).toLocaleString() : '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Link href={`/team/${tenant.slug}`} target="_blank" className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary hover:bg-slate-100 dark:text-white dark:hover:bg-white/10">
+                        <Link href={`/team/${tenant.slug}`} target="_blank" className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary hover:bg-slate-100 dark:text-white dark:hover:bg-white/10" title="View public site">
                           <ExternalLink className="h-3.5 w-3.5" /> Site
+                        </Link>
+                        <Link href={`/team/${tenant.slug}/admin/login`} target="_blank" className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30" title="Go to workspace admin">
+                          <ExternalLink className="h-3.5 w-3.5" /> Admin
                         </Link>
                         <form action={async () => { 'use server'; await setTenantStatus(tenant.id, tenant.status === 'active' ? 'suspended' : 'active') }}>
                           <button
