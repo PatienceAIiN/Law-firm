@@ -16,7 +16,7 @@ export const advocateAuthOptions: NextAuthOptions = {
           return null
         }
 
-        const advocate = await prisma.advocate.findUnique({
+        const advocate = await prisma.advocate.findFirst({
           where: {
             email: credentials.email
           }

@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     if (!email) return NextResponse.json({ error: 'Email is required' }, { status: 400 })
 
     // Check if admin user exists with this email
-    const admin = await prisma.adminUser.findUnique({ where: { email } })
+    const admin = await prisma.adminUser.findFirst({ where: { email } })
     if (!admin) {
       // Don't reveal whether email exists — return success anyway
       return NextResponse.json({ success: true })

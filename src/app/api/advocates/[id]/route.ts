@@ -63,7 +63,7 @@ export async function PUT(
 
     // Check if email is already taken by another advocate
     if (data.email) {
-      const existing = await prisma.advocate.findUnique({
+      const existing = await prisma.advocate.findFirst({
         where: { email: data.email },
       })
 

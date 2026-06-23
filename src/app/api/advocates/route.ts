@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if email already exists
-    const existingAdvocate = await prisma.advocate.findUnique({
+    const existingAdvocate = await prisma.advocate.findFirst({
       where: { email: data.email },
     })
 
