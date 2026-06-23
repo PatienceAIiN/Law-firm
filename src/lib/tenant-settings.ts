@@ -17,7 +17,7 @@ export async function getTenantSettingValue(tenantId: string, key: string): Prom
       const legacy = await prisma.siteSetting.findFirst({ where: { tenantId, key } })
       return legacy?.value || null
     },
-    86400
+    300
   )
 }
 

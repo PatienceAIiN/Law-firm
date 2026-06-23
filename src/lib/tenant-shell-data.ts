@@ -49,6 +49,6 @@ export async function loadTenantPublicShell(slug: string): Promise<TenantPublicD
       ]
       return { tenant, brand: brandData, officeDetails, navigation, practiceAreas }
     },
-    3600 // 1 hour cache
+    60 // short TTL — branding updates need to surface quickly
   )
 }

@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { getTenantBySlug } from '@/lib/tenant'
 import { setTenantSettingJson } from '@/lib/tenant-settings'
+import { invalidateCache } from '@/lib/redis'
 import { revalidatePath } from 'next/cache'
 
 export async function updateBranding(slug: string, formData: FormData) {
@@ -14,6 +15,8 @@ export async function updateBranding(slug: string, formData: FormData) {
   const tenant = await getTenantBySlug(slug)
   if (!tenant) throw new Error('Tenant not found')
 
+  const logoUrl = (formData.get('logoUrl') as string) || ''
+
   const themeConfig = {
     primaryColor: formData.get('primaryColor') as string,
     secondaryColor: formData.get('secondaryColor') as string,
@@ -22,12 +25,17 @@ export async function updateBranding(slug: string, formData: FormData) {
     footerColor: formData.get('footerColor') as string,
     borderRadius: formData.get('borderRadius') as string,
     fontFamily: formData.get('fontFamily') as string,
-    logoUrl: formData.get('logoUrl') as string,
-    faviconUrl: formData.get('faviconUrl') as string,
+    logoUrl,
+    faviconUrl: logoUrl, // keep in sync — favicon mirrors the logo
     siteTitle: formData.get('siteTitle') as string,
   }
 
   await setTenantSettingJson(tenant.id, 'site_theme', themeConfig)
 
+  // Bust the Redis shell cache so the public site picks up the new logo/favicon
+  await invalidateCache(`tenant_shell_v2:${tenant.id}`)
+
+  // Bust all cached pages under this tenant so the new logo/favicon appears instantly
   revalidatePath(`/team/${slug}`, 'layout')
+  revalidatePath(`/team/${slug}`)
 }

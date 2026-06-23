@@ -125,6 +125,9 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
           <nav className="flex items-center gap-6 text-[13px]">
             <Link href={termsHref} className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white">Terms of Service</Link>
             <Link href={privacyHref} className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white">Privacy Policy</Link>
+            {tenantSlug && (
+              <Link href={`/team/${tenantSlug}/admin/login`} className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white">Admin Panel</Link>
+            )}
             <a
               href="https://patienceai.in"
               target="_blank"
