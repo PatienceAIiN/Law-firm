@@ -11,6 +11,45 @@ datasource db {
 }
 
 // Models
+model AdvocateActivationToken {
+  id          String   @id @default(cuid())
+  advocateId  String
+  token       String   @unique
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([advocateId])
+  @@map("advocate_activation_tokens")
+}
+
+model WorkspaceOpenOtp {
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("workspace_open_otps")
+}
+
+model SignupOtp {
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  payload   String
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("signup_otps")
+}
+
 model Tenant {
   id            String   @id @default(cuid())
   slug          String   @unique

@@ -108,7 +108,11 @@
       "Bash(mkdir -p ~/pgdata/log)",
       "Bash(curl *)",
       "Bash(psql *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)",
+      "Bash(grep -rn \"practiceHref\\\\|/practice-areas/\\\\${.*slug\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
+      "Bash(grep *)"
     ]
   }
 }

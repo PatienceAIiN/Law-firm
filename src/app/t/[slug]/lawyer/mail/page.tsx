@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { ArrowLeft } from 'lucide-react'
-import { MailClient } from '@/app/admin/(authenticated)/mail/mail-client'
+import { MailClient } from '@/components/mail/mail-client'
 import { getTenantBySlug } from '@/lib/tenant'
 
 export const dynamic = 'force-dynamic'

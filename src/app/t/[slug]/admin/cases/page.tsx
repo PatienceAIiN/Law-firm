@@ -1,10 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getServerSession } from 'next-auth/next'
-import { ArrowLeft } from 'lucide-react'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { getTenantBySlug } from '@/lib/tenant'
 import { prisma } from '@/lib/prisma'
+import { TenantAdminShell } from '@/components/tenant/admin-shell'
 import { TenantCasesClient } from './cases-client'
 
 export const dynamic = 'force-dynamic'
@@ -26,14 +25,11 @@ export default async function TenantCasesPage({ params }: { params: Promise<{ sl
     prisma.advocate.findMany({ where: { tenantId: tenant.id, isActive: true }, select: { id: true, name: true, email: true } }),
   ])
 
+  const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
-      <div className="mx-auto max-w-6xl px-4 py-6">
-        <Link href={`/t/${slug}/admin`} className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
-          <ArrowLeft className="h-4 w-4" /> Back to admin
-        </Link>
-        <h1 className="mb-6 text-2xl font-black text-slate-900 dark:text-white">{tenant.name} · Cases</h1>
-        <TenantCasesClient
+    <TenantAdminShell tenant={tenant} currentUser={currentUser}>
+      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Cases</h2>
+      <TenantCasesClient
           slug={slug}
           cases={cases.map((c) => ({
             id: c.id,
@@ -47,7 +43,6 @@ export default async function TenantCasesPage({ params }: { params: Promise<{ sl
           }))}
           advocates={advocates}
         />
-      </div>
-    </div>
+    </TenantAdminShell>
   )
 }

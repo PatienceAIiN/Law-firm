@@ -51,8 +51,22 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   }).catch((e) => ({ __err: e?.message || 'Booking failed' } as any))
   if ((booking as any).__err) return NextResponse.json({ error: (booking as any).__err }, { status: 409 })
 
+  const bookingId = (booking as any).id as string
   const slotDateLabel = slot.day.date.toISOString().slice(0, 10)
   const slotTimeLabel = `${slot.startTime.toISOString().slice(11, 16)} - ${slot.endTime.toISOString().slice(11, 16)}`
+
+  // For virtual modes, generate a secure meeting URL keyed by booking id and
+  // persist it so both parties get the same link.
+  const isVirtual = meetingMode !== 'PHYSICAL'
+  let meetingLink: string | null = null
+  if (isVirtual) {
+    const base = (process.env.NEXTAUTH_URL || 'http://localhost:3001').replace(/\/$/, '')
+    meetingLink = `${base}/meeting/${bookingId}`
+    await prisma.consultationBooking.update({
+      where: { id: bookingId },
+      data: { meetingLink },
+    })
+  }
 
   // Confirm to the client and notify the tenant owner. Errors are swallowed —
   // booking still succeeds even if email delivery fails.
@@ -62,18 +76,24 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
       subject: `Consultation confirmed — ${slotDateLabel} ${slotTimeLabel}`,
       htmlContent: generateBookingConfirmationEmail({
         name, email, date: slotDateLabel, time: slotTimeLabel, meetingMode,
+        meetingLink: meetingLink || undefined,
       }),
-      textContent: `Your consultation is confirmed for ${slotDateLabel} at ${slotTimeLabel}.`,
+      textContent: meetingLink
+        ? `Your consultation is confirmed for ${slotDateLabel} at ${slotTimeLabel}.\nJoin link: ${meetingLink}`
+        : `Your consultation is confirmed for ${slotDateLabel} at ${slotTimeLabel}.`,
     }),
     sendEmail({
       to: tenant.ownerEmail,
       subject: `New booking by ${name} — ${slotDateLabel} ${slotTimeLabel}`,
       htmlContent: generateBookingNotificationEmail({
         name, email, phone, date: slotDateLabel, time: slotTimeLabel, meetingMode, subject,
+        meetingLink: meetingLink || undefined,
       }),
-      textContent: `${name} booked ${slotDateLabel} at ${slotTimeLabel}.`,
+      textContent: meetingLink
+        ? `${name} booked ${slotDateLabel} at ${slotTimeLabel}.\nHost link: ${meetingLink}?admin=1`
+        : `${name} booked ${slotDateLabel} at ${slotTimeLabel}.`,
     }),
   ])
 
-  return NextResponse.json({ ok: true, bookingId: (booking as any).id })
+  return NextResponse.json({ ok: true, bookingId, meetingLink: meetingLink || null })
 }

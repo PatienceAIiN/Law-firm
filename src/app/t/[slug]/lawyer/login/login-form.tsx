@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import { PasswordInput } from '@/components/ui/password-input'
 
 export function TenantLawyerLoginForm({ slug }: { slug: string }) {
   const [email, setEmail] = useState('')
@@ -36,7 +37,7 @@ export function TenantLawyerLoginForm({ slug }: { slug: string }) {
       </label>
       <label className="block text-sm">
         <span className="text-slate-700">Password</span>
-        <input type="password" required value={password} onChange={(e) => setPassword(e.target.value)}
+        <PasswordInput required value={password} onChange={(e) => setPassword(e.target.value)}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20" />
       </label>
       {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}

@@ -17,6 +17,22 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      { source: '/about', destination: '/', permanent: false },
+      { source: '/contact', destination: '/', permanent: false },
+      { source: '/consultation', destination: '/', permanent: false },
+      { source: '/blog', destination: '/', permanent: false },
+      { source: '/blog/:slug*', destination: '/', permanent: false },
+      { source: '/practice-areas', destination: '/', permanent: false },
+      { source: '/practice-areas/:slug*', destination: '/', permanent: false },
+      { source: '/terms', destination: '/', permanent: false },
+      { source: '/privacy', destination: '/', permanent: false },
+      { source: '/testimonial-request/:rest*', destination: '/', permanent: false },
+      { source: '/lawyer', destination: '/', permanent: false },
+      { source: '/lawyer/:rest*', destination: '/', permanent: false },
+    ];
+  },
   async headers() {
     return [
       {

@@ -26,9 +26,7 @@ export default function SaasLandingPage() {
         <Link href="/" className="text-xl font-bold tracking-tight">Patience<span className="text-[#c9a227]">AI</span></Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <a href="#open" className="hidden rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10 sm:inline-flex">
-            Open workspace
-          </a>
+          <OpenWorkspace />
           <Link href="/signup" className="rounded-xl bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52]">
             Get started
           </Link>
@@ -66,9 +64,6 @@ export default function SaasLandingPage() {
           <p className="mt-4 text-xs text-slate-500 dark:text-slate-400">
             Free during preview · No credit card · Set up in under a minute
           </p>
-          <div id="open" className="scroll-mt-20">
-            <OpenWorkspace variant="card" />
-          </div>
         </div>
       </section>
 

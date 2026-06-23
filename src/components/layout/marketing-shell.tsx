@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { LawAiBubble } from '@/components/chat/law-ai-bubble'
-import { ConsultationModal } from '@/components/consultation-modal'
 import { WelcomeGreeting } from '@/components/welcome-greeting'
 import { Header } from '@/components/layout/header'
 import { Footer } from '@/components/layout/footer'
@@ -15,6 +14,7 @@ interface MarketingShellProps {
   footerConfig?: any
   officeDetails?: any
   practiceAreas?: any[]
+  tenantSlug?: string
 }
 
 export function MarketingShell({
@@ -24,23 +24,20 @@ export function MarketingShell({
   footerConfig,
   officeDetails,
   practiceAreas,
+  tenantSlug,
 }: MarketingShellProps) {
-  const [consultationOpen, setConsultationOpen] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
   const visibleNavigation = (navigation || []).filter((item) => item?.href !== '/blog' && item?.name !== 'Blog')
+  const bookHref = tenantSlug ? `/t/${tenantSlug}/book` : '/'
+  const contactHref = tenantSlug ? `/t/${tenantSlug}/contact` : '/'
 
-  const openConsultation = useCallback(() => setConsultationOpen(true), [])
-  const closeConsultation = useCallback(() => setConsultationOpen(false), [])
+  const openConsultation = useCallback(() => {
+    window.location.href = bookHref
+  }, [bookHref])
   const openContact = useCallback(() => {
-    window.location.href = '/contact'
-  }, [])
-
-  useEffect(() => {
-    const handler = () => setConsultationOpen(true)
-    window.addEventListener('open:consultation', handler)
-    return () => window.removeEventListener('open:consultation', handler)
-  }, [])
+    window.location.href = contactHref
+  }, [contactHref])
 
   useEffect(() => {
     setMobileOpen(false)
@@ -52,6 +49,7 @@ export function MarketingShell({
         brand={brand}
         navigation={visibleNavigation}
         contact={officeDetails}
+        tenantSlug={tenantSlug}
         mobileOpen={mobileOpen}
         onToggleMobile={() => setMobileOpen((value) => !value)}
       />
@@ -77,6 +75,7 @@ export function MarketingShell({
             practiceAreas={practiceAreas}
             footerConfig={footerConfig}
             officeDetails={officeDetails}
+            tenantSlug={tenantSlug}
           />
         </div>
       </main>
@@ -86,11 +85,6 @@ export function MarketingShell({
       <LawAiBubble
         onOpenConsultation={openConsultation}
         onOpenContact={openContact}
-      />
-
-      <ConsultationModal
-        open={consultationOpen}
-        onClose={closeConsultation}
       />
     </div>
   )

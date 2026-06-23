@@ -5,6 +5,7 @@ import { signOut } from 'next-auth/react'
 import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video } from 'lucide-react'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { PasswordInput } from '@/components/ui/password-input'
 
 type T = { id: string; slug: string; name: string }
 type Adv = { id: string; name: string; email: string; title: string; bio: string | null; phone: string | null }
@@ -185,9 +186,9 @@ function PasswordTab({ basePath }: { basePath: string }) {
           <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Change password</h3>
           <p className="mt-1 text-sm text-slate-500">At least 8 characters.</p>
         </div>
-        <input type="password" placeholder="Current password" value={currentPassword} onChange={(e) => setCurrent(e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
-        <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNew(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
-        <input type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirm(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="Current password" value={currentPassword} onChange={(e) => setCurrent(e.target.value)} required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="New password" value={newPassword} onChange={(e) => setNew(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <PasswordInput placeholder="Confirm new password" value={confirmPassword} onChange={(e) => setConfirm(e.target.value)} required minLength={8} className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[#14203E] focus:outline-none dark:border-white/15 dark:bg-white/5 dark:text-white" />
         {status && <div className={`rounded-lg px-3 py-2 text-sm ${status.type === 'success' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'}`}>{status.message}</div>}
         <button type="submit" disabled={loading} className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
           {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

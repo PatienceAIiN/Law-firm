@@ -8,13 +8,40 @@ interface FooterProps {
   practiceAreas?: any[]
   footerConfig?: any
   officeDetails?: any
+  tenantSlug?: string
 }
 
-export function Footer({ brand, navigation, practiceAreas, officeDetails }: FooterProps) {
+const DEFAULT_FOOTER_NAV = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Practice Areas', href: '/practice-areas' },
+  { label: 'Articles', href: '/blog' },
+  { label: 'Contact', href: '/contact' },
+]
+
+const DEFAULT_PRACTICE = [
+  { name: 'Corporate Law' },
+  { name: 'Civil Litigation' },
+  { name: 'Criminal Defense' },
+  { name: 'Family Law' },
+]
+
+export function Footer({ brand, navigation, practiceAreas, officeDetails, tenantSlug }: FooterProps) {
   const firmName = brand?.firm_full_name || brand?.firm_name || 'Logo'
   const tagline = brand?.tagline || brand?.description
+  const homeHref = tenantSlug ? `/t/${tenantSlug}` : '/'
+  const termsHref = tenantSlug ? `/t/${tenantSlug}/terms` : '/terms'
+  const privacyHref = tenantSlug ? `/t/${tenantSlug}/privacy` : '/privacy'
+
+  // Within a tenant workspace, default footer links stay inside the tenant.
+  const fallbackNav = tenantSlug
+    ? DEFAULT_FOOTER_NAV.map((n) => ({ ...n, href: n.href === '/' ? homeHref : `${homeHref}${n.href}` }))
+    : DEFAULT_FOOTER_NAV
+
   const navLinks = (navigation || []).slice(0, 6)
+  const finalNav = navLinks.length ? navLinks : fallbackNav
   const areas = (practiceAreas || []).slice(0, 6)
+  const finalAreas = areas.length ? areas : DEFAULT_PRACTICE
 
   return (
     <footer className="relative left-1/2 right-1/2 -mx-[50vw] w-screen border-t border-[#F4E8D8] bg-[#FFFCF8] transition-colors dark:border-white/10 dark:bg-[#11151f]">
@@ -22,7 +49,7 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails }: Foot
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand + contact */}
           <div className="lg:col-span-1">
-            <BrandMark brand={brand} imageHeight={36} className="text-[20px]" />
+            <BrandMark brand={brand} href={homeHref} imageHeight={36} className="text-[20px]" />
             {tagline && (
               <p className="mt-3 text-[13px] leading-relaxed text-[#14203E]/60 dark:text-white/50">
                 {tagline}
@@ -37,19 +64,13 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails }: Foot
           <div>
             <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#14203E]/70 dark:text-white/60">Explore</h4>
             <ul className="mt-4 space-y-2.5 text-[14px]">
-              {(navLinks.length ? navLinks : [
-                { label: 'Home', href: '/' },
-                { label: 'About', href: '/about' },
-                { label: 'Practice Areas', href: '/practice-areas' },
-                { label: 'Articles', href: '/blog' },
-                { label: 'Contact', href: '/contact' },
-              ]).map((n: any, i: number) => (
+              {finalNav.map((n: any, i: number) => (
                 <li key={i}>
                   <Link
-                    href={n.href || n.url || '#'}
+                    href={n.href || n.url || homeHref}
                     className="text-[#14203E]/70 transition-colors hover:text-[#14203E] dark:text-white/60 dark:hover:text-white"
                   >
-                    {n.label || n.title}
+                    {n.label || n.name || n.title}
                   </Link>
                 </li>
               ))}
@@ -60,19 +81,9 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails }: Foot
           <div>
             <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[#14203E]/70 dark:text-white/60">Practice Areas</h4>
             <ul className="mt-4 space-y-2.5 text-[14px]">
-              {(areas.length ? areas : [
-                { name: 'Corporate Law' },
-                { name: 'Civil Litigation' },
-                { name: 'Criminal Defense' },
-                { name: 'Family Law' },
-              ]).map((p: any, i: number) => (
-                <li key={i}>
-                  <Link
-                    href={p.slug ? `/practice-areas/${p.slug}` : '/practice-areas'}
-                    className="text-[#14203E]/70 transition-colors hover:text-[#14203E] dark:text-white/60 dark:hover:text-white"
-                  >
-                    {p.name || p.title}
-                  </Link>
+              {finalAreas.map((p: any, i: number) => (
+                <li key={i} className="text-[#14203E]/70 dark:text-white/60">
+                  {p.title || p.name}
                 </li>
               ))}
             </ul>
@@ -112,8 +123,8 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails }: Foot
             &copy; {new Date().getFullYear()} {firmName}. All rights reserved.
           </p>
           <nav className="flex items-center gap-6 text-[13px]">
-            <Link href="/terms" className="text-[#14203E]/60 transition-colors hover:text-[#14203E] dark:text-white/50 dark:hover:text-white">Terms of Service</Link>
-            <Link href="/privacy" className="text-[#14203E]/60 transition-colors hover:text-[#14203E] dark:text-white/50 dark:hover:text-white">Privacy Policy</Link>
+            <Link href={termsHref} className="text-[#14203E]/60 transition-colors hover:text-[#14203E] dark:text-white/50 dark:hover:text-white">Terms of Service</Link>
+            <Link href={privacyHref} className="text-[#14203E]/60 transition-colors hover:text-[#14203E] dark:text-white/50 dark:hover:text-white">Privacy Policy</Link>
             <a
               href="https://patienceai.in"
               target="_blank"

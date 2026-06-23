@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { signIn } from 'next-auth/react'
 import { Loader2 } from 'lucide-react'
+import { PasswordInput } from '@/components/ui/password-input'
 
 export function TenantAdminLoginForm({ slug }: { slug: string }) {
   const [email, setEmail] = useState('')
@@ -41,8 +42,7 @@ export function TenantAdminLoginForm({ slug }: { slug: string }) {
       </label>
       <label className="block text-sm">
         <span className="text-slate-700">Password</span>
-        <input
-          type="password"
+        <PasswordInput
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}

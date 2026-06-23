@@ -1,10 +1,9 @@
 import { redirect, notFound } from 'next/navigation'
-import Link from 'next/link'
 import { getServerSession } from 'next-auth/next'
-import { ArrowLeft } from 'lucide-react'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { getTenantBySlug } from '@/lib/tenant'
 import { prisma } from '@/lib/prisma'
+import { TenantAdminShell } from '@/components/tenant/admin-shell'
 import { TenantReceiptsClient } from './receipts-client'
 
 export const dynamic = 'force-dynamic'
@@ -22,23 +21,19 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
     orderBy: { createdAt: 'desc' },
     take: 200,
   })
+  const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
-      <div className="mx-auto max-w-5xl px-4 py-6">
-        <Link href={`/t/${slug}/admin`} className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white">
-          <ArrowLeft className="h-4 w-4" /> Back to admin
-        </Link>
-        <h1 className="mb-6 text-2xl font-black text-slate-900 dark:text-white">{tenant.name} · Receipts</h1>
-        <TenantReceiptsClient
-          slug={slug}
-          receipts={receipts.map((r) => ({
-            id: r.id, number: r.number, clientName: r.clientName, clientEmail: r.clientEmail,
-            total: r.total, currency: r.currency, status: r.status,
-            createdAt: r.createdAt.toISOString(),
-          }))}
-        />
-      </div>
-    </div>
+    <TenantAdminShell tenant={tenant} currentUser={currentUser}>
+      <h2 className="mb-4 text-xl font-bold text-[#14203E] dark:text-white">Receipts</h2>
+      <TenantReceiptsClient
+        slug={slug}
+        receipts={receipts.map((r) => ({
+          id: r.id, number: r.number, clientName: r.clientName, clientEmail: r.clientEmail,
+          total: r.total, currency: r.currency, status: r.status,
+          createdAt: r.createdAt.toISOString(),
+        }))}
+      />
+    </TenantAdminShell>
   )
 }

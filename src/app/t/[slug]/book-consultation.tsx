@@ -11,7 +11,7 @@ export function BookConsultation({ slug }: { slug: string }) {
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Slot | null>(null)
   const [submitting, setSubmitting] = useState(false)
-  const [done, setDone] = useState(false)
+  const [done, setDone] = useState<{ meetingLink: string | null } | false>(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -41,7 +41,7 @@ export function BookConsultation({ slug }: { slug: string }) {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Booking failed')
-      setDone(true)
+      setDone({ meetingLink: data.meetingLink || null })
     } catch (err: any) {
       setError(err.message)
     } finally {
@@ -55,6 +55,16 @@ export function BookConsultation({ slug }: { slug: string }) {
         <CheckCircle2 className="mx-auto h-12 w-12 text-emerald-400" />
         <p className="mt-3 text-lg font-semibold text-white">Booking confirmed</p>
         <p className="mt-1 text-sm text-white/70">We've emailed you the details.</p>
+        {done.meetingLink && (
+          <a
+            href={done.meetingLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#c9a227] px-4 py-2 text-xs font-semibold text-[#0b0f17] hover:bg-[#d8b33a]"
+          >
+            Join meeting
+          </a>
+        )}
       </div>
     )
   }
@@ -112,8 +122,12 @@ export function BookConsultation({ slug }: { slug: string }) {
       <input name="email" type="email" required placeholder="Email" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
       <input name="phone" placeholder="Phone (optional)" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
       <input name="subject" placeholder="Matter / subject" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
-      <select name="meetingMode" defaultValue="VIRTUAL" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
-        {selected.modes.map((m) => <option key={m} value={m} className="bg-[#11151f]">{m === 'VIRTUAL' || m === 'GOOGLE_MEET' || m === 'ZOOM' ? 'Online video call' : 'In person'}</option>)}
+      <select name="meetingMode" defaultValue={selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0]} className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
+        {selected.modes.map((m) => (
+          <option key={m} value={m} className="bg-[#11151f]">
+            {m === 'PHYSICAL' ? 'In person — at the office' : 'Online video call'}
+          </option>
+        ))}
       </select>
       {error && <div className="rounded-lg bg-rose-500/20 px-3 py-2 text-sm text-rose-200">{error}</div>}
       <button disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-[#14203E] hover:bg-white/90 disabled:opacity-60">

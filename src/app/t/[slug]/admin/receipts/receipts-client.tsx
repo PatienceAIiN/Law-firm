@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Plus, Trash2, ReceiptText, Loader2 } from 'lucide-react'
-import { createReceipt, deleteReceipt } from './actions'
+import { Plus, Trash2, ReceiptText, Loader2, Send } from 'lucide-react'
+import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 
 type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string }
 
@@ -57,9 +57,23 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                   <td className="px-3 py-2"><span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-700 dark:bg-white/10 dark:text-slate-200">{r.status}</span></td>
                   <td className="px-3 py-2 text-xs text-slate-500">{new Date(r.createdAt).toLocaleDateString()}</td>
                   <td className="px-3 py-2 text-right">
-                    <form action={async () => { await deleteReceipt(slug, r.id) }}>
-                      <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
-                    </form>
+                    <div className="flex items-center justify-end gap-1">
+                      <form action={async () => {
+                        const next = r.clientEmail || window.prompt('Send receipt PDF to which email?', '')
+                        if (!next) return
+                        await emailReceiptToClient(slug, r.id, next)
+                      }}>
+                        <button
+                          title={r.clientEmail ? `Re-send to ${r.clientEmail}` : 'Send by email'}
+                          className="rounded-md p-1 text-[#14203E] hover:bg-slate-100 dark:text-white dark:hover:bg-white/10"
+                        >
+                          <Send className="h-4 w-4" />
+                        </button>
+                      </form>
+                      <form action={async () => { await deleteReceipt(slug, r.id) }}>
+                        <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -74,7 +88,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
             <div className="mb-4 flex items-center gap-2"><ReceiptText className="h-5 w-5 text-[#14203E] dark:text-white" /><h3 className="text-lg font-bold text-slate-900 dark:text-white">New receipt</h3></div>
             <form onSubmit={onCreate} className="space-y-3 text-sm">
               <input name="clientName" required placeholder="Client name" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
-              <input name="clientEmail" type="email" required placeholder="Client email" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <input name="clientEmail" type="email" placeholder="Client email (optional — receipt PDF will be emailed if filled)" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               <input name="description" placeholder="Description (e.g. Consultation fee)" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               <input name="amount" required type="number" step="0.01" min="0" placeholder="Amount (INR)" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-xs text-rose-700">{error}</div>}

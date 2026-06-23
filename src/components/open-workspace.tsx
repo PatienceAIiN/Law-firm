@@ -1,79 +1,177 @@
 'use client'
 
 import { useState } from 'react'
-import { ArrowRight, Loader2 } from 'lucide-react'
+import { ArrowRight, Loader2, X, Mail, CheckCircle2 } from 'lucide-react'
 
-type Mode = 'site' | 'admin' | 'lawyer'
+type Step = 'email' | 'otp' | 'pick'
 
 export function OpenWorkspace({ variant = 'inline' }: { variant?: 'inline' | 'card' }) {
-  const [q, setQ] = useState('')
-  const [mode, setMode] = useState<Mode>('admin')
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
+  const [open, setOpen] = useState(false)
 
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!q.trim()) return
-    setBusy(true); setError('')
-    try {
-      const res = await fetch('/api/workspace-lookup', {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ q }),
-      })
-      const data = await res.json()
-      if (!res.ok) throw new Error(data.error || 'Workspace not found')
-      const path = mode === 'site' ? `/t/${data.slug}` : mode === 'lawyer' ? `/t/${data.slug}/lawyer/login` : `/t/${data.slug}/admin/login`
-      window.location.href = path
-    } catch (err: any) {
-      setError(err.message)
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  const isCard = variant === 'card'
+  const buttonClass =
+    variant === 'card'
+      ? 'mx-auto mt-10 inline-flex items-center gap-2 rounded-xl bg-[#14203E] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[#1d2c52]'
+      : 'inline-flex items-center gap-2 rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10'
 
   return (
-    <form
-      onSubmit={submit}
-      className={
-        isCard
-          ? 'mx-auto mt-10 max-w-xl rounded-2xl border border-[#14203E]/10 bg-white/85 p-5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#11151f]/80'
-          : 'flex flex-col gap-2 sm:flex-row sm:items-center'
-      }
-    >
-      <div className={isCard ? 'mb-3 text-center' : 'hidden'}>
-        <p className="text-sm font-semibold uppercase tracking-widest text-[#14203E]/70 dark:text-white/80">Open your workspace</p>
-        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Type your firm name or workspace URL.</p>
-      </div>
-
-      <div className={isCard ? 'flex flex-col gap-2 sm:flex-row sm:items-center' : 'flex flex-1 gap-2'}>
-        <input
-          value={q}
-          onChange={(e) => { setQ(e.target.value); setError('') }}
-          placeholder="e.g. Acme Law or acme-law"
-          className="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-sm text-slate-900 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/15 dark:border-white/15 dark:bg-white/5 dark:text-white"
-        />
-        <select
-          value={mode}
-          onChange={(e) => setMode(e.target.value as Mode)}
-          className="rounded-xl border border-slate-300 bg-white px-3 py-3 text-sm text-slate-700 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/15 dark:border-white/15 dark:bg-white/5 dark:text-white"
-        >
-          <option value="admin">Admin login</option>
-          <option value="lawyer">Lawyer login</option>
-          <option value="site">Public site</option>
-        </select>
-        <button
-          disabled={busy}
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#14203E] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60"
-        >
-          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-          Open
-        </button>
-      </div>
-
-      {error && <p className={`${isCard ? 'mt-2 text-center' : 'sm:ml-auto'} text-xs text-rose-600 dark:text-rose-300`}>{error}</p>}
-    </form>
+    <>
+      <button onClick={() => setOpen(true)} className={buttonClass}>
+        Open your workspace <ArrowRight className="h-4 w-4" />
+      </button>
+      {open && <OpenWorkspaceModal onClose={() => setOpen(false)} />}
+    </>
   )
+}
+
+function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
+  const [step, setStep] = useState<Step>('email')
+  const [email, setEmail] = useState('')
+  const [code, setCode] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [devOtp, setDevOtp] = useState<string | undefined>()
+  const [workspaces, setWorkspaces] = useState<{ slug: string; name: string }[]>([])
+
+  const requestOtp = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError(''); setBusy(true)
+    try {
+      const res = await fetch('/api/workspace-open/request', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not send code')
+      setDevOtp(data.devOtp)
+      setStep('otp')
+    } catch (e: any) { setError(e.message) } finally { setBusy(false) }
+  }
+
+  const verifyOtp = async (slugOverride?: string) => {
+    setError(''); setBusy(true)
+    try {
+      const res = await fetch('/api/workspace-open/verify', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ email, code, slug: slugOverride }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Verification failed')
+      if (data.requiresPick) {
+        setWorkspaces(data.workspaces)
+        setStep('pick')
+        return
+      }
+      // Cookie is set on the server; navigate hard to the admin so the new
+      // session is picked up on first paint.
+      window.location.href = `/t/${data.slug}/admin`
+    } catch (e: any) { setError(e.message) } finally { setBusy(false) }
+  }
+
+  const submitOtp = (e: React.FormEvent) => {
+    e.preventDefault()
+    verifyOtp()
+  }
+
+  return (
+    <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/50 p-4" onClick={onClose}>
+      <div
+        className="w-full max-w-md rounded-2xl border border-[#F4E8D8] bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#11151f]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-[#14203E]/70 dark:text-white/70">
+            <Mail className="h-4 w-4" /> Open your workspace
+          </div>
+          <button onClick={onClose} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        {step === 'email' && (
+          <form onSubmit={requestOtp} className="space-y-3">
+            <p className="text-sm text-slate-600 dark:text-slate-300">Enter the admin email you signed up with. We'll send you a 6-digit code.</p>
+            <input
+              type="email"
+              required
+              autoFocus
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@firm.com"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+            />
+            {error && <Banner kind="error">{error}</Banner>}
+            <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+              {busy ? 'Sending…' : 'Send code'}
+            </button>
+          </form>
+        )}
+
+        {step === 'otp' && (
+          <form onSubmit={submitOtp} className="space-y-3">
+            <p className="text-sm text-slate-600 dark:text-slate-300">
+              Code sent to <strong>{email}</strong>. Expires in 10 minutes.
+            </p>
+            {devOtp && (
+              <Banner kind="info">
+                Dev mode — code: <code className="ml-1 rounded bg-white px-2 py-0.5 font-mono text-[13px] tracking-widest dark:bg-white/10">{devOtp}</code>
+              </Banner>
+            )}
+            <input
+              value={code}
+              onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              inputMode="numeric"
+              pattern="\d{6}"
+              maxLength={6}
+              required
+              autoFocus
+              placeholder="123456"
+              className="w-full rounded-lg border border-slate-300 px-4 py-3 text-center font-mono text-lg tracking-[0.6em] text-slate-900 outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
+            />
+            {error && <Banner kind="error">{error}</Banner>}
+            <button disabled={busy || code.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+              {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
+              {busy ? 'Verifying…' : 'Verify & open'}
+            </button>
+            <button type="button" onClick={() => { setStep('email'); setCode(''); setError('') }} className="block w-full text-center text-xs text-slate-500 hover:underline dark:text-slate-400">
+              Wrong email? Start over
+            </button>
+          </form>
+        )}
+
+        {step === 'pick' && (
+          <div className="space-y-3">
+            <p className="text-sm text-slate-600 dark:text-slate-300">You own multiple workspaces. Pick one to open:</p>
+            {error && <Banner kind="error">{error}</Banner>}
+            <ul className="space-y-2">
+              {workspaces.map((w) => (
+                <li key={w.slug}>
+                  <button
+                    onClick={() => verifyOtp(w.slug)}
+                    disabled={busy}
+                    className="flex w-full items-center justify-between rounded-lg border border-slate-200 px-4 py-3 text-left hover:bg-slate-50 disabled:opacity-60 dark:border-white/10 dark:hover:bg-white/5"
+                  >
+                    <span>
+                      <p className="text-sm font-semibold text-[#14203E] dark:text-white">{w.name}</p>
+                      <p className="text-xs text-slate-500">/t/{w.slug}</p>
+                    </span>
+                    {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4 text-slate-400" />}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function Banner({ kind, children }: { kind: 'error' | 'info'; children: React.ReactNode }) {
+  const cls = kind === 'error'
+    ? 'bg-rose-50 text-rose-700 dark:bg-rose-900/20 dark:text-rose-200'
+    : 'bg-amber-50 text-amber-900 dark:bg-amber-900/20 dark:text-amber-200'
+  return <div className={`rounded-lg px-3 py-2 text-xs ${cls}`}>{children}</div>
 }

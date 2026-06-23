@@ -12,13 +12,12 @@ interface HeaderProps {
   brand?: any
   navigation?: any[]
   contact?: any
+  tenantSlug?: string
   mobileOpen: boolean
   onToggleMobile: () => void
 }
 
-// Nav matches the Day 1436 landing design: centered links, cream "Log In"
-// pill and navy "Start Free Trial" pill on the right.
-const NAV = [
+const DEFAULT_NAV = [
   { name: 'Home', href: '/' },
   { name: 'Consultant', href: '/consultation' },
   { name: 'Articles', href: '/blog' },
@@ -26,8 +25,19 @@ const NAV = [
   { name: 'About', href: '/about' },
 ]
 
-export function Header({ brand, mobileOpen, onToggleMobile }: HeaderProps) {
+function normalizeNav(items?: any[]) {
+  return (items || []).map((n) => ({
+    name: n.name || n.label || n.title || '',
+    href: n.href || n.url || '#',
+  })).filter((n) => n.name && n.href)
+}
+
+export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobile }: HeaderProps) {
   const pathname = usePathname()
+  const passed = normalizeNav(navigation)
+  const NAV = passed.length > 0 ? passed : DEFAULT_NAV
+  const homeHref = tenantSlug ? `/t/${tenantSlug}` : '/'
+  const lawyerLoginHref = tenantSlug ? `/t/${tenantSlug}/lawyer/login` : '/lawyer/login'
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''
@@ -38,15 +48,16 @@ export function Header({ brand, mobileOpen, onToggleMobile }: HeaderProps) {
     <header className="sticky top-0 z-50 w-full border-b border-[#F4E8D8] bg-white transition-colors dark:border-white/10 dark:bg-[#11151f]">
       <div className="relative mx-auto flex h-[72px] max-w-[1280px] items-center justify-between px-5 lg:px-8">
         {/* Logo */}
-        <BrandMark brand={brand} imageHeight={40} />
+        <BrandMark brand={brand} href={homeHref} imageHeight={40} />
 
         {/* Center nav */}
         <nav className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-9 lg:flex">
           {NAV.map((item) => {
-            const active = item.href === '/' ? pathname === '/' : pathname.startsWith(item.href)
+            const cleanHref = item.href.split('#')[0]
+            const active = cleanHref === pathname || (cleanHref !== '/' && pathname.startsWith(cleanHref))
             return (
               <Link
-                key={item.name}
+                key={`${item.name}-${item.href}`}
                 href={item.href}
                 className={cn(
                   'text-[18px] transition-colors',
@@ -62,7 +73,7 @@ export function Header({ brand, mobileOpen, onToggleMobile }: HeaderProps) {
         {/* Right actions */}
         <div className="flex items-center gap-3">
           <Link
-            href="/lawyer/login"
+            href={lawyerLoginHref}
             className="hidden h-[49px] items-center justify-center rounded-[10px] bg-[#F6F0E8] px-6 text-[18px] font-medium text-[#14203E] transition-colors hover:bg-[#efe6d8] dark:bg-white/10 dark:text-white dark:hover:bg-white/20 sm:inline-flex"
           >
             Adv. Portal
@@ -87,7 +98,7 @@ export function Header({ brand, mobileOpen, onToggleMobile }: HeaderProps) {
           <div className="mx-auto max-w-[1280px] space-y-1 px-5 py-4">
             {NAV.map((item) => (
               <Link
-                key={item.name}
+                key={`m-${item.name}-${item.href}`}
                 href={item.href}
                 onClick={onToggleMobile}
                 className="block rounded-[10px] px-4 py-3 text-[17px] text-[#14203E] hover:bg-[#F6F0E8]"
