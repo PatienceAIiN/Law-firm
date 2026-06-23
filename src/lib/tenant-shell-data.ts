@@ -17,7 +17,7 @@ export async function loadTenantPublicShell(slug: string): Promise<TenantPublicD
   if (!tenant) notFound()
 
   return fetchWithCache(
-    `tenant_shell:${tenant.id}`,
+    `tenant_shell_v2:${tenant.id}`,
     async () => {
       const [brand, practiceAreas, aboutProfile, siteTheme] = await Promise.all([
         getTenantSettingJson<any>(tenant.id, 'brand_config'),
