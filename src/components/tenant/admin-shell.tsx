@@ -76,6 +76,7 @@ export function TenantAdminShell({
                 <Link
                   key={t.href}
                   href={t.href}
+                  prefetch={true}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                     active
                       ? 'bg-[#14203E] text-white shadow'

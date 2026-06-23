@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, Loader2, X, Mail, CheckCircle2 } from 'lucide-react'
 
 type Step = 'email' | 'otp' | 'pick'
@@ -31,6 +31,28 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState('')
   const [devOtp, setDevOtp] = useState<string | undefined>()
   const [workspaces, setWorkspaces] = useState<{ slug: string; name: string }[]>([])
+  const [remember, setRemember] = useState(true)
+
+  // Auto-login: if previously remembered, try to skip OTP entirely
+  useEffect(() => {
+    const remembered = localStorage.getItem('workspace-remember-email')
+    if (!remembered) return
+    let active = true
+    ;(async () => {
+      try {
+        const res = await fetch('/api/workspace-open/auto', {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ email: remembered }),
+        })
+        const data = await res.json()
+        if (active && data.ok && data.slug) {
+          window.location.href = `/t/${data.slug}/admin`
+        }
+      } catch {}
+    })()
+    return () => { active = false }
+  }, [])
 
   const requestOtp = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,7 +76,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
       const res = await fetch('/api/workspace-open/verify', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ email, code, slug: slugOverride }),
+        body: JSON.stringify({ email, code, slug: slugOverride, remember }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Verification failed')
@@ -65,6 +87,11 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
       }
       // Cookie is set on the server; navigate hard to the admin so the new
       // session is picked up on first paint.
+      if (remember) {
+        localStorage.setItem('workspace-remember-email', email)
+      } else {
+        localStorage.removeItem('workspace-remember-email')
+      }
       window.location.href = `/t/${data.slug}/admin`
     } catch (e: any) { setError(e.message) } finally { setBusy(false) }
   }
@@ -102,6 +129,24 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
               className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] focus:ring-2 focus:ring-[#14203E]/20 dark:border-white/15 dark:bg-white/5 dark:text-white"
             />
             {error && <Banner kind="error">{error}</Banner>}
+            <label className="flex items-center gap-3 cursor-pointer select-none group">
+              <span
+                className={`flex h-5 w-5 items-center justify-center rounded-full border-2 transition-all ${
+                  remember
+                    ? 'border-[#14203E] bg-[#14203E]'
+                    : 'border-slate-300 bg-white dark:border-white/30 dark:bg-white/5'
+                } group-hover:border-[#14203E]`}
+                onClick={() => setRemember(!remember)}
+              >
+                {remember && (
+                  <svg className="h-3 w-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </span>
+              <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="sr-only" />
+              <span className="text-sm text-slate-600 dark:text-slate-300">Remember me — skip OTP next time</span>
+            </label>
             <button disabled={busy} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {busy ? 'Sending…' : 'Send code'}
