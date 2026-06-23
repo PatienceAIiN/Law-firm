@@ -1,6 +1,6 @@
 // Service worker — network-first for navigation with offline fallback,
 // cache-first for static assets. Bump CACHE to invalidate.
-const CACHE = 'lawfirm-v1'
+const CACHE = 'lawfirm-v2'
 const OFFLINE_URL = '/offline.html'
 const PRECACHE = ['/offline.html', '/icon-192.png', '/icon-512.png']
 
@@ -28,12 +28,18 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // Static assets: cache-first with background refresh.
+  // Static assets: cache-first with background refresh. Clone BEFORE the
+  // response is handed back to the browser — otherwise by the time
+  // caches.put runs (async after caches.open) the body has been consumed
+  // and clone() throws "Response body is already used".
   if (url.pathname.startsWith('/_next/static') || /\.(png|jpg|jpeg|svg|webp|ico|css|js|woff2?)$/.test(url.pathname)) {
     event.respondWith(
       caches.match(request).then((cached) => {
         const network = fetch(request).then((res) => {
-          if (res.ok) caches.open(CACHE).then((c) => c.put(request, res.clone()))
+          if (res && res.ok) {
+            const copy = res.clone()
+            event.waitUntil(caches.open(CACHE).then((c) => c.put(request, copy)).catch(() => {}))
+          }
           return res
         }).catch(() => cached)
         return cached || network

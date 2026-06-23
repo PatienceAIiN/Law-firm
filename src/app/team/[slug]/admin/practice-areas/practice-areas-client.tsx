@@ -4,6 +4,7 @@ import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { createPracticeArea, deletePracticeArea } from '../actions'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type P = { id: string; title: string; slug: string; description: string }
 
@@ -38,9 +39,11 @@ export function PracticeAreasClient({ slug, items }: { slug: string; items: P[] 
                   <p className="text-sm font-semibold text-primary dark:text-white">{p.title}</p>
                   <p className="text-xs text-slate-500">{p.slug}{p.description ? ` · ${p.description}` : ''}</p>
                 </div>
-                <form action={async () => { await deletePracticeArea(slug, p.id); router.refresh() }}>
-                  <button className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
-                </form>
+                <DeleteButton
+                  onDelete={() => deletePracticeArea(slug, p.id)}
+                  confirmMessage={`Delete practice area "${p.title}"?`}
+                  className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"
+                />
               </li>
             ))}
           </ul>

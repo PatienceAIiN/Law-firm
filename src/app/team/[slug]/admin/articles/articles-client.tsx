@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, Upload, X } from 'lucide-react'
 import { createBlogPost, deleteBlogPost } from '../actions'
 import { uploadImage } from '@/app/admin/actions/upload'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type B = { id: string; title: string; slug: string; status: string; coverImage?: string | null; excerpt?: string | null }
 
@@ -113,9 +114,11 @@ export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
                   <p className="truncate text-sm font-semibold text-primary dark:text-white">{b.title}</p>
                   <p className="truncate text-xs text-slate-500">{b.slug} · {b.status}</p>
                 </div>
-                <form action={async () => { await deleteBlogPost(slug, b.id); router.refresh() }}>
-                  <button className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
-                </form>
+                <DeleteButton
+                  onDelete={() => deleteBlogPost(slug, b.id)}
+                  confirmMessage={`Delete article "${b.title}"?`}
+                  className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"
+                />
               </li>
             ))}
           </ul>

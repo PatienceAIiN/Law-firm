@@ -57,7 +57,9 @@ function hexToHsl(hex: string) {
 }
 
 export const viewport: import('next').Viewport = {
-  themeColor: 'var(--primary)',
+  // Web App Manifest's theme_color must be a CSS-color value, not a var().
+  // Browsers silently drop var() and log "property 'theme_color' ignored".
+  themeColor: '#14203E',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,

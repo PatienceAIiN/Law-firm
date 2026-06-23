@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon } from 'lucide-react'
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string }
 
@@ -111,9 +112,11 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                           <Send className="h-4 w-4" />
                         </button>
                       </form>
-                      <form action={async () => { await deleteReceipt(slug, r.id); router.refresh() }}>
-                        <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
-                      </form>
+                      <DeleteButton
+                        onDelete={async () => { await deleteReceipt(slug, r.id) }}
+                        confirmMessage={`Delete receipt ${r.number}?`}
+                        className="rounded-md p-1 text-rose-500 hover:bg-rose-50"
+                      />
                     </div>
                   </td>
                 </tr>

@@ -4,6 +4,7 @@ import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Trash2, Loader2, Star, Send, CheckCircle2, XCircle, Mail } from 'lucide-react'
 import { askTestimonial, approveTestimonial, rejectTestimonial, deleteTestimonial } from './actions'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type P = { id: string; name: string; role: string | null; content: string; rating: number; createdAt: string }
 type T = { id: string; name: string; role: string | null; content: string; rating: number }
@@ -90,9 +91,11 @@ export function TestimonialsClient({ slug, pending, published }: { slug: string;
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="flex">{Array.from({ length: t.rating }).map((_, i) => <Star key={i} className="h-3.5 w-3.5 fill-[#c9a227] text-[#c9a227]" />)}</div>
-                    <form action={async () => { await deleteTestimonial(slug, t.id); router.refresh() }}>
-                      <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
-                    </form>
+                    <DeleteButton
+                      onDelete={async () => { await deleteTestimonial(slug, t.id) }}
+                      confirmMessage={`Remove testimonial from ${t.name}?`}
+                      className="rounded-md p-1 text-rose-500 hover:bg-rose-50"
+                    />
                   </div>
                 </div>
                 <p className="mt-2 text-sm text-slate-700 dark:text-slate-200">"{t.content}"</p>

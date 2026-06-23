@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, Upload, X, Edit, Save } from 'lucide-react'
 import { uploadImage } from '@/app/admin/actions/upload'
 import { createTeamMember, deleteTeamMember, updateTeamMember } from './actions'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type M = { id: string; name: string; title: string; bio: string; email: string | null; image: string | null; isActive: boolean }
 
@@ -78,11 +79,11 @@ export function TeamClient({ slug, items }: { slug: string; items: M[] }) {
                   >
                     <Edit className="h-4 w-4" />
                   </button>
-                  <form action={async () => { await deleteTeamMember(slug, m.id); router.refresh() }}>
-                    <button className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50" title="Delete">
-                      <Trash2 className="h-4 w-4" />
-                    </button>
-                  </form>
+                  <DeleteButton
+                    onDelete={() => deleteTeamMember(slug, m.id)}
+                    className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50"
+                    title="Delete"
+                  />
                 </div>
               </li>
             ))}

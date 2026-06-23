@@ -41,7 +41,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ slug
     scope,
     display: "standalone",
     background_color: "#FFFCF8",
-    theme_color: theme.primaryColor || "#14203E",
+    // Web manifest theme_color must be a CSS color literal. If the tenant
+    // saved a `var(...)` or anything non-color (e.g. "navy"), fall back.
+    theme_color: /^(#|rgb|hsl)/i.test(theme.primaryColor || '') ? theme.primaryColor : '#14203E',
     icons: [
       { src: iconSrc, sizes: "192x192", type: "image/png" },
       { src: iconSrc, sizes: "512x512", type: "image/png" },

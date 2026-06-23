@@ -4,6 +4,7 @@ import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, CalendarClock } from 'lucide-react'
 import { addSlot, deleteSlot } from './actions'
+import { DeleteButton } from '@/components/ui/delete-button'
 
 type Booking = { id: string; name: string; email: string; phone: string; status: string; meetingMode: string }
 type Slot = { id: string; startTime: string; endTime: string; capacity: number; bookedCount: number; bookings: Booking[] }
@@ -101,9 +102,10 @@ export function TenantAvailabilityClient({ slug, days, advocates }: { slug: stri
                           <span className="ml-2 inline-flex items-center rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/10 dark:text-slate-300">Available</span>
                         )}
                       </div>
-                      <form action={async () => { await deleteSlot(slug, s.id); router.refresh() }}>
-                        <button className="rounded-md p-1 text-rose-500 hover:bg-rose-100"><Trash2 className="h-4 w-4" /></button>
-                      </form>
+                      <DeleteButton
+                        onDelete={async () => { await deleteSlot(slug, s.id) }}
+                        className="rounded-md p-1 text-rose-500 hover:bg-rose-100"
+                      />
                     </div>
                     {s.bookings.length > 0 && (
                       <ul className="mt-2 space-y-1 border-t border-slate-200 pt-2 text-xs text-slate-600 dark:border-white/10 dark:text-slate-300">
