@@ -26,7 +26,7 @@ export default async function TenantHomePage({ params }: { params: Promise<{ slu
   return (
     <MarketingShell brand={brand} navigation={navigation} officeDetails={officeDetails} practiceAreas={practiceAreas} tenantSlug={tenant.slug}>
       <section className="relative overflow-hidden rounded-2xl">
-        <VideoCover src={COVER_VIDEOS.home} overlay="medium" />
+        <VideoCover src={brand?.home_cover_url || COVER_VIDEOS.home} overlay="medium" />
         <div className="relative z-10 mx-auto max-w-5xl px-6 py-24 text-center">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
             {brand.firm_name || tenant.name}

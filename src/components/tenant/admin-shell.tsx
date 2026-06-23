@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Briefcase, FileText, Users, Inbox, Gavel, ReceiptText,
-  CalendarClock, UserPlus, Quote, Mail, Settings, ExternalLink, LogOut, KeyRound,
+  CalendarClock, UserPlus, Quote, Mail, Settings, ExternalLink, LogOut, KeyRound, Shield,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -26,6 +26,7 @@ const TABS = (slug: string) => [
   { href: `/team/${slug}/admin/testimonials`,   label: 'Testimonials',  icon: Quote },
   { href: `/team/${slug}/admin/mail`,           label: 'Mail',          icon: Mail },
   { href: `/team/${slug}/admin/branding`,       label: 'Branding',      icon: Settings },
+  { href: `/team/${slug}/admin/legal`,          label: 'Legal',         icon: Shield },
   { href: `/team/${slug}/admin/account`,        label: 'Account',       icon: KeyRound },
 ]
 

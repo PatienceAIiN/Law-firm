@@ -22,6 +22,8 @@ export default async function TenantBrandingPage({ params }: { params: Promise<{
 
   const tenantTheme = await getTenantSettingJson(tenant.id, 'site_theme') || {}
   const theme = { ...DEFAULT_THEME, ...tenantTheme }
+  const brand = (await getTenantSettingJson<any>(tenant.id, 'brand_config')) || {}
+  const firmName = brand.firm_full_name || brand.firm_name || tenant.name
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
@@ -29,7 +31,7 @@ export default async function TenantBrandingPage({ params }: { params: Promise<{
         <h2 className="text-xl font-bold text-primary dark:text-white">Workspace Branding</h2>
         <p className="text-sm text-slate-500">Configure colors, fonts, and logos for your portal.</p>
       </div>
-      <BrandingClient slug={slug} theme={theme} />
+      <BrandingClient slug={slug} theme={theme} firmName={firmName} />
     </TenantAdminShell>
   )
 }

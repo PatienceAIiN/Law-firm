@@ -19,6 +19,8 @@ const POSTER =
     </svg>`
   )
 
+const isImage = (url: string) => /\.(jpe?g|png|webp|gif|avif|svg)(\?|$)/i.test(url)
+
 export function VideoCover({ src, overlay = 'medium' }: { src: string; overlay?: 'light' | 'medium' | 'strong' }) {
   const overlayClass =
     overlay === 'strong'
@@ -28,10 +30,10 @@ export function VideoCover({ src, overlay = 'medium' }: { src: string; overlay?:
         : 'bg-[#FFFCF8]/72 dark:bg-[#0b0f17]/74'
 
   const [ready, setReady] = useState(false)
+  const usingImage = isImage(src)
 
   return (
     <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden>
-      {/* Instant gradient poster — paints in the first frame */}
       <div
         className="absolute inset-0"
         style={{
@@ -40,19 +42,28 @@ export function VideoCover({ src, overlay = 'medium' }: { src: string; overlay?:
           backgroundPosition: 'center',
         }}
       />
-      <video
-        className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}
-        autoPlay
-        loop
-        muted
-        playsInline
-        preload="auto"
-        poster={POSTER}
-        onCanPlay={() => setReady(true)}
-        onLoadedData={() => setReady(true)}
-      >
-        <source src={src} type="video/mp4" />
-      </video>
+      {usingImage ? (
+        <img
+          src={src}
+          alt=""
+          className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}
+          onLoad={() => setReady(true)}
+        />
+      ) : (
+        <video
+          className={`h-full w-full object-cover transition-opacity duration-700 ${ready ? 'opacity-100' : 'opacity-0'}`}
+          autoPlay
+          loop
+          muted
+          playsInline
+          preload="auto"
+          poster={POSTER}
+          onCanPlay={() => setReady(true)}
+          onLoadedData={() => setReady(true)}
+        >
+          <source src={src} type="video/mp4" />
+        </video>
+      )}
       <div className={`absolute inset-0 ${overlayClass}`} />
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#FFFCF8] dark:to-[#0b0f17]" />
     </div>

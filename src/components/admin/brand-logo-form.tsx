@@ -9,6 +9,7 @@ type Brand = {
   firm_name?: string
   firm_full_name?: string
   logo_image_url?: string
+  home_cover_url?: string
   logo_style?: {
     fontFamily?: string
     fontWeight?: string
@@ -45,6 +46,31 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
   const [logoText, setLogoText] = useState(brand.logo_text || '')
   const [firmName, setFirmName] = useState(brand.firm_name || '')
   const [firmFullName, setFirmFullName] = useState(brand.firm_full_name || '')
+  const [homeCover, setHomeCover] = useState(brand.home_cover_url || '')
+  const [coverUploading, setCoverUploading] = useState(false)
+  const [coverError, setCoverError] = useState('')
+
+  const onCoverPick = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setCoverError('')
+    if (file.size > 10 * 1024 * 1024) { setCoverError('Cover must be under 10 MB'); e.target.value = ''; return }
+    if (!file.type.startsWith('image/') && !file.type.startsWith('video/')) { setCoverError('Pick an image or video file.'); e.target.value = ''; return }
+    setCoverUploading(true)
+    try {
+      const fd = new FormData(); fd.set('file', file)
+      const { uploadImage } = await import('@/app/admin/actions/upload')
+      const url = await uploadImage(fd)
+      setHomeCover(url)
+    } catch (err: any) { setCoverError(err?.message || 'Upload failed') }
+    finally { setCoverUploading(false); e.target.value = '' }
+  }
+
+  const onPexelsPaste = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Accept any direct URL; if user pastes a Pexels page URL we leave it as
+    // is — the public page handles image-vs-video by extension.
+    setHomeCover(e.target.value.trim())
+  }
 
   const submit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,6 +78,7 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
     fd.set('use_image_logo', useImage ? 'on' : '')
     fd.set('logo_image_url', logoImage)
     fd.set('logo_style', JSON.stringify({ fontFamily, fontWeight, fontStyle, color, letterSpacing }))
+    fd.set('home_cover_url', homeCover)
     startTransition(() => { updateBrand(fd) })
   }
 
@@ -174,6 +201,34 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
           onChange={(e) => setFirmFullName(e.target.value)}
           className="w-full rounded-xl bg-gray-50 p-4 outline-none"
         />
+      </div>
+
+      <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+        <label className="text-[10px] font-black uppercase tracking-widest text-gray-500">Home page cover (image or video, ≤ 10 MB) — or paste a Pexels URL</label>
+        {homeCover ? (
+          /\.(mp4|webm)(\?|$)/i.test(homeCover) ? (
+            <video src={homeCover} className="h-40 w-full rounded-lg object-cover" autoPlay muted loop playsInline />
+          ) : (
+            <img src={homeCover} alt="Home cover" className="h-40 w-full rounded-lg object-cover" />
+          )
+        ) : (
+          <label className="flex h-28 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white text-xs text-slate-500 hover:bg-slate-100">
+            {coverUploading ? 'Uploading…' : 'Click to upload (image or short video)'}
+            <input type="file" accept="image/*,video/*" onChange={onCoverPick} disabled={coverUploading} className="hidden" />
+          </label>
+        )}
+        <input
+          value={homeCover}
+          onChange={onPexelsPaste}
+          placeholder="Or paste a Pexels / direct URL (https://videos.pexels.com/... or any .mp4 / .jpg)"
+          className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs outline-none focus:border-primary"
+        />
+        {homeCover && (
+          <button type="button" onClick={() => setHomeCover('')} className="text-xs font-semibold text-rose-600 hover:underline">
+            Remove cover
+          </button>
+        )}
+        {coverError && <p className="text-xs text-rose-600">{coverError}</p>}
       </div>
 
       <div className="rounded-2xl border border-dashed border-gray-200 bg-white p-5">

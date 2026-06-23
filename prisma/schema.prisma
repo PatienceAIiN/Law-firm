@@ -23,6 +23,20 @@ model AdvocateActivationToken {
   @@map("advocate_activation_tokens")
 }
 
+model TestimonialAskToken {
+  id          String   @id @default(cuid())
+  token       String   @unique
+  tenantId    String
+  clientName  String
+  clientEmail String
+  used        Boolean  @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+
+  @@index([tenantId])
+  @@map("testimonial_ask_tokens")
+}
+
 model WorkspaceOpenOtp {
   id        String   @id @default(cuid())
   email     String
@@ -299,6 +313,7 @@ model Testimonial {
   isActive  Boolean  @default(true)
   order     Int      @default(0)
   tenantId  String?
+  status    String   @default("PUBLISHED")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
