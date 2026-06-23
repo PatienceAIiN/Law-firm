@@ -14,18 +14,18 @@ type TenantInfo = { slug: string; name: string }
 type CurrentUser = { id: string; name: string; email: string }
 
 const TABS = (slug: string) => [
-  { href: `/t/${slug}/admin`,                label: 'Dashboard',     icon: LayoutDashboard, exact: true },
-  { href: `/t/${slug}/admin/practice-areas`, label: 'Practice',      icon: Briefcase },
-  { href: `/t/${slug}/admin/articles`,       label: 'Articles',      icon: FileText },
-  { href: `/t/${slug}/admin/lawyers`,        label: 'Lawyers',       icon: Users },
-  { href: `/t/${slug}/admin/cases`,          label: 'Cases',         icon: Gavel },
-  { href: `/t/${slug}/admin/availability`,   label: 'Availability',  icon: CalendarClock },
-  { href: `/t/${slug}/admin/inquiries`,      label: 'Inquiries',     icon: Inbox },
-  { href: `/t/${slug}/admin/receipts`,       label: 'Receipts',      icon: ReceiptText },
-  { href: `/t/${slug}/admin/team`,           label: 'Team',          icon: UserPlus },
-  { href: `/t/${slug}/admin/testimonials`,   label: 'Testimonials',  icon: Quote },
-  { href: `/t/${slug}/admin/mail`,           label: 'Mail',          icon: Mail },
-  { href: `/t/${slug}/admin/branding`,       label: 'Branding',      icon: Settings },
+  { href: `/team/${slug}/admin`,                label: 'Dashboard',     icon: LayoutDashboard, exact: true },
+  { href: `/team/${slug}/admin/practice-areas`, label: 'Practice',      icon: Briefcase },
+  { href: `/team/${slug}/admin/articles`,       label: 'Articles',      icon: FileText },
+  { href: `/team/${slug}/admin/lawyers`,        label: 'Lawyers',       icon: Users },
+  { href: `/team/${slug}/admin/cases`,          label: 'Cases',         icon: Gavel },
+  { href: `/team/${slug}/admin/availability`,   label: 'Availability',  icon: CalendarClock },
+  { href: `/team/${slug}/admin/inquiries`,      label: 'Inquiries',     icon: Inbox },
+  { href: `/team/${slug}/admin/receipts`,       label: 'Receipts',      icon: ReceiptText },
+  { href: `/team/${slug}/admin/team`,           label: 'Team',          icon: UserPlus },
+  { href: `/team/${slug}/admin/testimonials`,   label: 'Testimonials',  icon: Quote },
+  { href: `/team/${slug}/admin/mail`,           label: 'Mail',          icon: Mail },
+  { href: `/team/${slug}/admin/branding`,       label: 'Branding',      icon: Settings },
 ]
 
 export function TenantAdminShell({
@@ -52,7 +52,7 @@ export function TenantAdminShell({
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur dark:border-white/10 dark:bg-[#11151f]/95">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
-            <Link href={`/t/${tenant.slug}/admin`} className="block">
+            <Link href={`/team/${tenant.slug}/admin`} className="block">
               <h1 className="truncate text-base font-bold text-primary dark:text-white">{tenant.name}</h1>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">{currentUser.email}</p>
             </Link>
@@ -60,7 +60,7 @@ export function TenantAdminShell({
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <Link
-              href={`/t/${tenant.slug}`}
+              href={`/team/${tenant.slug}`}
               target="_blank"
               className="hidden items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10 sm:inline-flex"
             >
@@ -69,7 +69,7 @@ export function TenantAdminShell({
             <button
               onClick={() => {
                 if (window.confirm('Are you sure you want to log out?')) {
-                  signOut({ callbackUrl: `/t/${tenant.slug}/admin/login` })
+                  signOut({ callbackUrl: `/team/${tenant.slug}/admin/login` })
                 }
               }}
               className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-100"

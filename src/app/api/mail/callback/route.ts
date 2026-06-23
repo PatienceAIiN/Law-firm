@@ -29,18 +29,18 @@ export async function GET(req: NextRequest) {
     else if (type === 'tenantadmin') {
       if (!slug || !id) throw new Error('Invalid state parameters')
       await exchangeCodeAndStore(code, tenantGmailAdminKey(id), '/api/mail/callback', base)
-      return NextResponse.redirect(`${base}/t/${slug}/admin/mail?connected=true`)
+      return NextResponse.redirect(`${base}/team/${slug}/admin/mail?connected=true`)
     } 
     else if (type === 'advocate') {
       if (!slug || !id) throw new Error('Invalid state parameters')
       await exchangeCodeAndStore(code, advocateMailKey(id), '/api/mail/callback', base)
-      return NextResponse.redirect(`${base}/t/${slug}/lawyer/mail?connected=true`)
+      return NextResponse.redirect(`${base}/team/${slug}/lawyer/mail?connected=true`)
     } 
     else {
       throw new Error('Unknown authentication type')
     }
   } catch (err: any) {
-    const fallbackPath = slug ? `/t/${slug}` : ''
+    const fallbackPath = slug ? `/team/${slug}` : ''
     return NextResponse.redirect(`${base}${fallbackPath}?mail_error=${encodeURIComponent(err?.message || 'connect_failed')}`)
   }
 }

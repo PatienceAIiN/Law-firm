@@ -29,8 +29,8 @@ export function MarketingShell({
   const [mobileOpen, setMobileOpen] = useState(false)
   const pathname = usePathname()
   const visibleNavigation = (navigation || []).filter((item) => item?.href !== '/blog' && item?.name !== 'Blog')
-  const bookHref = tenantSlug ? `/t/${tenantSlug}/book` : '/'
-  const contactHref = tenantSlug ? `/t/${tenantSlug}/contact` : '/'
+  const bookHref = tenantSlug ? `/team/${tenantSlug}/book` : '/'
+  const contactHref = tenantSlug ? `/team/${tenantSlug}/contact` : '/'
 
   const openConsultation = useCallback(() => {
     window.location.href = bookHref

@@ -7,8 +7,8 @@ Welcome to your new digital workspace. This guide will walk you through the esse
 
 ## 1. Getting Started
 When your workspace is created, you will be given an **Admin Login**. Use this to access your Firm Dashboard. 
-- **Your Public Site:** `https://yourdomain.com/t/your-firm`
-- **Admin Dashboard:** `https://yourdomain.com/t/your-firm/admin/login`
+- **Your Public Site:** `https://yourdomain.com/team/your-firm`
+- **Admin Dashboard:** `https://yourdomain.com/team/your-firm/admin/login`
 
 ### Initial Setup
 1. **Branding:** Go to the **Settings > Branding** tab. Update your Firm Name, upload a Logo, and select your primary and accent colors.
@@ -31,7 +31,7 @@ Each lawyer in your firm gets their own dedicated portal.
 ---
 
 ## 3. The Lawyer Portal
-Each lawyer logs in at `https://yourdomain.com/t/your-firm/lawyer/login`.
+Each lawyer logs in at `https://yourdomain.com/team/your-firm/lawyer/login`.
 Inside the Lawyer Portal, advocates can:
 - **Manage Cases:** Track active cases, hearings, and upload related documents.
 - **Set Availability:** Define when they are available for client consultations. 

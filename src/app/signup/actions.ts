@@ -151,8 +151,8 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
   await prisma.signupOtp.update({ where: { id: row.id }, data: { verified: true } })
 
   const base = (process.env.NEXTAUTH_URL || 'http://localhost:3001').replace(/\/$/, '')
-  const loginPath = `/t/${tenant.slug}/admin/login`
-  const sitePath = `/t/${tenant.slug}`
+  const loginPath = `/team/${tenant.slug}/admin/login`
+  const sitePath = `/team/${tenant.slug}`
 
   const html = `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#14203E;">

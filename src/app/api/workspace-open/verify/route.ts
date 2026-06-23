@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
   if (!target) return NextResponse.json({ error: 'Workspace mismatch.' }, { status: 400 })
 
   // Encode a NextAuth tenant-admin JWT for this user and set the cookie. After
-  // this the user is logged into /t/<slug>/admin without ever typing a password.
+  // this the user is logged into /team/<slug>/admin without ever typing a password.
   const secret = process.env.NEXTAUTH_SECRET
   if (!secret) return NextResponse.json({ error: 'Server misconfigured (NEXTAUTH_SECRET missing).' }, { status: 500 })
 

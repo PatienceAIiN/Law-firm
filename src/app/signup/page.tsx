@@ -65,7 +65,7 @@ export default function SignupPage() {
               <div>
                 <span className="block text-sm text-slate-700 dark:text-slate-200">Workspace URL</span>
                 <div className="mt-1 flex overflow-hidden rounded-lg border border-slate-300 bg-white dark:border-white/15 dark:bg-white/5">
-                  <span className="bg-slate-100 px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-300">/t/</span>
+                  <span className="bg-slate-100 px-3 py-2 text-xs text-slate-500 dark:bg-white/10 dark:text-slate-300">/team/</span>
                   <input
                     name="slug"
                     required
@@ -145,7 +145,7 @@ export default function SignupPage() {
                 Go to admin login
               </Link>
               <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-                Lawyer login: <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/t/{success.slug}/lawyer/login</code>
+                Lawyer login: <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/team/{success.slug}/lawyer/login</code>
               </p>
             </div>
           </>

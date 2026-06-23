@@ -40,12 +40,12 @@ export async function loadTenantPublicShell(slug: string): Promise<TenantPublicD
         catch { return { email: tenant.ownerEmail } }
       })()
       const navigation = [
-        { name: 'Home', label: 'Home', href: `/t/${tenant.slug}` },
-        { name: 'Practice Areas', label: 'Practice Areas', href: `/t/${tenant.slug}/practice-areas` },
-        { name: 'Team', label: 'Team', href: `/t/${tenant.slug}/team` },
-        { name: 'Articles', label: 'Articles', href: `/t/${tenant.slug}/articles` },
-        { name: 'Consult', label: 'Consult', href: `/t/${tenant.slug}/book` },
-        { name: 'Contact', label: 'Contact', href: `/t/${tenant.slug}/contact` },
+        { name: 'Home', label: 'Home', href: `/team/${tenant.slug}` },
+        { name: 'Practice Areas', label: 'Practice Areas', href: `/team/${tenant.slug}/practice-areas` },
+        { name: 'Team', label: 'Team', href: `/team/${tenant.slug}/team` },
+        { name: 'Articles', label: 'Articles', href: `/team/${tenant.slug}/articles` },
+        { name: 'Consult', label: 'Consult', href: `/team/${tenant.slug}/book` },
+        { name: 'Contact', label: 'Contact', href: `/team/${tenant.slug}/contact` },
       ]
       return { tenant, brand: brandData, officeDetails, navigation, practiceAreas }
     },

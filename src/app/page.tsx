@@ -95,7 +95,7 @@ export default function SaasLandingPage() {
           <h2 className="text-center text-3xl font-bold md:text-4xl">From signup to live site in 60 seconds</h2>
           <ol className="mt-10 space-y-6">
             {[
-              { n: '1', title: 'Sign up', body: 'Pick a workspace URL like /t/your-firm. Tell us your firm name and email.' },
+              { n: '1', title: 'Sign up', body: 'Pick a workspace URL like /team/your-firm. Tell us your firm name and email.' },
               { n: '2', title: 'Get credentials', body: 'We email you an admin login. Your workspace is created with a blank canvas.' },
               { n: '3', title: 'Customize', body: 'Add practice areas, articles, lawyers, branding. Everything updates the public site instantly.' },
               { n: '4', title: 'Go live', body: 'Share your site URL. Clients book consultations, submit inquiries, meet over video.' },

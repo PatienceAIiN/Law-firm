@@ -47,7 +47,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
         })
         const data = await res.json()
         if (active && data.ok && data.slug) {
-          window.location.href = `/t/${data.slug}/admin`
+          window.location.href = `/team/${data.slug}/admin`
         }
       } catch {}
     })()
@@ -92,7 +92,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
       } else {
         localStorage.removeItem('workspace-remember-email')
       }
-      window.location.href = `/t/${data.slug}/admin`
+      window.location.href = `/team/${data.slug}/admin`
     } catch (e: any) { setError(e.message) } finally { setBusy(false) }
   }
 
@@ -200,7 +200,7 @@ function OpenWorkspaceModal({ onClose }: { onClose: () => void }) {
                   >
                     <span>
                       <p className="text-sm font-semibold text-primary dark:text-white">{w.name}</p>
-                      <p className="text-xs text-slate-500">/t/{w.slug}</p>
+                      <p className="text-xs text-slate-500">/team/{w.slug}</p>
                     </span>
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4 text-slate-400" />}
                   </button>

@@ -36,8 +36,8 @@ export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobi
   const pathname = usePathname()
   const passed = normalizeNav(navigation)
   const NAV = passed.length > 0 ? passed : DEFAULT_NAV
-  const homeHref = tenantSlug ? `/t/${tenantSlug}` : '/'
-  const lawyerLoginHref = tenantSlug ? `/t/${tenantSlug}/lawyer/login` : '/lawyer/login'
+  const homeHref = tenantSlug ? `/team/${tenantSlug}` : '/'
+  const lawyerLoginHref = tenantSlug ? `/team/${tenantSlug}/lawyer/login` : '/lawyer/login'
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : ''

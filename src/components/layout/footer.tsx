@@ -29,9 +29,9 @@ const DEFAULT_PRACTICE = [
 export function Footer({ brand, navigation, practiceAreas, officeDetails, tenantSlug }: FooterProps) {
   const firmName = brand?.firm_full_name || brand?.firm_name || 'Logo'
   const tagline = brand?.tagline || brand?.description
-  const homeHref = tenantSlug ? `/t/${tenantSlug}` : '/'
-  const termsHref = tenantSlug ? `/t/${tenantSlug}/terms` : '/terms'
-  const privacyHref = tenantSlug ? `/t/${tenantSlug}/privacy` : '/privacy'
+  const homeHref = tenantSlug ? `/team/${tenantSlug}` : '/'
+  const termsHref = tenantSlug ? `/team/${tenantSlug}/terms` : '/terms'
+  const privacyHref = tenantSlug ? `/team/${tenantSlug}/privacy` : '/privacy'
 
   // Within a tenant workspace, default footer links stay inside the tenant.
   const fallbackNav = tenantSlug
