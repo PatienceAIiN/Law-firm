@@ -55,34 +55,37 @@ export function TenantAdminClient({
               {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <LinkIcon className="h-3.5 w-3.5" />} Share
             </button>
             <ThemeToggle />
-            <Link href={`/t/${tenant.slug}/admin/cases`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            <Link prefetch={true} href={`/t/${tenant.slug}/admin/cases`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
               <Gavel className="h-3.5 w-3.5" /> Cases
             </Link>
-            <Link href={`/t/${tenant.slug}/admin/availability`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            <Link prefetch={true} href={`/t/${tenant.slug}/admin/availability`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
               <CalendarClock className="h-3.5 w-3.5" /> Availability
             </Link>
-            <Link href={`/t/${tenant.slug}/admin/receipts`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            <Link prefetch={true} href={`/t/${tenant.slug}/admin/receipts`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
               <ReceiptText className="h-3.5 w-3.5" /> Receipts
             </Link>
-            <Link href={`/t/${tenant.slug}/admin/team`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            <Link prefetch={true} href={`/t/${tenant.slug}/admin/team`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
               <UserPlus className="h-3.5 w-3.5" /> Team
             </Link>
-            <Link href={`/t/${tenant.slug}/admin/testimonials`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            <Link prefetch={true} href={`/t/${tenant.slug}/admin/testimonials`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
               <Quote className="h-3.5 w-3.5" /> Testimonials
             </Link>
             <Link
+              prefetch={true}
               href={`/t/${tenant.slug}/admin/mail`}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
             >
               <Mail className="h-3.5 w-3.5" /> Mail
             </Link>
             <Link
+              prefetch={true}
               href={`/t/${tenant.slug}/admin/branding`}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
             >
               <Settings className="h-3.5 w-3.5" /> Branding
             </Link>
             <Link
+              prefetch={true}
               href={`/t/${tenant.slug}`}
               target="_blank"
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
