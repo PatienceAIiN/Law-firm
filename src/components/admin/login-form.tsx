@@ -40,7 +40,8 @@ export function LoginForm() {
       if (result?.error) {
         setError('Invalid credentials. Please try again.')
       } else {
-        router.push('/admin/dashboard')
+        const urlParams = new URLSearchParams(window.location.search)
+        router.push(urlParams.get('callbackUrl') || '/super-admin')
       }
     } catch {
       setError('An error occurred. Please try again.')
