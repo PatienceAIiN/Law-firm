@@ -5,6 +5,7 @@ import { getSiteTheme } from '@/lib/theme'
 import { PwaRegister } from '@/components/pwa-register'
 import { ThemeAuto } from '@/components/theme-auto'
 import { DpdpConsentBanner } from '@/components/dpdp-consent-banner'
+import { AnimatedTabTitle } from '@/components/animated-tab-title'
 
 const inter = IBM_Plex_Sans({ weight: ['400', '500', '600', '700'], subsets: ['latin'], variable: '--font-sans' })
 const serif = Libre_Baskerville({ weight: ['400', '700'], subsets: ['latin'], variable: '--font-serif' })
@@ -134,6 +135,7 @@ export default async function RootLayout({
         <DpdpConsentBanner />
         <ThemeAuto />
         <PwaRegister />
+        <AnimatedTabTitle />
       </body>
     </html>
   )
