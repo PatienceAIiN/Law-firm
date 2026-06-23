@@ -22,7 +22,7 @@ export function AnimatedHeading({ text }: { text?: string }) {
   const items = text ? [text, ...HEADINGS] : HEADINGS
   const [i, setI] = useState(0)
   useEffect(() => {
-    const id = setInterval(() => setI((n) => (n + 1) % items.length), 3800)
+    const id = setInterval(() => setI((n) => (n + 1) % items.length), 7000)
     return () => clearInterval(id)
   }, [items.length])
 
@@ -35,7 +35,7 @@ export function AnimatedHeading({ text }: { text?: string }) {
           <h1
             key={idx}
             aria-hidden={!active}
-            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-center text-4xl font-bold leading-tight tracking-tight text-transparent transition-all duration-700 ease-out md:text-6xl ${
+            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-center text-4xl font-bold leading-tight tracking-tight text-transparent transition-all duration-[1200ms] ease-out md:text-6xl ${
               active
                 ? 'translate-y-0 scale-100 opacity-100 blur-0 animate-gradient-x'
                 : prev

@@ -118,7 +118,9 @@
       "Bash(git reset *)",
       "Bash(npx tsc *)",
       "Bash(convert -version)",
-      "Bash(magick -list font)"
+      "Bash(magick -list font)",
+      "Bash(pandoc --version)",
+      "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=patienceai-podcast-brief.pdf --print-to-pdf-no-header --no-pdf-header-footer \"file://$\\(pwd\\)/patienceai-podcast-brief.html\")"
     ]
   }
 }

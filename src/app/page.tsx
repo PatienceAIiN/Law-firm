@@ -32,13 +32,6 @@ export default function SaasLandingPage() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <OpenWorkspace />
-          <Link
-            id="top-create-workspace"
-            href="/signup"
-            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent scroll-mt-24"
-          >
-            Create your workspace
-          </Link>
         </div>
       </header>
 
@@ -53,8 +46,9 @@ export default function SaasLandingPage() {
           <RotatingTagline />
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link
+              id="top-create-workspace"
               href="/signup"
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#14203E]/20 hover:bg-accent"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#14203E]/20 hover:bg-accent scroll-mt-24"
             >
               Create your workspace <ArrowRight className="h-4 w-4" />
             </Link>

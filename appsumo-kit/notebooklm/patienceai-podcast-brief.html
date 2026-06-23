@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PatienceAI — NotebookLM Podcast Brief</title>
+<style>
+  @page { size: A4; margin: 22mm 18mm 22mm 18mm; }
+  body { font-family: Georgia, "Times New Roman", serif; color: #14203E; line-height: 1.55; font-size: 11.5pt; }
+  h1 { font-size: 24pt; margin: 0 0 6pt; color: #14203E; }
+  h2 { font-size: 16pt; margin-top: 22pt; color: #14203E; border-bottom: 1pt solid #B7913D; padding-bottom: 4pt; }
+  h3 { font-size: 13pt; margin-top: 14pt; color: #1c2c52; }
+  p, ul, ol { margin: 6pt 0 10pt; }
+  ul, ol { padding-left: 18pt; }
+  li { margin-bottom: 3pt; }
+  .lede { font-size: 12.5pt; color: #475569; font-style: italic; margin-bottom: 14pt; }
+  .pill { display: inline-block; background: #FFFCF8; border: 1pt solid #F4E8D8; color: #B7913D; padding: 3pt 9pt; border-radius: 999pt; font-size: 9.5pt; font-weight: bold; letter-spacing: 0.08em; text-transform: uppercase; margin-right: 6pt; }
+  .kv { width: 100%; border-collapse: collapse; margin: 6pt 0; }
+  .kv td { border-top: 0.5pt solid #e5e7eb; padding: 5pt 6pt; vertical-align: top; font-size: 10.5pt; }
+  .kv td:first-child { width: 32%; color: #6b7280; font-weight: bold; }
+  blockquote { border-left: 3pt solid #B7913D; margin: 10pt 0; padding: 4pt 14pt; color: #1c2c52; background: #FFFCF8; }
+  code { background: #f3f4f6; padding: 1pt 4pt; border-radius: 3pt; font-size: 10pt; }
+  .footer { margin-top: 30pt; font-size: 9.5pt; color: #94a3b8; border-top: 1pt solid #e5e7eb; padding-top: 8pt; }
+  .cover { text-align: center; padding-top: 60pt; }
+  .cover .glyph { font-size: 110pt; color: #B7913D; line-height: 1; }
+  .cover .brand { font-size: 30pt; margin-top: 18pt; }
+  .cover .sub { color: #6b7280; font-style: italic; margin-top: 10pt; font-size: 13pt; }
+  .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<section class="cover">
+  <div class="glyph">§</div>
+  <div class="brand"><strong>PatienceAI</strong></div>
+  <div class="sub">The AI-powered command center for solo lawyers and small firms</div>
+  <div style="margin-top:34pt;">
+    <span class="pill">NotebookLM Podcast Brief</span>
+    <span class="pill">v1.0</span>
+  </div>
+  <div style="margin-top:50pt; font-size:11pt; color:#475569; max-width: 540pt; margin-left:auto; margin-right:auto; text-align:left;">
+    <p><strong>Drop this PDF into NotebookLM</strong> to generate an Audio Overview / Deep Dive podcast about PatienceAI. The document is written in narrative form so the AI hosts have a strong story to riff on — founder context, the problem, the product, customer scenarios, technical architecture, business model, and FAQs are all in here.</p>
+    <p style="margin-top:14pt;"><strong>Recommended prompt to NotebookLM after adding this source:</strong></p>
+    <blockquote>"Generate a 12-minute Deep Dive podcast aimed at solo Indian advocates and small-firm partners. Hosts should sound enthusiastic but credible, cite specific features from the source, and end with a clear call to action to visit the redeem page."</blockquote>
+  </div>
+</section>
+
+<div class="page-break"></div>
+
+<h1>PatienceAI — Product &amp; Story Brief</h1>
+<p class="lede">A single workspace that replaces six tools — CRM, intake, scheduling, receipts, website, AI assistant — for advocates and small law firms. Built specifically for the way Indian law practices actually work.</p>
+
+<h2>1. The 30-second pitch</h2>
+<p>Most legal-tech is built for 500-lawyer firms with IT departments. PatienceAI is the opposite: a single tenant-isolated workspace that a solo advocate or a 3–10 lawyer firm can run their entire practice on. You get a branded public site at <code>yourdomain.com/team/your-slug</code>, an admin panel, a lawyer portal, video consultations, receipts, an inquiries inbox, and an AI legal assistant called LawAI — all with one signup, one login, and one monthly bill.</p>
+<p>It is positioned as a "Barrister-in-a-Box": the digital plumbing a new practice needs, set up in under 60 seconds, instead of paying for nine SaaS subscriptions.</p>
+
+<h2>2. Why now</h2>
+<ul>
+  <li><strong>Legal-tech for SMBs is finally affordable.</strong> Per-tenant Postgres (Supabase), per-tenant LiveKit video rooms, and per-tenant Brevo email mean the unit economics for a solo lawyer finally make sense.</li>
+  <li><strong>India's bar is digitizing fast.</strong> Post-2024 e-filing mandates in commercial and high courts forced even traditional advocates to adopt digital workflows. They need tools that match — most existing products are built for corporates.</li>
+  <li><strong>Generalist AI (ChatGPT, Gemini) hallucinates citations.</strong> A workspace-scoped assistant that answers from your own case files is dramatically more useful than a generalist chatbot for legal work.</li>
+</ul>
+
+<h2>3. Who it's for</h2>
+<table class="kv">
+  <tr><td>Primary persona</td><td>Solo advocates and small-firm partners (1–10 lawyers) in metro India who handle commercial, civil, family, or criminal matters and currently juggle WhatsApp + Excel + a manual receipt book.</td></tr>
+  <tr><td>Secondary persona</td><td>Newly-set-up firms that need a website, intake form, and booking flow on day one — not after three months of finding a developer.</td></tr>
+  <tr><td>Anti-persona</td><td>500+ lawyer firms with custom matter-management software and dedicated IT. PatienceAI's opinionated workspace would feel constraining.</td></tr>
+</table>
+
+<h2>4. The product, end-to-end</h2>
+
+<h3>4.1 Admin panel</h3>
+<p>Sticky top-nav with eleven tabs: Dashboard, Practice Areas, Articles, Lawyers, Cases, Availability, Inquiries, Receipts, Team, Testimonials, Mail, Packages, Branding, Legal, and Account. Every change goes live on the public site instantly via cache invalidation. The dashboard shows active cases, new inquiries, revenue MTD, and consultations this week as the four headline metrics.</p>
+
+<h3>4.2 Public branded site</h3>
+<p>Each tenant gets a polished marketing site at <code>/team/&lt;slug&gt;</code> with hero video, animated tagline carousel, practice areas, team, articles, testimonials carousel, and a contact form. Branding (logo, colors, font, favicon, hero image) is editable from the admin panel and reflects within seconds — including the browser tab favicon.</p>
+
+<h3>4.3 Lawyer portal</h3>
+<p>Each lawyer activates their account via an email link, sets their own password, and lands in their own portal. They see only the cases assigned to them, the inquiries the admin has routed, and their personal availability slots. The portal has its own auth cookie, completely separate from the admin's.</p>
+
+<h3>4.4 Consultations (video + in-person)</h3>
+<p>Clients book a 30-minute or 60-minute consultation from the public site, choose video or in-person, and get a confirmation email. Video consults open a LiveKit room when both sides click the link — no install. For in-person, the lawyer's chamber address is set once on their availability slot and is displayed read-only to the client — the client never enters the address, removing an entire class of mistakes.</p>
+
+<h3>4.5 Receipts &amp; billing</h3>
+<p>Admin and lawyers can issue itemized receipts to clients. If the client email is provided, the system emails the receipt as a PDF automatically. Each tenant has its own clean ledger by client. Foundation for full GST invoicing later.</p>
+
+<h3>4.6 LawAI assistant</h3>
+<p>A floating chat bubble on every tenant page. The assistant is <em>tenant-scoped</em> — it answers from the current workspace's data only, with no cross-tenant leakage. Ask "how many active commercial cases this quarter," "draft a follow-up email to Mr. Bansal," or "summarize the Acme Industries matter" and it responds with workspace context. Conversations are stored per-tenant in localStorage so they don't bleed between workspaces.</p>
+
+<h3>4.7 Inquiries inbox</h3>
+<p>Public contact form submissions land in an inbox tabbed by status (All / New / Assigned / Replied / Archived). Admin assigns each inquiry to a lawyer; the lawyer is emailed instantly and sees it in their own inquiries tab. Reply happens from inside the app — the response goes to the client by email and the inquiry flips to "Replied".</p>
+
+<h3>4.8 Super-admin</h3>
+<p>Founders (gated by <code>SUPER_ADMIN_EMAILS</code> env) get a cross-tenant overview: every workspace, owner, status, and counts. Used for support and for revoking codes if needed.</p>
+
+<h2>5. Architecture in one paragraph</h2>
+<p>Next.js 15 App Router with Server Components and Server Actions. Prisma 6 against Supabase Postgres (PgBouncer pooled, <code>connection_limit=5&amp;pool_timeout=20</code>). NextAuth with three separate auth configs — tenant-admin, tenant-lawyer, super-admin — each on its own cookie name to prevent confusion across roles. Path-based multi-tenancy under <code>/team/[slug]/</code>; every Prisma model has a <code>tenantId</code> foreign key and every query is scoped to it. Redis caches the per-tenant shell under <code>tenant_shell_v2:&lt;id&gt;</code> for 24 hours, invalidated on every admin write. Brevo for transactional email; LiveKit for video; Cloudinary or R2 for media. Hosted on Render.</p>
+
+<h2>6. Customer scenarios (great fodder for the podcast hosts)</h2>
+
+<h3>Scenario A — Manini, three years out of NLU, going solo</h3>
+<p>Manini just left her senior advocate's chambers and is setting up on her own. She needs a website, a way for clients to find her, an intake form, a place to track matters, a way to take fees, and a calendar. She has zero IT budget and one weekend. She signs up for PatienceAI, picks the slug <code>manini-law</code>, uploads her logo, adds three practice areas, sets her chamber address once, opens four availability slots for next week, and shares the public URL on WhatsApp. By Monday morning she has two inquiries and one booked consultation. Setup took 47 minutes.</p>
+
+<h3>Scenario B — Harsh &amp; Co., a 6-lawyer firm</h3>
+<p>Harsh &amp; Co. has six lawyers and a paralegal. They invite each lawyer by email — each lawyer activates and sets their own password. The admin partner assigns each inquiry to a specific lawyer based on the practice area. LawAI answers the partner's question "how many active commercial cases do we have above ₹50L exposure" in two seconds, pulling from the actual case rows. They use the receipts feature with auto-PDF-email for every retainer payment. After a quarter, they realize they no longer subscribe to four other tools.</p>
+
+<h3>Scenario C — A new advocate after an AppSumo lifetime deal</h3>
+<p>A buyer redeems an AppSumo code at <code>/redeem</code>, gets routed to <code>/signup?code=…</code>, verifies their email with an OTP, and is in the admin panel within sixty seconds. The code flips from AVAILABLE to REDEEMED in the database. They have lifetime access — no recurring bill, no surprise upcharges. They tell their bar association group.</p>
+
+<h2>7. Business model</h2>
+<ul>
+  <li><strong>Lifetime tier via AppSumo</strong> — one-time payment, single workspace, up to 10 lawyer seats. 60-day redemption window. Stacking supported.</li>
+  <li><strong>Direct monthly subscription</strong> — for buyers outside the AppSumo channel.</li>
+  <li><strong>Add-ons</strong> — custom domain mapping, additional LiveKit minutes, white-glove migration.</li>
+  <li><strong>Defensibility</strong> — every workspace's data is locked in via integrations (email, receipts, LawAI context). Switching costs go up the longer the firm uses it.</li>
+</ul>
+
+<h2>8. Differentiators vs. alternatives</h2>
+<ul>
+  <li><strong>vs. generic CRMs (HubSpot, Zoho):</strong> opinionated for legal — cases not deals, hearings not tasks, advocates not "sales reps".</li>
+  <li><strong>vs. legal-tech enterprise suites (LexisNexis, Manupatra Practice):</strong> 1/100th the price, designed for one practitioner, no consultant required to set up.</li>
+  <li><strong>vs. building a custom site:</strong> live in 60 seconds vs. months of dev work, with first-class AI and video included.</li>
+  <li><strong>vs. ChatGPT for legal:</strong> tenant-scoped answers from your own data, not the entire internet. No fabricated case citations.</li>
+</ul>
+
+<h2>9. The story behind the name</h2>
+<p>"Patience" is a deliberate counter to legal-tech marketing's usual "10x faster" hustle. Litigation is slow. Adjournments are inevitable. Clients are anxious. The product's job is to give a lawyer the calm, organized infrastructure that lets them stay patient with their clients even when the courts aren't. The mascot is the legal section symbol (§) — quiet, structural, and immediately recognizable.</p>
+
+<h2>10. FAQ (good for the podcast Q&amp;A segment)</h2>
+
+<h3>Is my data really isolated from other firms?</h3>
+<p>Yes. Every database model has a <code>tenantId</code> foreign key. Every server-side query is scoped to it. NextAuth cookies are separate per role. There is no cross-tenant read path in the codebase.</p>
+
+<h3>What if I want my own domain?</h3>
+<p>Point a CNAME at our app domain. We map it during onboarding — usually within a few hours.</p>
+
+<h3>Can I migrate my existing client list and matters?</h3>
+<p>Yes, via CSV import. White-glove migration is available as an add-on.</p>
+
+<h3>What happens if PatienceAI shuts down?</h3>
+<p>Self-hosting documentation ships with every tenant on the lifetime tier. Your data exports to standard CSV / JSON. The license stays with you forever.</p>
+
+<h3>Is LawAI a separate AI service?</h3>
+<p>It's a wrapper around current-generation LLMs (Claude / GPT) with retrieval-augmented generation against the current workspace's data. Your prompts and responses are not used to train any model.</p>
+
+<h2>11. Suggested podcast cold open</h2>
+<blockquote>
+  "If you're a solo lawyer in Delhi or Bangalore right now, you probably have seven tabs open: one for your client list in Excel, one for your billing in a Word doc, one for your scheduling on WhatsApp, one for a website you keep meaning to build, one for a video call tool, one for an AI chatbot that's slightly wrong, and one for the case management software you tried but stopped using. Today we're talking about a tool that's trying to replace all seven with a single workspace, built specifically for the way Indian law practices actually run. It's called PatienceAI."
+</blockquote>
+
+<h2>12. Suggested podcast call-to-action</h2>
+<blockquote>
+  "PatienceAI is free to try right now while they prepare their AppSumo launch. Go to <code>patienceai.in</code>, click 'Create your workspace', and you'll have a branded site and an AI assistant in under a minute. When the AppSumo deal goes live, lifetime access stacks — one code per workspace, no recurring fee, ever."
+</blockquote>
+
+<div class="footer">
+  PatienceAI · §  · One platform. Every part of your practice. · patienceai.in
+</div>
+
+</body>
+</html>
