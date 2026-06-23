@@ -16,12 +16,14 @@ export default async function TenantTestimonialsPage({ params }: { params: Promi
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) redirect(`/team/${slug}/admin/login`)
 
+  // Order by createdAt only so the page still renders if the Testimonial.status
+  // column hasn't been applied to the deployed DB yet. We bucket in JS.
   const all = await prisma.testimonial.findMany({
     where: { tenantId: tenant.id },
-    orderBy: [{ status: 'asc' }, { createdAt: 'desc' }],
+    orderBy: { createdAt: 'desc' },
   })
-  const pending = all.filter((t) => t.status === 'PENDING')
-  const published = all.filter((t) => t.status !== 'PENDING')
+  const pending = all.filter((t: any) => t.status === 'PENDING')
+  const published = all.filter((t: any) => !t.status || t.status !== 'PENDING')
 
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
   return (

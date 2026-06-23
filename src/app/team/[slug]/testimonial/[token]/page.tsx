@@ -14,7 +14,13 @@ export default async function TestimonialAskPage({
   const tenant = await getTenantBySlug(slug)
   if (!tenant) notFound()
 
-  const row = await prisma.testimonialAskToken.findUnique({ where: { token } })
+  let row: Awaited<ReturnType<typeof prisma.testimonialAskToken.findUnique>> | null = null
+  try {
+    row = await prisma.testimonialAskToken.findUnique({ where: { token } })
+  } catch (e) {
+    // Table not migrated yet — show "invalid link" rather than crashing SSR.
+    console.error('[testimonial-ask] lookup failed:', e)
+  }
   const invalid = !row || row.tenantId !== tenant.id
   const expired = row && row.expiresAt < new Date()
   const used = row && row.used
