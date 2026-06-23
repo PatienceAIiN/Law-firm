@@ -13,6 +13,7 @@ type Receipt = {
 const blankForm = () => ({
   id: '' as string,
   clientName: '', clientEmail: '', currency: 'INR', taxRate: 0, notes: '',
+  paymentMethod: 'UPI',
   items: [{ description: '', qty: 1, rate: 0 }] as Item[],
 })
 
@@ -70,7 +71,7 @@ export function ReceiptsManager() {
   const edit = (r: Receipt) => {
     let items: Item[] = []
     try { items = JSON.parse(r.items) } catch {}
-    setForm({ id: r.id, clientName: r.clientName, clientEmail: r.clientEmail, currency: r.currency, taxRate: r.taxRate, notes: r.notes || '', items: items.length ? items : [{ description: '', qty: 1, rate: 0 }] })
+    setForm({ id: r.id, clientName: r.clientName, clientEmail: r.clientEmail, currency: r.currency, taxRate: r.taxRate, notes: r.notes || '', paymentMethod: (r as any).paymentMethod || 'UPI', items: items.length ? items : [{ description: '', qty: 1, rate: 0 }] })
     setShowForm(true)
     setError('')
   }
@@ -111,6 +112,19 @@ export function ReceiptsManager() {
           <div className="grid sm:grid-cols-2 gap-3">
             <input value={form.clientName} onChange={(e) => setForm({ ...form, clientName: e.target.value })} placeholder="Client name *" className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none" />
             <input value={form.clientEmail} onChange={(e) => setForm({ ...form, clientEmail: e.target.value })} placeholder="Client email *" className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none" />
+          </div>
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-widest text-[#64748b] mb-1">Payment method</label>
+            <select
+              value={form.paymentMethod}
+              onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
+              className="w-full px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none"
+            >
+              <option value="UPI">UPI</option>
+              <option value="NEFT">NEFT / Bank transfer</option>
+              <option value="CASH">Cash</option>
+              <option value="OTHER">Other</option>
+            </select>
           </div>
 
           {/* Line items */}

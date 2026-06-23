@@ -14,7 +14,15 @@ export type ReceiptData = {
   taxAmount: number
   total: number
   notes?: string | null
+  paymentMethod?: string | null
   createdAt: Date | string
+}
+
+const PAYMENT_METHOD_LABELS: Record<string, string> = {
+  UPI: 'UPI',
+  NEFT: 'NEFT / Bank transfer',
+  CASH: 'Cash',
+  OTHER: 'Other',
 }
 
 const FIRM_NAME = process.env.BREVO_SENDER_NAME || 'Law Firm'
@@ -81,7 +89,13 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
   page.drawRectangle({ x: 360, y: y - 6, width: 195, height: 24, color: navy })
   text('TOTAL', 372, y, 11, bold, rgb(1, 1, 1))
   text(money(data.total, data.currency), 478, y, 11, bold, gold)
-  y -= 50
+  y -= 30
+
+  const pmKey = (data.paymentMethod || 'OTHER').toUpperCase()
+  const pmLabel = PAYMENT_METHOD_LABELS[pmKey] || PAYMENT_METHOD_LABELS.OTHER
+  text('Payment method', 40, y, 9, bold, gray)
+  text(pmLabel, 140, y, 10, bold, navy)
+  y -= 30
 
   if (data.notes) {
     text('Notes', 40, y, 9, bold, gray)

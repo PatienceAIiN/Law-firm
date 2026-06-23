@@ -21,6 +21,8 @@ export async function createReceipt(slug: string, formData: FormData) {
   const { tenantId, name: createdByName } = await authed(slug)
   const clientName = (formData.get('clientName') as string)?.trim()
   const clientEmailRaw = (formData.get('clientEmail') as string)?.trim() || ''
+  const paymentMethodRaw = ((formData.get('paymentMethod') as string) || 'OTHER').toUpperCase()
+  const paymentMethod = ['UPI', 'NEFT', 'CASH', 'OTHER'].includes(paymentMethodRaw) ? paymentMethodRaw : 'OTHER'
 
   // Prefer the new multi-line JSON payload; fall back to single description+amount.
   let lines: { description: string; qty: number; rate: number }[] = []
@@ -61,6 +63,7 @@ export async function createReceipt(slug: string, formData: FormData) {
       clientEmail: clientEmailRaw,
       createdByName,
       items: JSON.stringify(enriched),
+      paymentMethod,
       subtotal,
       total,
       status: clientEmailRaw ? 'SENT' : 'DRAFT',

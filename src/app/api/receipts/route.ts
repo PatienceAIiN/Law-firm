@@ -24,10 +24,15 @@ export async function POST(req: NextRequest) {
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }
 
-  const { clientName, clientEmail, items = [], taxRate = 0, currency = 'INR', notes = '', send = false } = body
+  const { clientName, clientEmail, items = [], taxRate = 0, currency = 'INR', notes = '', send = false, paymentMethod = 'OTHER' } = body
   if (!clientName || !clientEmail || !Array.isArray(items) || items.length === 0) {
     return NextResponse.json({ error: 'Client name, email and at least one item are required' }, { status: 400 })
   }
+
+  const allowed = ['UPI', 'NEFT', 'CASH', 'OTHER'] as const
+  const pm = allowed.includes(String(paymentMethod).toUpperCase() as any)
+    ? String(paymentMethod).toUpperCase()
+    : 'OTHER'
 
   const totals = computeTotals(items, taxRate)
   const number = await nextReceiptNumber()
@@ -41,6 +46,7 @@ export async function POST(req: NextRequest) {
       currency, taxRate: Number(taxRate) || 0,
       subtotal: totals.subtotal, taxAmount: totals.taxAmount, total: totals.total,
       notes: notes || null,
+      paymentMethod: pm,
       status: 'DRAFT',
     },
   })

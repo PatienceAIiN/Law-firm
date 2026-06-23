@@ -39,6 +39,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       clientEmail: body.clientEmail ?? a.receipt.clientEmail,
       currency: body.currency ?? a.receipt.currency,
       notes: body.notes ?? a.receipt.notes,
+      paymentMethod: body.paymentMethod
+        ? (['UPI', 'NEFT', 'CASH', 'OTHER'].includes(String(body.paymentMethod).toUpperCase())
+            ? String(body.paymentMethod).toUpperCase()
+            : (a.receipt as any).paymentMethod || 'OTHER')
+        : (a.receipt as any).paymentMethod || 'OTHER',
       taxRate: Number(taxRate) || 0,
       items: JSON.stringify(totals.items),
       subtotal: totals.subtotal, taxAmount: totals.taxAmount, total: totals.total,

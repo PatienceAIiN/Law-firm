@@ -18,6 +18,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
   const [items, setItems] = useState<Item[]>([{ description: 'Legal services', qty: 1, rate: 0 }])
   const [clientName, setClientName] = useState('')
   const [clientEmail, setClientEmail] = useState('')
+  const [paymentMethod, setPaymentMethod] = useState('UPI')
 
   const addItem = () => setItems((arr) => [...arr, { description: '', qty: 1, rate: 0 }])
   const removeItem = (i: number) => setItems((arr) => arr.filter((_, idx) => idx !== i))
@@ -32,6 +33,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
     const fd = new FormData()
     fd.set('clientName', clientName)
     fd.set('clientEmail', clientEmail)
+    fd.set('paymentMethod', paymentMethod)
     fd.set('itemsJson', JSON.stringify(items.map((it) => ({
       description: it.description.trim() || 'Item',
       qty: Number(it.qty) || 0,
@@ -48,7 +50,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
         await createReceipt(slug, fd)
         setOpen(false)
         setItems([{ description: 'Legal services', qty: 1, rate: 0 }])
-        setClientName(''); setClientEmail('')
+        setClientName(''); setClientEmail(''); setPaymentMethod('UPI')
         router.refresh()
       } catch (err: any) { setError(err.message || 'Failed') }
     })
@@ -133,6 +135,17 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
             <form onSubmit={onCreate} className="space-y-3 text-sm">
               <input value={clientName} onChange={(e) => setClientName(e.target.value)} required placeholder="Client name" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               <input value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="Client email (optional — PDF will be emailed if filled)" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+              <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">Payment method</label>
+              <select
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white"
+              >
+                <option value="UPI">UPI</option>
+                <option value="NEFT">NEFT / Bank transfer</option>
+                <option value="CASH">Cash</option>
+                <option value="OTHER">Other</option>
+              </select>
 
               <div className="rounded-xl border border-slate-200 p-3 dark:border-white/10">
                 <div className="mb-2 grid grid-cols-[1fr_70px_100px_36px] gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500">

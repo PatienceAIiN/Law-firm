@@ -499,6 +499,7 @@ model Receipt {
   taxAmount     Float     @default(0)
   total         Float     @default(0)
   notes         String?
+  paymentMethod String    @default("OTHER") // UPI | NEFT | CASH | OTHER
   status        String    @default("DRAFT")
   sentAt        DateTime?
   tenantId      String?
