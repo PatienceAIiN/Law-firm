@@ -28,15 +28,15 @@ export function gmailConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
 }
 
-export function gmailRedirectUri(redirectPath = ADMIN_REDIRECT) {
-  const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+export function gmailRedirectUri(redirectPath = ADMIN_REDIRECT, baseUrl?: string) {
+  const base = (baseUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
   return `${base}${redirectPath}`
 }
 
-export function gmailAuthUrl(state = '', redirectPath = ADMIN_REDIRECT) {
+export function gmailAuthUrl(state = '', redirectPath = ADMIN_REDIRECT, baseUrl?: string) {
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID || '',
-    redirect_uri: gmailRedirectUri(redirectPath),
+    redirect_uri: gmailRedirectUri(redirectPath, baseUrl),
     response_type: 'code',
     access_type: 'offline',
     prompt: 'consent',
@@ -73,8 +73,7 @@ export async function getConnectedEmail(key = ADMIN_KEY): Promise<string | null>
   return acc?.email || null
 }
 
-// Exchange an OAuth code for tokens and persist the account under `key`.
-export async function exchangeCodeAndStore(code: string, key = ADMIN_KEY, redirectPath = ADMIN_REDIRECT) {
+export async function exchangeCodeAndStore(code: string, key = ADMIN_KEY, redirectPath = ADMIN_REDIRECT, baseUrl?: string) {
   const res = await fetch(TOKEN_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -82,7 +81,7 @@ export async function exchangeCodeAndStore(code: string, key = ADMIN_KEY, redire
       code,
       client_id: process.env.GOOGLE_CLIENT_ID || '',
       client_secret: process.env.GOOGLE_CLIENT_SECRET || '',
-      redirect_uri: gmailRedirectUri(redirectPath),
+      redirect_uri: gmailRedirectUri(redirectPath, baseUrl),
       grant_type: 'authorization_code',
     }),
   })

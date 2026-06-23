@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state') // Expected format: "type:slug:id"
-  const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+  const base = `${url.protocol}//${url.host}`
 
   if (!code || !state) {
     return NextResponse.redirect(`${base}/?error=missing_auth_params`)
@@ -22,17 +22,17 @@ export async function GET(req: NextRequest) {
 
   try {
     if (type === 'superadmin') {
-      await exchangeCodeAndStore(code, 'gmail_account', '/api/mail/callback')
+      await exchangeCodeAndStore(code, 'gmail_account', '/api/mail/callback', base)
       return NextResponse.redirect(`${base}/admin/mail?connected=1`)
     } 
     else if (type === 'tenantadmin') {
       if (!slug || !id) throw new Error('Invalid state parameters')
-      await exchangeCodeAndStore(code, tenantGmailAdminKey(id), '/api/mail/callback')
+      await exchangeCodeAndStore(code, tenantGmailAdminKey(id), '/api/mail/callback', base)
       return NextResponse.redirect(`${base}/t/${slug}/admin/mail?connected=true`)
     } 
     else if (type === 'advocate') {
       if (!slug || !id) throw new Error('Invalid state parameters')
-      await exchangeCodeAndStore(code, advocateMailKey(id), '/api/mail/callback')
+      await exchangeCodeAndStore(code, advocateMailKey(id), '/api/mail/callback', base)
       return NextResponse.redirect(`${base}/t/${slug}/lawyer/mail?connected=true`)
     } 
     else {

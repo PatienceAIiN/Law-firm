@@ -5,7 +5,7 @@ import { gmailAuthUrl, gmailConfigured } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+export async function GET(req: Request, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params
   const session = await getServerSession(tenantAdminAuthOptions)
   const u: any = session?.user
@@ -13,5 +13,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   if (!gmailConfigured()) return NextResponse.json({ error: 'Gmail is not configured.' }, { status: 400 })
   // State carries tenant + role so the callback knows where to land.
   const state = `tenantadmin:${slug}:${u.tenantId}`
-  return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback'))
+  const url = new URL(req.url)
+  const baseUrl = `${url.protocol}//${url.host}`
+  return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback', baseUrl))
 }
