@@ -60,7 +60,15 @@ export async function uploadFile(file: File): Promise<string> {
     }
   }
 
-  // 3. Ultimate Fallback to local storage
+  // 3. Local FS fallback — only safe on a writable filesystem. On Render /
+  // any containerized prod, public/ is read-only, so we surface a clear,
+  // actionable error instead of throwing EROFS into the React renderer.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'Image upload not configured. Set CLOUDINARY_CLOUD_NAME (+ API_KEY/API_SECRET) ' +
+        'or R2_ENDPOINT/R2_BUCKET_NAME/R2_ACCESS_KEY_ID/R2_SECRET_ACCESS_KEY in your Render environment.',
+    )
+  }
   const publicPath = join(process.cwd(), 'public', 'uploads')
   try {
     await mkdir(publicPath, { recursive: true })

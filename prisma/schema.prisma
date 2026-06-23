@@ -6,18 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Migrations (`prisma db push`, `prisma migrate`) bypass the pooler — the
+  // schema engine needs its own connections and PgBouncer in session mode
+  // runs out of slots quickly. Point this at the Supabase Direct URL
+  // (Project Settings → Database → Connection string → "URI" (5432)).
+  directUrl = env("DIRECT_URL")
 }
 
 // Models
 model AdvocateActivationToken {
-  id          String   @id @default(cuid())
-  advocateId  String
-  token       String   @unique
-  expiresAt   DateTime
-  used        Boolean  @default(false)
-  createdAt   DateTime @default(now())
+  id         String   @id @default(cuid())
+  advocateId String
+  token      String   @unique
+  expiresAt  DateTime
+  used       Boolean  @default(false)
+  createdAt  DateTime @default(now())
 
   @@index([advocateId])
   @@map("advocate_activation_tokens")
@@ -65,21 +70,21 @@ model SignupOtp {
 }
 
 model Tenant {
-  id            String   @id @default(cuid())
-  slug          String   @unique
-  name          String
-  ownerEmail    String
-  status        String   @default("active")
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id         String   @id @default(cuid())
+  slug       String   @unique
+  name       String
+  ownerEmail String
+  status     String   @default("active")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  adminUsers      AdminUser[]
-  advocates       Advocate[]
-  practiceAreas   PracticeArea[]
-  blogPosts       BlogPost[]
-  siteSettings    SiteSetting[]
+  adminUsers       AdminUser[]
+  advocates        Advocate[]
+  practiceAreas    PracticeArea[]
+  blogPosts        BlogPost[]
+  siteSettings     SiteSetting[]
   contactInquiries ContactSubmission[]
-  aboutProfile    AboutProfile?
+  aboutProfile     AboutProfile?
 
   @@map("tenants")
 }
@@ -96,37 +101,37 @@ model AdminUser {
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
 
-  pushSubscriptions     PushSubscription[]
+  pushSubscriptions PushSubscription[]
 
   @@unique([tenantId, email])
   @@map("admin_users")
 }
 
 model Advocate {
-  id                String   @id @default(cuid())
-  email             String
-  name              String
-  password          String
-  title             String
-  bio               String?
-  profileImage      String?
-  phone             String?
-  expertise         String?
-  education         String?
-  barCouncilId      String?
-  registrationDate  DateTime?
-  isActive          Boolean  @default(true)
-  tenantId          String?
-  tenant            Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  id               String    @id @default(cuid())
+  email            String
+  name             String
+  password         String
+  title            String
+  bio              String?
+  profileImage     String?
+  phone            String?
+  expertise        String?
+  education        String?
+  barCouncilId     String?
+  registrationDate DateTime?
+  isActive         Boolean   @default(true)
+  tenantId         String?
+  tenant           Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
 
-  cases      CourtCase[]
-  accessLogs AccessLog[]
-  caseNotes  CaseNote[]
-  contactInquiries ContactSubmission[]
-  availabilityDays AvailabilityDay[]
-  bookings         ConsultationBooking[]
+  cases             CourtCase[]
+  accessLogs        AccessLog[]
+  caseNotes         CaseNote[]
+  contactInquiries  ContactSubmission[]
+  availabilityDays  AvailabilityDay[]
+  bookings          ConsultationBooking[]
   pushSubscriptions PushSubscription[]
 
   @@unique([tenantId, email])
@@ -134,63 +139,63 @@ model Advocate {
 }
 
 model AccessLog {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   advocateId String
-  loginTime  DateTime @default(now())
+  loginTime  DateTime  @default(now())
   logoutTime DateTime?
   ipAddress  String?
   userAgent  String?
-  
-  advocate   Advocate @relation(fields: [advocateId], references: [id], onDelete: Cascade)
-  
+
+  advocate Advocate @relation(fields: [advocateId], references: [id], onDelete: Cascade)
+
   @@map("access_logs")
 }
 
 model CaseNote {
-  id        String   @id @default(cuid())
-  caseId    String
+  id         String   @id @default(cuid())
+  caseId     String
   advocateId String
-  content   String
-  isPrivate Boolean  @default(false)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  
-  case      CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  advocate  Advocate @relation(fields: [advocateId], references: [id], onDelete: Cascade)
-  
+  content    String
+  isPrivate  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  case     CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  advocate Advocate  @relation(fields: [advocateId], references: [id], onDelete: Cascade)
+
   @@map("case_notes")
 }
 
 model AboutProfile {
-  id              String   @id @default(cuid())
-  name            String
-  title           String
-  aboutContent    String
-  profileImage    String?
-  socialLinks     String?
-  officeDetails   String?
-  tenantId        String?  @unique
-  tenant          Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id            String   @id @default(cuid())
+  name          String
+  title         String
+  aboutContent  String
+  profileImage  String?
+  socialLinks   String?
+  officeDetails String?
+  tenantId      String?  @unique
+  tenant        Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
   @@map("about_profile")
 }
 
 model PracticeArea {
-  id            String   @id @default(cuid())
-  title         String
-  slug          String
-  description   String
-  icon          String?
-  content       String?
-  image         String?
-  order         Int      @default(0)
-  isActive      Boolean  @default(true)
-  tenantId      String?
-  tenant        Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  title       String
+  slug        String
+  description String
+  icon        String?
+  content     String?
+  image       String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  tenantId    String?
+  tenant      Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   @@unique([tenantId, slug])
   @@map("practice_areas")
@@ -217,89 +222,89 @@ model BlogPost {
 }
 
 model ContactSubmission {
-  id           String   @id @default(cuid())
-  fullName     String
-  email        String
-  phone        String?
-  subject      String
-  message      String
-  serviceType  String?
-  status       String   @default("NEW")
-  tenantId     String?
-  advocateId   String?
-  tenant       Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  advocate     Advocate? @relation(fields: [advocateId], references: [id], onDelete: SetNull)
-  createdAt    DateTime @default(now())
+  id          String    @id @default(cuid())
+  fullName    String
+  email       String
+  phone       String?
+  subject     String
+  message     String
+  serviceType String?
+  status      String    @default("NEW")
+  tenantId    String?
+  advocateId  String?
+  tenant      Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  advocate    Advocate? @relation(fields: [advocateId], references: [id], onDelete: SetNull)
+  createdAt   DateTime  @default(now())
 
   @@map("contact_submissions")
 }
 
 model AvailabilityDay {
-  id        String   @id @default(cuid())
-  date      DateTime
-  isActive  Boolean  @default(true)
-  tenantId  String?
+  id         String   @id @default(cuid())
+  date       DateTime
+  isActive   Boolean  @default(true)
+  tenantId   String?
   advocateId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  advocate  Advocate? @relation(fields: [advocateId], references: [id], onDelete: Cascade)
-  slots     AvailabilitySlot[]
+  advocate Advocate?          @relation(fields: [advocateId], references: [id], onDelete: Cascade)
+  slots    AvailabilitySlot[]
 
   @@map("availability_days")
 }
 
 model AvailabilitySlot {
-  id                String       @id @default(cuid())
+  id                String   @id @default(cuid())
   dayId             String
   startTime         DateTime
   endTime           DateTime
-  capacity          Int          @default(1)
-  bookedCount       Int          @default(0)
-  isActive          Boolean      @default(true)
-  allowedModes      String?      // Comma separated modes: PHYSICAL,GOOGLE_MEET,ZOOM
+  capacity          Int      @default(1)
+  bookedCount       Int      @default(0)
+  isActive          Boolean  @default(true)
+  allowedModes      String? // Comma separated modes: PHYSICAL,GOOGLE_MEET,ZOOM
   manualMeetingLink String?
   physicalAddress   String?
-  createdAt         DateTime     @default(now())
-  updatedAt         DateTime     @updatedAt
-  
-  day               AvailabilityDay @relation(fields: [dayId], references: [id], onDelete: Cascade)
-  bookings          ConsultationBooking[]
-  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  day      AvailabilityDay       @relation(fields: [dayId], references: [id], onDelete: Cascade)
+  bookings ConsultationBooking[]
+
   @@map("availability_slots")
 }
 
 model ConsultationBooking {
-  id            String   @id @default(cuid())
-  slotId        String
-  name          String
-  email         String
-  phone         String
-  subject       String
-  notes         String?
-  meetingMode   String
-  meetingLink   String?
-  status        String   @default("PENDING")
-  tenantId      String?
-  advocateId    String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  id          String   @id @default(cuid())
+  slotId      String
+  name        String
+  email       String
+  phone       String
+  subject     String
+  notes       String?
+  meetingMode String
+  meetingLink String?
+  status      String   @default("PENDING")
+  tenantId    String?
+  advocateId  String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
-  slot          AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
-  advocate      Advocate? @relation(fields: [advocateId], references: [id], onDelete: SetNull)
+  slot     AvailabilitySlot @relation(fields: [slotId], references: [id], onDelete: Cascade)
+  advocate Advocate?        @relation(fields: [advocateId], references: [id], onDelete: SetNull)
 
   @@map("consultation_bookings")
 }
 
 model SiteMetric {
-  id          String   @id @default(cuid())
-  label       String
-  value       String
-  icon        String?
-  order       Int      @default(0)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id        String   @id @default(cuid())
+  label     String
+  value     String
+  icon      String?
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@map("site_metrics")
 }
 
@@ -328,7 +333,7 @@ model Faq {
   order     Int      @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  
+
   @@map("faqs")
 }
 
@@ -346,7 +351,7 @@ model SiteSetting {
 
 model ChatConversation {
   id        String   @id @default(cuid())
-  messages  String   // JSON array of {role, content, timestamp}
+  messages  String // JSON array of {role, content, timestamp}
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -354,102 +359,102 @@ model ChatConversation {
 }
 
 model TeamMember {
-  id             String   @id @default(cuid())
-  name           String
-  title          String
-  bio            String
-  image          String?
-  expertise      String?
-  education      String?
-  email          String?
-  phone          String?
-  linkedin       String?
-  order          Int      @default(0)
-  isActive       Boolean  @default(true)
-  tenantId       String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id        String   @id @default(cuid())
+  name      String
+  title     String
+  bio       String
+  image     String?
+  expertise String?
+  education String?
+  email     String?
+  phone     String?
+  linkedin  String?
+  order     Int      @default(0)
+  isActive  Boolean  @default(true)
+  tenantId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@map("team_members")
 }
 
 model TestimonialRequest {
-  id              String   @id @default(cuid())
-  token           String   @unique @default(cuid())
-  recipientEmail  String
-  recipientName   String
-  status          String   @default("PENDING") // PENDING, SUBMITTED, APPROVED, REJECTED
-  submittedName   String?
-  submittedRole   String?
+  id               String   @id @default(cuid())
+  token            String   @unique @default(cuid())
+  recipientEmail   String
+  recipientName    String
+  status           String   @default("PENDING") // PENDING, SUBMITTED, APPROVED, REJECTED
+  submittedName    String?
+  submittedRole    String?
   submittedContent String?
   submittedRating  Int?
-  testimonialId   String?  // FK to approved Testimonial id
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  testimonialId    String? // FK to approved Testimonial id
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
   @@map("testimonial_requests")
 }
 
 model CourtCase {
-  id              String   @id @default(cuid())
-  caseNumber      String   
-  title           String
-  caseType        String   // Civil, Criminal, Family, Property, Labour, etc.
-  status          String   @default("ACTIVE") // ACTIVE, CLOSED, DISPOSED, PENDING, ADJOURNED
-  court           String   // Court name
-  judge           String?
-  clientName      String
-  clientEmail     String
-  clientPhone     String?
-  opposingParty   String?
-  advocateId      String?  // FK to Advocate
-  filingDate      DateTime?
-  nextHearingDate DateTime?
+  id                  String    @id @default(cuid())
+  caseNumber          String
+  title               String
+  caseType            String // Civil, Criminal, Family, Property, Labour, etc.
+  status              String    @default("ACTIVE") // ACTIVE, CLOSED, DISPOSED, PENDING, ADJOURNED
+  court               String // Court name
+  judge               String?
+  clientName          String
+  clientEmail         String
+  clientPhone         String?
+  opposingParty       String?
+  advocateId          String? // FK to Advocate
+  filingDate          DateTime?
+  nextHearingDate     DateTime?
   courtAppearanceDate DateTime?
-  description     String?  // Case summary
-  photoUrl        String?  // Case cover photo
-  emailControl    String   @default("NONE")
-  sendReminder    Boolean  @default(true)
-  reminderSentOn  DateTime?
-  tenantId        String?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  description         String? // Case summary
+  photoUrl            String? // Case cover photo
+  emailControl        String    @default("NONE")
+  sendReminder        Boolean   @default(true)
+  reminderSentOn      DateTime?
+  tenantId            String?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
-  advocate       Advocate? @relation(fields: [advocateId], references: [id], onDelete: SetNull)
-  documents      CaseDocument[]
-  payments       CasePayment[]
-  notes          CaseNote[]
+  advocate  Advocate?      @relation(fields: [advocateId], references: [id], onDelete: SetNull)
+  documents CaseDocument[]
+  payments  CasePayment[]
+  notes     CaseNote[]
 
   @@map("court_cases")
 }
 
 model CaseDocument {
-  id        String   @id @default(cuid())
-  caseId    String
-  name      String
-  fileUrl   String   // Relative path or URL to uploaded PDF
-  fileType  String   @default("application/pdf")
-  fileSize  Int?
+  id         String   @id @default(cuid())
+  caseId     String
+  name       String
+  fileUrl    String // Relative path or URL to uploaded PDF
+  fileType   String   @default("application/pdf")
+  fileSize   Int?
   uploadedAt DateTime @default(now())
 
-  case      CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  case CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@map("case_documents")
 }
 
 model CasePayment {
-  id            String   @id @default(cuid())
-  caseId        String
-  amount        Float
-  currency      String   @default("INR")
-  mode          String   // CASH, CHEQUE, NEFT, UPI, CARD
-  reference     String?  // Transaction ref / cheque no
-  description   String?
-  paymentDate   DateTime
-  receiptSent   Boolean  @default(false)
-  createdAt     DateTime @default(now())
+  id          String   @id @default(cuid())
+  caseId      String
+  amount      Float
+  currency    String   @default("INR")
+  mode        String // CASH, CHEQUE, NEFT, UPI, CARD
+  reference   String? // Transaction ref / cheque no
+  description String?
+  paymentDate DateTime
+  receiptSent Boolean  @default(false)
+  createdAt   DateTime @default(now())
 
-  case          CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  case CourtCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
 
   @@map("case_payments")
 }
@@ -466,24 +471,24 @@ model PasswordResetOTP {
 }
 
 model Receipt {
-  id          String   @id @default(cuid())
-  number      String   @unique
-  clientName  String
-  clientEmail String
-  advocateId  String?
+  id            String    @id @default(cuid())
+  number        String    @unique
+  clientName    String
+  clientEmail   String
+  advocateId    String?
   createdByName String
-  items       String
-  currency    String   @default("INR")
-  subtotal    Float    @default(0)
-  taxRate     Float    @default(0)
-  taxAmount   Float    @default(0)
-  total       Float    @default(0)
-  notes       String?
-  status      String   @default("DRAFT")
-  sentAt      DateTime?
-  tenantId    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  items         String
+  currency      String    @default("INR")
+  subtotal      Float     @default(0)
+  taxRate       Float     @default(0)
+  taxAmount     Float     @default(0)
+  total         Float     @default(0)
+  notes         String?
+  status        String    @default("DRAFT")
+  sentAt        DateTime?
+  tenantId      String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   @@map("receipts")
 }
@@ -491,9 +496,9 @@ model Receipt {
 model CaseActivity {
   id        String   @id @default(cuid())
   caseId    String
-  actorType String   // ADVOCATE, ADMIN
+  actorType String // ADVOCATE, ADMIN
   actorName String
-  action    String   // STATUS_CHANGED, CASE_EDITED, NOTE_ADDED, NOTE_DELETED
+  action    String // STATUS_CHANGED, CASE_EDITED, NOTE_ADDED, NOTE_DELETED
   details   String?
   createdAt DateTime @default(now())
 
@@ -516,15 +521,15 @@ model CaseTrackOTP {
 }
 
 model CaseReminder {
-  id           String   @id @default(cuid())
-  caseId       String
-  scheduledFor DateTime
-  message      String?
-  includeDetails Boolean @default(true)
-  sent         Boolean  @default(false)
-  sentAt       DateTime?
-  createdBy    String?
-  createdAt    DateTime @default(now())
+  id             String    @id @default(cuid())
+  caseId         String
+  scheduledFor   DateTime
+  message        String?
+  includeDetails Boolean   @default(true)
+  sent           Boolean   @default(false)
+  sentAt         DateTime?
+  createdBy      String?
+  createdAt      DateTime  @default(now())
 
   @@index([caseId])
   @@index([sent, scheduledFor])
@@ -533,32 +538,31 @@ model CaseReminder {
 
 // DPDP Act 2023 — Consent records
 model DpdpConsent {
-  id            String   @id @default(cuid())
-  fingerprint   String   @unique          // browser fingerprint / cookie id
-  consentGiven  Boolean  @default(false)  // true = accepted, false = denied
-  purposes      String?                   // JSON array of accepted purposes
-  ipAddress     String?
-  userAgent     String?
-  givenAt       DateTime @default(now())
-  revokedAt     DateTime?
-  updatedAt     DateTime @updatedAt
+  id           String    @id @default(cuid())
+  fingerprint  String    @unique // browser fingerprint / cookie id
+  consentGiven Boolean   @default(false) // true = accepted, false = denied
+  purposes     String? // JSON array of accepted purposes
+  ipAddress    String?
+  userAgent    String?
+  givenAt      DateTime  @default(now())
+  revokedAt    DateTime?
+  updatedAt    DateTime  @updatedAt
 
   @@index([fingerprint])
   @@map("dpdp_consents")
 }
 
 model PushSubscription {
-  id           String   @id @default(cuid())
-  endpoint     String   @unique
-  p256dh       String
-  auth         String
-  adminUserId  String?
-  advocateId   String?
-  createdAt    DateTime @default(now())
+  id          String   @id @default(cuid())
+  endpoint    String   @unique
+  p256dh      String
+  auth        String
+  adminUserId String?
+  advocateId  String?
+  createdAt   DateTime @default(now())
 
-  adminUser    AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
-  advocate     Advocate?  @relation(fields: [advocateId], references: [id], onDelete: Cascade)
+  adminUser AdminUser? @relation(fields: [adminUserId], references: [id], onDelete: Cascade)
+  advocate  Advocate?  @relation(fields: [advocateId], references: [id], onDelete: Cascade)
 
   @@map("push_subscriptions")
 }
-

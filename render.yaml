@@ -18,6 +18,11 @@ services:
         fromDatabase:
           name: law-firm-db
           property: connectionString
+      # Direct (non-pooler) URL for Prisma migrations. Set this to Supabase's
+      # "URI" connection string (port 5432) — required so `prisma db push`
+      # doesn't exhaust the PgBouncer session pool.
+      - key: DIRECT_URL
+        sync: false
       - key: NEXTAUTH_URL
         sync: false
       - key: NEXTAUTH_SECRET

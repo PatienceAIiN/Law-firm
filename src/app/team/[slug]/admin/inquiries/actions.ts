@@ -35,6 +35,8 @@ export async function assignInquiry(slug: string, inquiryId: string, advocateId:
   if (advocateId) {
     const adv = await prisma.advocate.findUnique({ where: { id: advocateId }, select: { name: true, email: true } })
     if (adv?.email) {
+      const base = (process.env.NEXTAUTH_URL || 'http://localhost:3001').replace(/\/$/, '')
+      const portalUrl = `${base}/team/${slug}/lawyer/inquiries`
       await sendEmail({
         to: adv.email,
         subject: `Inquiry assigned: ${inquiry.subject}`,
@@ -42,16 +44,17 @@ export async function assignInquiry(slug: string, inquiryId: string, advocateId:
           <div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#14203E;">
             <h2>You've been assigned an inquiry</h2>
             <p style="font-size:14px;line-height:1.6;color:#475569;">Hi ${adv.name},</p>
-            <p style="font-size:14px;line-height:1.6;color:#475569;">A new inquiry has been routed to you.</p>
+            <p style="font-size:14px;line-height:1.6;color:#475569;">A new inquiry has been routed to you. Open your inquiries tab to reply.</p>
             <div style="background:#FFFCF8;border:1px solid #F4E8D8;border-radius:12px;padding:16px;margin:16px 0;font-size:14px;">
               <div><strong>From:</strong> ${inquiry.fullName} &lt;${inquiry.email}&gt;</div>
               ${inquiry.phone ? `<div><strong>Phone:</strong> ${inquiry.phone}</div>` : ''}
               <div style="margin-top:6px;"><strong>Subject:</strong> ${inquiry.subject}</div>
               <div style="margin-top:6px;white-space:pre-wrap;">${inquiry.message}</div>
             </div>
+            <p style="margin:16px 0;"><a href="${portalUrl}" style="display:inline-block;background:#14203E;color:#fff;padding:10px 20px;border-radius:8px;text-decoration:none;font-weight:600;">Open in lawyer portal</a></p>
           </div>
         `,
-        textContent: `Inquiry from ${inquiry.fullName} <${inquiry.email}>:\n${inquiry.message}`,
+        textContent: `Inquiry from ${inquiry.fullName} <${inquiry.email}>:\n${inquiry.message}\n\nOpen: ${portalUrl}`,
       }).catch(() => {})
     }
   }

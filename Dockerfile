@@ -27,8 +27,14 @@ ARG DATABASE_URL
 ENV DATABASE_URL=$DATABASE_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Push schema to database so tables exist for Next.js static prerendering
-RUN npx prisma db push --accept-data-loss
+# Push schema to database so tables exist for Next.js static prerendering.
+# Use directUrl (bypasses Supabase pooler) — falls back to a soft warning so
+# a transient EMAXCONNSESSION doesn't tank the whole build when the schema
+# is already in sync from a previous deploy.
+ARG DIRECT_URL
+ENV DIRECT_URL=$DIRECT_URL
+RUN npx prisma db push --accept-data-loss --skip-generate \
+ || echo "[build] prisma db push failed; assuming schema already in sync."
 RUN npm run build
 
 # ---- runner ----

@@ -20,8 +20,12 @@ export async function addSlot(slug: string, formData: FormData) {
   const capacity = parseInt((formData.get('capacity') as string) || '1', 10)
   const advocateId = formData.get('advocateId') as string | null
   const modes = (formData.get('modes') as string) || 'VIRTUAL,PHYSICAL'
-  
+  const physicalAddress = ((formData.get('physicalAddress') as string) || '').slice(0, 250).trim()
+
   if (!dateStr || !start || !end) throw new Error('Date, start, and end are required')
+  if (modes.includes('PHYSICAL') && !physicalAddress) {
+    throw new Error('A meeting address is required for slots that allow in-person consultations.')
+  }
 
   const dayDate = new Date(`${dateStr}T00:00:00.000Z`)
   const startDate = new Date(`${dateStr}T${start}:00`)
@@ -33,7 +37,12 @@ export async function addSlot(slug: string, formData: FormData) {
 
   await prisma.availabilitySlot.create({
     data: {
-      dayId: day.id, startTime: startDate, endTime: endDate, capacity: Math.max(1, capacity), allowedModes: modes,
+      dayId: day.id,
+      startTime: startDate,
+      endTime: endDate,
+      capacity: Math.max(1, capacity),
+      allowedModes: modes,
+      physicalAddress: modes.includes('PHYSICAL') ? physicalAddress : null,
     },
   })
   revalidatePath(`/team/${slug}/admin/availability`)

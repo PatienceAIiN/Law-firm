@@ -1,6 +1,6 @@
 'use client'
 
-import { useTransition } from 'react'
+import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, CalendarClock } from 'lucide-react'
 import { addSlot, deleteSlot } from './actions'
@@ -12,14 +12,24 @@ type AdvocateOption = { id: string; name: string }
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-export function TenantAvailabilityClient({ slug, days, advocates }: { slug: string; days: Day[]; advocates: AdvocateOption[] }) {
+type Slot2 = Slot & { allowedModes?: string | null; physicalAddress?: string | null }
+type Day2 = Omit<Day, 'slots'> & { slots: Slot2[] }
+
+export function TenantAvailabilityClient({ slug, days, advocates }: { slug: string; days: Day2[]; advocates: AdvocateOption[] }) {
   const [pending, start] = useTransition()
   const router = useRouter()
+  // Track the selected mode to conditionally render the address field.
+  const [modes, setModes] = useState<string>('VIRTUAL,PHYSICAL')
+  const requiresAddress = modes.includes('PHYSICAL')
 
   const onAdd = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    start(async () => { await addSlot(slug, fd); (e.target as HTMLFormElement).reset(); router.refresh() })
+    if (requiresAddress && !((fd.get('physicalAddress') as string) || '').trim()) {
+      alert('Please add the meeting address for in-person slots.')
+      return
+    }
+    start(async () => { await addSlot(slug, fd); (e.target as HTMLFormElement).reset(); setModes('VIRTUAL,PHYSICAL'); router.refresh() })
   }
 
   return (
@@ -34,17 +44,36 @@ export function TenantAvailabilityClient({ slug, days, advocates }: { slug: stri
             <option value="">Any Advocate (Firm Level)</option>
             {advocates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
           </select>
-          <select name="modes" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white">
+          <select
+            name="modes"
+            value={modes}
+            onChange={(e) => setModes(e.target.value)}
+            className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white"
+          >
             <option value="VIRTUAL,PHYSICAL">Both (Virtual & In-Person)</option>
             <option value="VIRTUAL">Virtual Only</option>
             <option value="PHYSICAL">In-Person Only</option>
           </select>
           <input name="capacity" type="number" min={1} defaultValue={1} placeholder="Seats" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          {requiresAddress && (
+            <input
+              name="physicalAddress"
+              maxLength={250}
+              required
+              placeholder="In-person meeting address (firm / chamber, shown to the client)"
+              className="rounded-lg border border-slate-300 px-3 py-2 sm:col-span-5 dark:border-white/15 dark:bg-white/5 dark:text-white"
+            />
+          )}
           <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-accent disabled:opacity-60">
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
             Add slot
           </button>
         </form>
+        {!requiresAddress && (
+          <p className="mt-2 text-[11px] text-slate-500">
+            Virtual slots get an auto-generated meeting link on booking. For in-person slots, you set the meeting address here — the client only picks a time.
+          </p>
+        )}
       </div>
 
       <div className="space-y-3">

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { signOut } from 'next-auth/react'
-import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check } from 'lucide-react'
+import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox } from 'lucide-react'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PasswordInput } from '@/components/ui/password-input'
@@ -67,6 +67,12 @@ export function TenantLawyerClient({
             >
               {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <LinkIcon className="h-3.5 w-3.5" />} Share Portal
             </button>
+            <Link
+              href={`/team/${tenant.slug}/lawyer/inquiries`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+            >
+              <Inbox className="h-3.5 w-3.5" /> Inquiries
+            </Link>
             <Link
               href={`/team/${tenant.slug}/lawyer/mail`}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
