@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { signOut } from 'next-auth/react'
-import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video } from 'lucide-react'
+import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X } from 'lucide-react'
 import Link from 'next/link'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PasswordInput } from '@/components/ui/password-input'
+import { createAdvocateCase } from './actions'
 
 type T = { id: string; slug: string; name: string }
 type Adv = { id: string; name: string; email: string; title: string; bio: string | null; phone: string | null }
@@ -81,7 +82,7 @@ export function TenantLawyerClient({
           })}
         </nav>
 
-        {tab === 'cases' && <CasesTab cases={cases} />}
+        {tab === 'cases' && <CasesTab cases={cases} slug={tenant.slug} />}
         {tab === 'password' && <PasswordTab basePath={`/t/${tenant.slug}/lawyer`} />}
         {tab === 'access' && <AccessTab logs={accessLogs} />}
       </main>
@@ -127,25 +128,103 @@ function InstantMeetingCard({ slug }: { slug: string }) {
   )
 }
 
-function CasesTab({ cases }: { cases: CaseItem[] }) {
-  if (cases.length === 0) {
-    return (
-      <Card>
-        <p className="text-sm text-slate-500">No cases assigned to you yet. The admin can assign cases from the admin panel.</p>
-      </Card>
-    )
+function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
+  const [modalOpen, setModalOpen] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  const handleAdd = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setBusy(true)
+    setError('')
+    try {
+      const formData = new FormData(e.currentTarget)
+      await createAdvocateCase(slug, formData)
+      setModalOpen(false)
+    } catch (err: any) {
+      setError(err.message)
+    } finally {
+      setBusy(false)
+    }
   }
+
   return (
-    <Card>
-      <ul className="divide-y divide-slate-200 dark:divide-white/10">
-        {cases.map((c) => (
-          <li key={c.id} className="py-3">
-            <p className="text-sm font-semibold text-[#14203E] dark:text-white">{c.title}</p>
-            <p className="mt-0.5 text-xs text-slate-500">#{c.caseNumber} · {c.clientName} · {c.status}</p>
-          </li>
-        ))}
-      </ul>
-    </Card>
+    <div className="space-y-4">
+      <div className="flex justify-end">
+        <button
+          onClick={() => setModalOpen(true)}
+          className="inline-flex items-center gap-2 rounded-xl bg-[#14203E] px-4 py-2 text-sm font-semibold text-white hover:bg-[#1d2c52]"
+        >
+          <Plus className="h-4 w-4" /> Add Case
+        </button>
+      </div>
+
+      <Card>
+        {cases.length === 0 ? (
+          <p className="text-sm text-slate-500">No cases assigned to you yet.</p>
+        ) : (
+          <ul className="divide-y divide-slate-200 dark:divide-white/10">
+            {cases.map((c) => (
+              <li key={c.id} className="py-3">
+                <p className="text-sm font-semibold text-[#14203E] dark:text-white">{c.title}</p>
+                <p className="mt-0.5 text-xs text-slate-500">#{c.caseNumber} · {c.clientName} · {c.status}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+
+      {modalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm" onClick={() => setModalOpen(false)}>
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f]" onClick={e => e.stopPropagation()}>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="text-lg font-bold text-[#14203E] dark:text-white">Add New Case</h2>
+              <button onClick={() => setModalOpen(false)} className="rounded-md p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleAdd} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Number *</label>
+                  <input name="caseNumber" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Case Type</label>
+                  <input name="caseType" defaultValue="Civil" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div className="col-span-2">
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Title / Description *</label>
+                  <input name="title" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div className="col-span-2">
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Court *</label>
+                  <input name="court" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div className="col-span-2">
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Name *</label>
+                  <input name="clientName" required className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Email</label>
+                  <input name="clientEmail" type="email" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+                <div>
+                  <label className="mb-1 block text-xs font-semibold text-slate-600 dark:text-slate-400">Client Phone</label>
+                  <input name="clientPhone" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[#14203E] dark:border-white/15 dark:bg-white/5 dark:text-white" />
+                </div>
+              </div>
+              {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
+              <button disabled={busy} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-[#14203E] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#1d2c52] disabled:opacity-60">
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {busy ? 'Saving...' : 'Add Case'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
   )
 }
 
