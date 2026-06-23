@@ -2,12 +2,32 @@ import { Redis } from 'ioredis'
 
 const globalForRedis = global as unknown as { redis: Redis | undefined }
 
+// Extract a usable redis:// URL from REDIS_URL. Operators sometimes paste the
+// whole `redis-cli -u redis://…` connect line; pull just the URL out so the
+// app keeps running instead of throwing `Invalid URL` on every request.
+function sanitizeRedisUrl(raw: string | undefined): string | undefined {
+  if (!raw) return undefined
+  const trimmed = raw.trim()
+  if (!trimmed) return undefined
+  const match = trimmed.match(/rediss?:\/\/\S+/i)
+  const candidate = match ? match[0] : trimmed
+  try {
+    new URL(candidate)
+    return candidate
+  } catch {
+    console.warn('[redis] REDIS_URL is not a valid URL; disabling cache.')
+    return undefined
+  }
+}
+
+const REDIS_URL = sanitizeRedisUrl(process.env.REDIS_URL)
+
 // Initialize Redis only if the environment variable is provided.
 // In development, we use a global variable to preserve the connection across HMR.
 export const redis =
   globalForRedis.redis ||
-  (process.env.REDIS_URL
-    ? new Redis(process.env.REDIS_URL, {
+  (REDIS_URL
+    ? new Redis(REDIS_URL, {
         maxRetriesPerRequest: 3,
         enableReadyCheck: false,
         retryStrategy(times) {
@@ -15,6 +35,12 @@ export const redis =
         },
       })
     : undefined)
+
+if (redis) {
+  redis.on('error', (err) => {
+    if (process.env.NODE_ENV !== 'production') console.warn('[redis] error:', err.message)
+  })
+}
 
 if (process.env.NODE_ENV !== 'production' && redis) {
   globalForRedis.redis = redis

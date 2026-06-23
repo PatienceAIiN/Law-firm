@@ -112,7 +112,10 @@
       "Bash(git commit -m ' *)",
       "Bash(git push *)",
       "Bash(grep -rn \"practiceHref\\\\|/practice-areas/\\\\${.*slug\" src/ --include=\"*.tsx\" --include=\"*.ts\")",
-      "Bash(grep *)"
+      "Bash(grep *)",
+      "Bash(REDIS_URL=\"redis-cli -u redis://default:fake@example.com:6379\" npx tsx -e \"import\\('./src/lib/redis.ts'\\).then\\(m => console.log\\('redis instance:', m.redis ? 'connected' : 'disabled'\\)\\)\")",
+      "Bash(REDIS_URL='redis-cli -u redis://default:x@example.com:1234' node *)",
+      "Bash(git reset *)"
     ]
   }
 }

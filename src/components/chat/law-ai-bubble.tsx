@@ -35,18 +35,25 @@ function NavChip({ label, href, onClick }: { label: string; href: string; onClic
   )
 }
 
-function MessageBubble({ msg, triggerNav }: { msg: Message & { triggerAction?: string }; triggerNav?: (action: string) => void }) {
+// Rewrites legacy hard-coded paths to live inside the current tenant when the
+// chat is opened on a /t/<slug>/... page.
+function buildNavMap(tenantSlug?: string | null) {
+  const base = tenantSlug ? `/t/${tenantSlug}` : ''
+  return {
+    navigate_home: { label: 'Go to Home', href: base || '/' },
+    navigate_about: { label: 'About', href: tenantSlug ? `${base}/team` : '/' },
+    navigate_practice_areas: { label: 'Practice Areas', href: tenantSlug ? `${base}/practice-areas` : '/' },
+    navigate_blog: { label: 'Articles', href: tenantSlug ? `${base}/articles` : '/' },
+    open_consultation: { label: 'Consult', href: tenantSlug ? `${base}/book` : '/signup' },
+    open_contact: { label: 'Contact', href: tenantSlug ? `${base}/contact` : '/' },
+  } as Record<string, { label: string; href: string }>
+}
+
+function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: string }; tenantSlug?: string | null }) {
   const isUser = msg.role === 'user'
   const navAction: string | undefined = (msg as any).triggerAction
 
-  const navMap: Record<string, { label: string; href: string }> = {
-    navigate_home: { label: 'Go to Home', href: '/' },
-    navigate_about: { label: 'View About Us', href: '/about' },
-    navigate_practice_areas: { label: 'View Practice Areas', href: '/practice-areas' },
-    navigate_blog: { label: 'Read Blog', href: '/blog' },
-    open_consultation: { label: 'Book Consultation', href: '/consultation' },
-    open_contact: { label: 'Contact Us', href: '/contact' },
-  }
+  const navMap = buildNavMap(tenantSlug)
   const navLabel = navAction ? navMap[navAction] : null
 
   return (
@@ -87,6 +94,12 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
   const bottomRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const pathname = usePathname()
+  // Derive the current tenant slug from the URL so the LawAI bubble's CTAs
+  // always navigate inside the same workspace.
+  const tenantSlug = (() => {
+    const match = (pathname || '').match(/^\/t\/([^\/]+)/)
+    return match ? match[1] : null
+  })()
   const router = useRouter()
 
   // Persist conversation id
@@ -154,16 +167,9 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
   }
 
   const handleNavigation = useCallback((action: string) => {
-    const routes: Record<string, string> = {
-      navigate_home: '/',
-      navigate_about: '/about',
-      navigate_practice_areas: '/practice-areas',
-      navigate_blog: '/blog',
-      open_consultation: '/consultation',
-      open_contact: '/contact',
-    }
-    const route = routes[action]
-    if (!route) return
+    const map = buildNavMap(tenantSlug)
+    const target = map[action]
+    if (!target) return
     if (action === 'open_consultation' && onOpenConsultation) {
       onOpenConsultation()
       setOpen(false)
@@ -174,9 +180,9 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
       setOpen(false)
       return
     }
-    router.push(route)
+    router.push(target.href)
     setOpen(false)
-  }, [router, onOpenConsultation, onOpenContact])
+  }, [router, onOpenConsultation, onOpenContact, tenantSlug])
 
   const sendMessage = useCallback(async (text?: string) => {
     const messageText = text || input.trim()
@@ -306,7 +312,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
             )}
 
             {messages.map((msg, i) => (
-              <MessageBubble key={i} msg={msg} triggerNav={handleNavigation} />
+              <MessageBubble key={i} msg={msg} tenantSlug={tenantSlug} />
             ))}
 
             {loading && (
