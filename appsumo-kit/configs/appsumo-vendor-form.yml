@@ -1,0 +1,53 @@
+# AppSumo Vendor Portal — paste-ready config
+# Open https://sell.appsumo.com → Submit a Deal → fill each field with the values below.
+
+product:
+  name: "PatienceAI"
+  tagline: "The AI-powered command center for solo lawyers & small firms."
+  category: "Legal · CRM · AI Assistant"
+  pricing_model: "Lifetime"
+  base_url: "https://patienceai.in"
+  redemption_url: "https://patienceai.in/redeem"
+
+deal:
+  tier: "single-tier-lifetime"
+  msrp_usd: 348            # equivalent of $29/month × 12
+  appsumo_price_usd: 69    # standard lifetime sticker
+  redemption_window_days: 60
+  refund_window_days: 60
+  stackable: true
+  codes_uploaded: 110      # initial batch — generate more via scripts/seed-codes.ts
+
+assets:
+  marketplace_icon: "photos/logo-square.png"
+  listing_hero: "photos/banner-hero.png"
+  screenshots:
+    - "photos/screenshot-dashboard.png"
+    - "photos/screenshot-public.png"
+    - "photos/screenshot-lawai.png"
+    - "photos/screenshot-lawyer.png"
+    - "photos/screenshot-branding.png"
+  mobile_screenshots:
+    - "photos/mobile-dashboard.png"
+    - "photos/mobile-lawai.png"
+    - "photos/mobile-public.png"
+  product_video: "photos/walkthrough.mp4"
+
+copy:
+  short_description_file: "listing-copy.md#short-description"
+  long_description_file: "listing-copy.md#long-description"
+  features_file: "listing-copy.md#plans--features-single-tier-lifetime"
+  deal_terms_file: "listing-copy.md#deal-terms"
+  faq_file: "listing-copy.md#faq"
+
+support:
+  contact_email: "support@patienceai.in"
+  founder_email: "manini@providerpassport.co"
+  docs_url: "https://patienceai.in/docs"
+  status_page: "https://status.patienceai.in"
+
+redemption:
+  flow: "Buyer receives code from AppSumo → visits /redeem → enters code → routed to /signup?code=… → workspace activated → code marked REDEEMED"
+  code_format: "PATIENCE-XXXX-XXXX-XXXX (uppercase hex)"
+  one_per_workspace: true
+  multi_stack_supported: true

@@ -5,6 +5,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { OpenWorkspace } from '@/components/open-workspace'
 import { SaasFooter } from '@/components/saas-footer'
 import { AnimatedHeading, RotatingTagline } from '@/components/saas-hero'
+import { ScrollToTopCta } from '@/components/scroll-to-top-cta'
 
 export const metadata = {
   title: 'Barrister By Patience AI — Your law firm, fully online',
@@ -31,8 +32,12 @@ export default function SaasLandingPage() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <OpenWorkspace />
-          <Link href="/signup" className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent">
-            Get started
+          <Link
+            id="top-create-workspace"
+            href="/signup"
+            className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent scroll-mt-24"
+          >
+            Create your workspace
           </Link>
         </div>
       </header>
@@ -111,18 +116,9 @@ export default function SaasLandingPage() {
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="mx-auto max-w-3xl px-6 py-20 text-center">
-        <h2 className="text-3xl font-bold md:text-4xl">Ready to run your firm online?</h2>
-        <p className="mx-auto mt-3 max-w-xl text-slate-600 dark:text-slate-300">
-          Spin up a workspace, invite your team, and start taking inquiries today.
-        </p>
-        <Link
-          href="/signup"
-          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-accent"
-        >
-          Create your workspace <ArrowRight className="h-4 w-4" />
-        </Link>
+      {/* CTA — scroll back up to the top "Create your workspace" button */}
+      <section className="mx-auto max-w-3xl px-6 py-24 pb-32 text-center">
+        <ScrollToTopCta />
       </section>
 
       <SaasFooter />

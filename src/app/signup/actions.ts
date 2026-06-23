@@ -64,6 +64,13 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   const firmName = (formData.get('firmName') as string)?.trim()
   const emailRaw = (formData.get('email') as string)?.trim().toLowerCase()
   const slug = normalizeSlug((formData.get('slug') as string) || firmName || '')
+  const appsumoCode = (formData.get('appsumoCode') as string)?.trim().toUpperCase()
+
+  if (!appsumoCode) return { ok: false, error: 'An AppSumo redemption code is required. Get yours at /redeem.' }
+  const code = await prisma.appSumoCode.findUnique({ where: { code: appsumoCode } })
+  if (!code) return { ok: false, error: 'That AppSumo code is not recognized.' }
+  if (code.status === 'REDEEMED') return { ok: false, error: 'That code has already been redeemed.' }
+  if (code.status === 'REVOKED') return { ok: false, error: 'That code is no longer valid.' }
 
   if (!name || !firmName || !emailRaw || !slug) return { ok: false, error: 'Name, firm, email, and slug are required.' }
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailRaw)) return { ok: false, error: 'Enter a valid email address.' }
@@ -73,7 +80,7 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   if (existing) return { ok: false, error: 'That workspace URL is already taken.' }
 
   const otp = sixDigitOtp()
-  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw })
+  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw, appsumoCode })
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
   // Clear any previous pending OTPs for this email; only one valid at a time.
@@ -126,8 +133,13 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
     return { ok: false, error: 'Incorrect code. Try again.' }
   }
 
-  let payload: { name: string; firmName: string; slug: string; email: string }
+  let payload: { name: string; firmName: string; slug: string; email: string; appsumoCode?: string }
   try { payload = JSON.parse(row.payload) } catch { return { ok: false, error: 'Corrupt signup data. Start over.' } }
+
+  // Re-validate the AppSumo code right before tenant creation — race-safe.
+  if (!payload.appsumoCode) return { ok: false, error: 'Missing AppSumo code. Start over.' }
+  const codeRow = await prisma.appSumoCode.findUnique({ where: { code: payload.appsumoCode } })
+  if (!codeRow || codeRow.status !== 'AVAILABLE') return { ok: false, error: 'AppSumo code is no longer available. Start over.' }
 
   // Re-check slug availability — someone else might have grabbed it during
   // the OTP window.
@@ -147,6 +159,18 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
     },
   })
   await seedTenantDefaults(tenant.id, payload.firmName)
+
+  // Mark the AppSumo code as redeemed and bind it to this tenant.
+  await prisma.appSumoCode.update({
+    where: { id: codeRow.id },
+    data: {
+      status: 'REDEEMED',
+      redeemedBy: payload.email,
+      tenantId: tenant.id,
+      tenantSlug: tenant.slug,
+      redeemedAt: new Date(),
+    },
+  })
 
   await prisma.signupOtp.update({ where: { id: row.id }, data: { verified: true } })
 

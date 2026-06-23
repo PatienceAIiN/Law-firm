@@ -55,6 +55,21 @@ model WorkspaceOpenOtp {
   @@map("workspace_open_otps")
 }
 
+model AppSumoCode {
+  id          String    @id @default(cuid())
+  code        String    @unique
+  status      String    @default("AVAILABLE") // AVAILABLE | REDEEMED | REVOKED
+  tier        String    @default("LIFETIME")
+  redeemedBy  String?   // email of redeemer
+  tenantId    String?
+  tenantSlug  String?
+  redeemedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([status])
+  @@map("appsumo_codes")
+}
+
 model SignupOtp {
   id        String   @id @default(cuid())
   email     String

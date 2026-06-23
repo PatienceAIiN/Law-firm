@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle2, ArrowRight, Mail } from 'lucide-react'
 import { requestSignupOtp, verifySignupOtp, type RequestOtpResult, type VerifyOtpResult } from './actions'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -13,6 +14,16 @@ export default function SignupPage() {
   const [step, setStep] = useState<Step>('form')
   const [email, setEmail] = useState('')
   const [devOtp, setDevOtp] = useState<string | undefined>()
+  const params = useSearchParams()
+  const [prefillCode, setPrefillCode] = useState('')
+  useEffect(() => {
+    const q = params?.get('code')?.toUpperCase() || ''
+    if (q) { setPrefillCode(q); return }
+    try {
+      const stored = sessionStorage.getItem('appsumo_code')
+      if (stored) setPrefillCode(stored)
+    } catch {}
+  }, [params])
   const [requestError, setRequestError] = useState('')
   const [otp, setOtp] = useState('')
   const [verifyError, setVerifyError] = useState('')
@@ -71,6 +82,19 @@ export default function SignupPage() {
               We'll email you a 6-digit code to verify, then send your admin credentials. Your data stays isolated — new workspaces start empty.
             </p>
             <form onSubmit={submitForm} className="mt-6 space-y-4">
+              <label className="block text-sm">
+                <span className="text-slate-700 dark:text-slate-200">AppSumo redemption code</span>
+                <input
+                  name="appsumoCode"
+                  required
+                  defaultValue={prefillCode}
+                  placeholder="PATIENCE-XXXX-XXXX"
+                  className="mt-1 w-full rounded-lg border border-amber-300 bg-amber-50/40 px-3 py-2 font-mono text-sm uppercase tracking-widest text-slate-900 outline-none focus:border-primary focus:ring-2 focus:ring-[#14203E]/20 dark:border-amber-500/40 dark:bg-amber-900/10 dark:text-white"
+                />
+                <span className="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
+                  Don't have one? <Link href="/redeem" className="underline">Redeem at /redeem</Link>
+                </span>
+              </label>
               <Field name="name" label="Your name" />
               <Field name="firmName" label="Firm name" />
               <div>
