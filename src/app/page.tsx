@@ -23,7 +23,7 @@ export default function SaasLandingPage() {
     <div className="min-h-screen bg-[#FFFCF8] text-[#14203E] dark:bg-[#0b0f17] dark:text-slate-100">
       {/* Header */}
       <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="text-xl font-bold tracking-tight">Patience<span className="text-[#c9a227]">AI</span></Link>
+        <Link href="/" className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-pulse">Barrister</Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <OpenWorkspace />

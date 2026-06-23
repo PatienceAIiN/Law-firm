@@ -114,7 +114,7 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
               )}
               <span className="flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5 text-[#14203E]" />
-                8 Min Read
+                {Math.max(1, Math.ceil((post.content || '').split(/\s+/).length / 200))} Min Read
               </span>
             </div>
 

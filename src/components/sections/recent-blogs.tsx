@@ -67,7 +67,7 @@ export function RecentBlogs({ data, content }: RecentBlogsProps) {
                   </div>
                   <div className="flex items-center gap-1.5 uppercase tracking-wider">
                     <Clock className="w-3.5 h-3.5 text-[#14203E]" />
-                    <span>5 MIN READ</span>
+                    <span>{Math.max(1, Math.ceil((post.content || '').split(/\s+/).length / 200))} MIN READ</span>
                   </div>
                 </div>
 
