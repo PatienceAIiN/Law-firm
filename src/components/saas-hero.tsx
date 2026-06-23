@@ -27,7 +27,7 @@ export function AnimatedHeading({ text }: { text?: string }) {
   }, [items.length])
 
   return (
-    <div className="relative mx-auto mt-6 h-[140px] max-w-5xl md:h-[200px]">
+    <div className="relative mx-auto mt-6 h-[160px] max-w-5xl px-2 sm:h-[180px] md:h-[200px]">
       {items.map((s, idx) => {
         const active = idx === i
         const prev = idx === (i - 1 + items.length) % items.length
@@ -35,7 +35,7 @@ export function AnimatedHeading({ text }: { text?: string }) {
           <h1
             key={idx}
             aria-hidden={!active}
-            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-center text-4xl font-bold leading-tight tracking-tight text-transparent transition-all duration-[1200ms] ease-out md:text-6xl ${
+            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-balance text-center text-[28px] font-bold leading-[1.1] tracking-tight text-transparent transition-all duration-[1200ms] ease-out sm:text-4xl md:text-6xl ${
               active
                 ? 'translate-y-0 scale-100 opacity-100 blur-0 animate-gradient-x'
                 : prev
@@ -79,12 +79,12 @@ export function RotatingTagline() {
     return () => clearInterval(id)
   }, [])
   return (
-    <div className="relative mx-auto mt-5 h-[72px] max-w-2xl overflow-hidden md:h-[56px]">
+    <div className="relative mx-auto mt-5 h-[96px] max-w-2xl overflow-hidden px-2 sm:h-[72px] md:h-[56px]">
       {SENTENCES.map((s, idx) => (
         <p
           key={idx}
           aria-hidden={idx !== i}
-          className={`absolute inset-0 text-lg text-slate-700 transition-all duration-700 ease-out dark:text-slate-200 ${
+          className={`absolute inset-0 text-balance text-base text-slate-700 transition-all duration-700 ease-out dark:text-slate-200 sm:text-lg ${
             idx === i
               ? 'translate-y-0 opacity-100'
               : idx === (i - 1 + SENTENCES.length) % SENTENCES.length

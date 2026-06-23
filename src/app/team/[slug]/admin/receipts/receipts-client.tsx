@@ -148,12 +148,12 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
               </select>
 
               <div className="rounded-xl border border-slate-200 p-3 dark:border-white/10">
-                <div className="mb-2 grid grid-cols-[1fr_70px_100px_36px] gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                <div className="mb-2 grid grid-cols-[1fr_60px_80px_30px] sm:grid-cols-[1fr_70px_100px_36px] gap-2 text-xs font-semibold uppercase tracking-widest text-slate-500">
                   <span>Description</span><span>Qty</span><span>Rate</span><span />
                 </div>
                 <div className="space-y-2">
                   {items.map((it, i) => (
-                    <div key={i} className="grid grid-cols-[1fr_70px_100px_36px] gap-2">
+                    <div key={i} className="grid grid-cols-[1fr_60px_80px_30px] sm:grid-cols-[1fr_70px_100px_36px] gap-2">
                       <input
                         value={it.description}
                         onChange={(e) => updateItem(i, { description: e.target.value })}

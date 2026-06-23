@@ -53,6 +53,12 @@
   * {
     @apply border-border;
   }
+  html, body {
+    /* Prevent any rogue fixed-width child from forcing a horizontal scroll
+       on phones; desktop is unaffected. */
+    overflow-x: hidden;
+    -webkit-text-size-adjust: 100%;
+  }
   body {
     @apply bg-background text-foreground;
     background:

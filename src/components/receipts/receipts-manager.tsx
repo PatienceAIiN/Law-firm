@@ -130,7 +130,7 @@ export function ReceiptsManager() {
           {/* Line items */}
           <div className="space-y-2">
             {form.items.map((it, i) => (
-              <div key={i} className="grid grid-cols-[1fr_70px_90px_30px] gap-2 items-center">
+              <div key={i} className="grid grid-cols-[1fr_56px_72px_28px] sm:grid-cols-[1fr_70px_90px_30px] gap-2 items-center">
                 <input value={it.description} onChange={(e) => setItem(i, { description: e.target.value })} placeholder="Description" className="px-3 py-2 rounded-lg border border-[#F4E8D8] bg-white text-sm outline-none" />
                 <input type="number" value={it.qty} onChange={(e) => setItem(i, { qty: Number(e.target.value) })} placeholder="Qty" className="px-2 py-2 rounded-lg border border-[#F4E8D8] bg-white text-sm outline-none" />
                 <input type="number" value={it.rate} onChange={(e) => setItem(i, { rate: Number(e.target.value) })} placeholder="Rate" className="px-2 py-2 rounded-lg border border-[#F4E8D8] bg-white text-sm outline-none" />

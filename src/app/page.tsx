@@ -25,8 +25,8 @@ export default function SaasLandingPage() {
   return (
     <div className="min-h-screen bg-[#FFFCF8] text-primary dark:bg-[#0b0f17] dark:text-slate-100">
       {/* Header */}
-      <header className="relative z-20 mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
-        <Link href="/" className="-ml-2 lg:-ml-6 text-[2.75rem] font-serif italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-400 to-slate-900 dark:from-white dark:via-slate-500 dark:to-white bg-[length:200%_auto] animate-gradient-x drop-shadow-sm">
+      <header className="relative z-20 mx-auto flex max-w-[1400px] items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-5 lg:px-10">
+        <Link href="/" className="-ml-1 text-[2rem] font-serif italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-400 to-slate-900 dark:from-white dark:via-slate-500 dark:to-white bg-[length:200%_auto] animate-gradient-x drop-shadow-sm sm:-ml-2 sm:text-[2.75rem] lg:-ml-6">
           Barrister
         </Link>
         <div className="flex items-center gap-2">
@@ -38,13 +38,13 @@ export default function SaasLandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <VideoCover src={COVER_VIDEOS.home} overlay="medium" />
-        <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center">
+        <div className="relative z-10 mx-auto max-w-4xl px-4 py-14 text-center sm:px-6 sm:py-20 md:py-24">
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
             <Sparkles className="h-3.5 w-3.5" /> Your law firm, fully online
           </div>
           <AnimatedHeading text="One platform. Every part of your practice." />
           <RotatingTagline />
-          <div className="mt-8 flex items-center justify-center gap-3">
+          <div className="mt-8 flex flex-col items-stretch justify-center gap-3 sm:flex-row sm:items-center">
             <Link
               id="top-create-workspace"
               href="/signup"
