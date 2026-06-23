@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Plus, Trash2, ReceiptText, Loader2, Send } from 'lucide-react'
+import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon } from 'lucide-react'
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 
 type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string }
@@ -58,6 +58,15 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                   <td className="px-3 py-2 text-xs text-slate-500">{new Date(r.createdAt).toLocaleDateString()}</td>
                   <td className="px-3 py-2 text-right">
                     <div className="flex items-center justify-end gap-1">
+                      <a
+                        href={`/api/receipts/${r.id}/pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="View PDF"
+                        className="rounded-md p-1 text-slate-500 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-white/10"
+                      >
+                        <FileTextIcon className="h-4 w-4" />
+                      </a>
                       <form action={async () => {
                         const next = r.clientEmail || window.prompt('Send receipt PDF to which email?', '')
                         if (!next) return
