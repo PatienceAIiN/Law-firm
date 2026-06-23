@@ -217,11 +217,8 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
       }
       setMessages(prev => [...prev, assistantMsg])
       if (data.conversationId) setConversationId(data.conversationId)
-
-      // Auto-navigate after short delay
-      if (data.triggerAction) {
-        setTimeout(() => handleNavigation(data.triggerAction), 1400)
-      }
+      // Don't auto-navigate — the navigation chip is rendered inline; the user
+      // taps it explicitly. Auto-navigating was closing the chat unexpectedly.
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to connect.')
     } finally {

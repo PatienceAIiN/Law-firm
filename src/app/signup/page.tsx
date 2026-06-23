@@ -155,9 +155,12 @@ export default function SignupPage() {
               >
                 Go to admin login
               </Link>
-              <p className="text-center text-xs text-slate-500 dark:text-slate-400">
-                Lawyer login: <code className="rounded bg-slate-100 px-1 dark:bg-white/10">/team/{success.slug}/lawyer/login</code>
-              </p>
+              <Link
+                href={`/team/${success.slug}/lawyer/login`}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary/15 px-4 py-3 text-sm font-semibold text-primary hover:bg-[#F4E8D8] dark:border-white/15 dark:text-white dark:hover:bg-white/10"
+              >
+                Go to lawyer login
+              </Link>
             </div>
           </>
         )}

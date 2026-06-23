@@ -27,7 +27,7 @@ function sixDigitOtp(): string {
 
 async function seedTenantDefaults(tenantId: string, firmName: string) {
   await setTenantSettingJson(tenantId, 'brand_config', {
-    logo_text: firmName.slice(0, 3).toUpperCase(),
+    logo_text: firmName,
     firm_name: firmName,
     firm_full_name: firmName,
   })

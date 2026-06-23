@@ -187,14 +187,34 @@ export function BrandLogoForm({ brand, updateBrand }: Props) {
         </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary p-5 font-black uppercase tracking-widest text-white hover:bg-black disabled:opacity-60"
-      >
-        <Save className="h-5 w-5" />
-        {pending ? 'Saving…' : 'Save Identity'}
-      </button>
+      <div className="flex gap-2">
+        <button
+          type="submit"
+          disabled={pending}
+          className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-primary p-5 font-black uppercase tracking-widest text-white hover:bg-black disabled:opacity-60"
+        >
+          <Save className="h-5 w-5" />
+          {pending ? 'Saving…' : 'Save'}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setUseImage(Boolean(brand.use_image_logo ?? brand.logo_image_url))
+            setLogoImage(brand.logo_image_url || '')
+            setFontFamily(brand.logo_style?.fontFamily || 'inherit')
+            setFontWeight(brand.logo_style?.fontWeight || '700')
+            setFontStyle(brand.logo_style?.fontStyle || 'normal')
+            setColor(brand.logo_style?.color || 'var(--primary)')
+            setLetterSpacing(brand.logo_style?.letterSpacing || '-0.02em')
+            setLogoText(brand.logo_text || '')
+            setFirmName(brand.firm_name || '')
+            setFirmFullName(brand.firm_full_name || '')
+          }}
+          className="rounded-2xl border border-slate-300 px-5 font-black uppercase tracking-widest text-slate-700 hover:bg-slate-100"
+        >
+          Reset
+        </button>
+      </div>
     </form>
   )
 }

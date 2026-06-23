@@ -27,7 +27,9 @@ export function BrandMark({
   imageHeight?: number
 }) {
   const useImage = brand?.use_image_logo && brand?.logo_image_url
-  const text = brand?.logo_text || brand?.firm_name || 'Logo'
+  // Prefer firm name so the full brand reads correctly on the public site;
+  // only fall back to the short logo_text (initials) if no name is set.
+  const text = brand?.firm_name || brand?.firm_full_name || brand?.logo_text || 'Logo'
   const style = brand?.logo_style || {}
   const inlineStyle: React.CSSProperties = {
     fontFamily: style.fontFamily && style.fontFamily !== 'inherit' ? style.fontFamily : undefined,

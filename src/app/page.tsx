@@ -4,6 +4,7 @@ import { VideoCover, COVER_VIDEOS } from '@/components/video-cover'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { OpenWorkspace } from '@/components/open-workspace'
 import { SaasFooter } from '@/components/saas-footer'
+import { AnimatedHeading, RotatingTagline } from '@/components/saas-hero'
 
 export const metadata = {
   title: 'Barrister By Patience AI — Your law firm, fully online',
@@ -43,13 +44,8 @@ export default function SaasLandingPage() {
           <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
             <Sparkles className="h-3.5 w-3.5" /> Your law firm, fully online
           </div>
-          <h1 className="mt-6 text-5xl font-bold leading-tight tracking-tight md:text-6xl">
-            One platform. Every part of your practice.
-          </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-700 dark:text-slate-200">
-            Marketing site, lawyer portal, video meetings, case files, billing, mail — all in your own private workspace.
-            Set it up in minutes.
-          </p>
+          <AnimatedHeading text="One platform. Every part of your practice." />
+          <RotatingTagline />
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link
               href="/signup"

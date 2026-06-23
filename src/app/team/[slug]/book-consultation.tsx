@@ -7,6 +7,18 @@ type Slot = { id: string; startTime: string; endTime: string; seatsLeft: number;
 type Day = { date: string; advocateId: string | null; advocateName: string | null; slots: Slot[] }
 type Advocate = { id: string; name: string; title: string }
 
+const COUNTRY_CODES: { code: string; flag: string; label: string }[] = [
+  { code: '+91', flag: '🇮🇳', label: 'India' },
+  { code: '+1', flag: '🇺🇸', label: 'USA / Canada' },
+  { code: '+44', flag: '🇬🇧', label: 'UK' },
+  { code: '+61', flag: '🇦🇺', label: 'Australia' },
+  { code: '+971', flag: '🇦🇪', label: 'UAE' },
+  { code: '+65', flag: '🇸🇬', label: 'Singapore' },
+  { code: '+880', flag: '🇧🇩', label: 'Bangladesh' },
+  { code: '+977', flag: '🇳🇵', label: 'Nepal' },
+  { code: '+94', flag: '🇱🇰', label: 'Sri Lanka' },
+]
+
 export function BookConsultation({ slug }: { slug: string }) {
   const [days, setDays] = useState<Day[]>([])
   const [advocates, setAdvocates] = useState<Advocate[]>([])
@@ -16,6 +28,9 @@ export function BookConsultation({ slug }: { slug: string }) {
   const [submitting, setSubmitting] = useState(false)
   const [done, setDone] = useState<{ meetingLink: string | null } | false>(false)
   const [error, setError] = useState('')
+  const [countryCode, setCountryCode] = useState('+91')
+  const [phoneDigits, setPhoneDigits] = useState('')
+  const [mode, setMode] = useState<string>('')
 
   useEffect(() => {
     fetch(`/team/${slug}/api/availability`).then(async (r) => {
@@ -28,8 +43,14 @@ export function BookConsultation({ slug }: { slug: string }) {
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!selected) return
-    setSubmitting(true); setError('')
+    setError('')
+    if (phoneDigits && phoneDigits.length !== 10) {
+      setError('Phone number must be exactly 10 digits.'); return
+    }
+    setSubmitting(true)
     const fd = new FormData(e.currentTarget)
+    const chosenMode = mode || (selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0])
+    const physicalAddress = (fd.get('physicalAddress') as string)?.toString().slice(0, 250).trim()
     try {
       const res = await fetch(`/team/${slug}/api/book`, {
         method: 'POST',
@@ -38,9 +59,10 @@ export function BookConsultation({ slug }: { slug: string }) {
           slotId: selected.id,
           name: fd.get('name'),
           email: fd.get('email'),
-          phone: fd.get('phone'),
+          phone: phoneDigits ? `${countryCode} ${phoneDigits}` : '',
           subject: fd.get('subject'),
-          meetingMode: fd.get('meetingMode'),
+          meetingMode: chosenMode,
+          physicalAddress: chosenMode === 'PHYSICAL' ? physicalAddress : undefined,
         }),
       })
       const data = await res.json()
@@ -151,15 +173,51 @@ export function BookConsultation({ slug }: { slug: string }) {
       </div>
       <input name="name" required placeholder="Full name" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
       <input name="email" type="email" required placeholder="Email" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
-      <input name="phone" placeholder="Phone (optional)" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
+      <div className="flex gap-2">
+        <select
+          value={countryCode}
+          onChange={(e) => setCountryCode(e.target.value)}
+          className="w-32 shrink-0 rounded-lg border border-white/15 bg-white/10 px-2 py-2 text-sm text-white focus:border-white focus:outline-none"
+        >
+          {COUNTRY_CODES.map((c) => (
+            <option key={c.code} value={c.code} className="bg-[#11151f]">{c.flag} {c.code}</option>
+          ))}
+        </select>
+        <input
+          inputMode="numeric"
+          pattern="\d{10}"
+          maxLength={10}
+          value={phoneDigits}
+          onChange={(e) => setPhoneDigits(e.target.value.replace(/\D/g, '').slice(0, 10))}
+          placeholder="10-digit phone (optional)"
+          className="flex-1 rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none"
+        />
+      </div>
+      {phoneDigits && phoneDigits.length !== 10 && (
+        <p className="text-xs text-rose-200">Phone must be 10 digits.</p>
+      )}
       <input name="subject" placeholder="Matter / subject" className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none" />
-      <select name="meetingMode" defaultValue={selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0]} className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white focus:border-white focus:outline-none">
+      <select
+        value={mode || (selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0])}
+        onChange={(e) => setMode(e.target.value)}
+        className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white focus:border-white focus:outline-none"
+      >
         {selected.modes.map((m) => (
           <option key={m} value={m} className="bg-[#11151f]">
             {m === 'PHYSICAL' ? 'In person — at the office' : 'Online video call'}
           </option>
         ))}
       </select>
+      {(mode || (selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0])) === 'PHYSICAL' && (
+        <textarea
+          name="physicalAddress"
+          maxLength={250}
+          rows={3}
+          required
+          placeholder="Your address to come and meet (max 250 chars)"
+          className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none"
+        />
+      )}
       {error && <div className="rounded-lg bg-rose-500/20 px-3 py-2 text-sm text-rose-200">{error}</div>}
       <button disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-primary hover:bg-white/90 disabled:opacity-60">
         {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}

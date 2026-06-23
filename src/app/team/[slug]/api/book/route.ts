@@ -19,8 +19,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const meetingMode = ['PHYSICAL', 'VIRTUAL', 'GOOGLE_MEET', 'ZOOM'].includes((body.meetingMode || '').toString())
     ? body.meetingMode
     : 'VIRTUAL'
+  const physicalAddress = meetingMode === 'PHYSICAL'
+    ? (body.physicalAddress || '').toString().slice(0, 250).trim()
+    : ''
   if (!slotId || !name || !email) {
     return NextResponse.json({ error: 'Slot, name, and email are required' }, { status: 400 })
+  }
+  if (meetingMode === 'PHYSICAL' && !physicalAddress) {
+    return NextResponse.json({ error: 'Address is required for in-person bookings' }, { status: 400 })
   }
 
   // Verify slot belongs to this tenant via its day.
@@ -44,6 +50,10 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
         slotId: slot.id,
         name, email, phone: phone || '', subject,
         meetingMode,
+        // For in-person, store the client's address on meetingLink so the
+        // admin/lawyer dashboard surfaces it next to the booking.
+        meetingLink: meetingMode === 'PHYSICAL' && physicalAddress ? physicalAddress : null,
+        notes: meetingMode === 'PHYSICAL' && physicalAddress ? `Client address: ${physicalAddress}` : null,
         status: 'CONFIRMED',
         tenantId: tenant.id,
       },

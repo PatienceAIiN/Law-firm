@@ -24,9 +24,9 @@ export default async function TenantContactPage({ params }: { params: Promise<{ 
         </div>
         {(shell.officeDetails?.email || shell.officeDetails?.phone || shell.officeDetails?.address) && (
           <div className="mt-10 grid gap-2 text-sm text-white/80">
-            {shell.officeDetails.email && <p>Email: <a href={`mailto:${shell.officeDetails.email}`} className="text-secondary hover:underline">{shell.officeDetails.email}</a></p>}
-            {shell.officeDetails.phone && <p>Phone: <a href={`tel:${shell.officeDetails.phone}`} className="text-secondary hover:underline">{shell.officeDetails.phone}</a></p>}
-            {shell.officeDetails.address && <p>Address: {shell.officeDetails.address}</p>}
+            {shell.officeDetails.email && <p className="text-white">Email: <a href={`mailto:${shell.officeDetails.email}`} className="font-semibold text-white underline decoration-secondary decoration-2 underline-offset-4 hover:text-secondary">{shell.officeDetails.email}</a></p>}
+            {shell.officeDetails.phone && <p className="text-white">Phone: <a href={`tel:${shell.officeDetails.phone}`} className="font-semibold text-white underline decoration-secondary decoration-2 underline-offset-4 hover:text-secondary">{shell.officeDetails.phone}</a></p>}
+            {shell.officeDetails.address && <p className="text-white">Address: {shell.officeDetails.address}</p>}
           </div>
         )}
       </section>

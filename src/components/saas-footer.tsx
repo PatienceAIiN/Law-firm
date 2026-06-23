@@ -17,19 +17,12 @@ export function SaasFooter() {
           · A SaaS platform for modern law firms
         </p>
         <div className="flex items-center gap-5">
-          <button
-            type="button"
-            onClick={() => setOpen(true)}
-            className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white"
-          >
+          <button type="button" onClick={() => setOpen(true)} className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white">
             Contact
           </button>
-          <a
-            href="https://patienceai.in"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white"
-          >
+          <a href="/terms" className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white">Terms</a>
+          <a href="/privacy" className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white">Privacy</a>
+          <a href="https://patienceai.in" target="_blank" rel="noopener noreferrer" className="text-slate-600 transition-colors hover:text-[#14203E] dark:text-slate-300 dark:hover:text-white">
             patienceai.in
           </a>
         </div>
