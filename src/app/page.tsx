@@ -22,8 +22,10 @@ export default function SaasLandingPage() {
   return (
     <div className="min-h-screen bg-[#FFFCF8] text-primary dark:bg-[#0b0f17] dark:text-slate-100">
       {/* Header */}
-      <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
-        <Link href="/" className="text-4xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-400 to-slate-900 dark:from-white dark:via-slate-500 dark:to-white bg-[length:200%_auto] animate-gradient-x">Barrister</Link>
+      <header className="relative z-20 mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 lg:px-10">
+        <Link href="/" className="-ml-2 lg:-ml-6 text-[2.75rem] font-serif italic font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 via-slate-400 to-slate-900 dark:from-white dark:via-slate-500 dark:to-white bg-[length:200%_auto] animate-gradient-x drop-shadow-sm">
+          Barrister
+        </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <OpenWorkspace />
