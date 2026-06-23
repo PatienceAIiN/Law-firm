@@ -33,8 +33,12 @@ export async function POST(req: NextRequest) {
     const hashed = await bcrypt.hash(newPassword, 12)
 
     // Update admin password
+    const admin = await prisma.adminUser.findFirst({ where: { email } })
+    if (!admin) {
+      return NextResponse.json({ error: 'Admin not found' }, { status: 404 })
+    }
     await prisma.adminUser.update({
-      where: { email },
+      where: { id: admin.id },
       data: { password: hashed },
     })
 

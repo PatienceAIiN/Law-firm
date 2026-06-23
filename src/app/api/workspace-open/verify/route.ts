@@ -25,10 +25,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Incorrect code.' }, { status: 400 })
   }
 
-  const adminUsers = await prisma.adminUser.findMany({
+  const adminUsers = (await prisma.adminUser.findMany({
     where: { email, tenant: { status: 'active' } },
     select: { id: true, role: true, tenant: { select: { id: true, slug: true, name: true } } },
-  })
+  })).filter((u) => u.tenant !== null) as { id: string; role: string; tenant: { id: string; slug: string; name: string } }[]
   if (adminUsers.length === 0) return NextResponse.json({ error: 'No active workspace for this email.' }, { status: 404 })
 
   // If multiple workspaces share this email and the caller didn't pick one, ask
