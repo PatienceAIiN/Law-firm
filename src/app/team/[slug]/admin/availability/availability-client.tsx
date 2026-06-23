@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, CalendarClock } from 'lucide-react'
 import { addSlot, deleteSlot } from './actions'
 
@@ -13,11 +14,12 @@ const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-di
 
 export function TenantAvailabilityClient({ slug, days, advocates }: { slug: string; days: Day[]; advocates: AdvocateOption[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
 
   const onAdd = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    start(async () => { await addSlot(slug, fd); (e.target as HTMLFormElement).reset() })
+    start(async () => { await addSlot(slug, fd); (e.target as HTMLFormElement).reset(); router.refresh() })
   }
 
   return (
@@ -70,7 +72,7 @@ export function TenantAvailabilityClient({ slug, days, advocates }: { slug: stri
                           <span className="ml-2 inline-flex items-center rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-white/10 dark:text-slate-300">Available</span>
                         )}
                       </div>
-                      <form action={async () => { await deleteSlot(slug, s.id) }}>
+                      <form action={async () => { await deleteSlot(slug, s.id); router.refresh() }}>
                         <button className="rounded-md p-1 text-rose-500 hover:bg-rose-100"><Trash2 className="h-4 w-4" /></button>
                       </form>
                     </div>

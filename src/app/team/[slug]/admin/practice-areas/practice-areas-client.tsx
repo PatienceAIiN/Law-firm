@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { createPracticeArea, deletePracticeArea } from '../actions'
 
@@ -8,10 +9,11 @@ type P = { id: string; title: string; slug: string; description: string }
 
 export function PracticeAreasClient({ slug, items }: { slug: string; items: P[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
   const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    start(async () => { await createPracticeArea(slug, fd); (e.target as HTMLFormElement).reset() })
+    start(async () => { await createPracticeArea(slug, fd); (e.target as HTMLFormElement).reset(); router.refresh() })
   }
   return (
     <div className="space-y-4">
@@ -36,7 +38,7 @@ export function PracticeAreasClient({ slug, items }: { slug: string; items: P[] 
                   <p className="text-sm font-semibold text-primary dark:text-white">{p.title}</p>
                   <p className="text-xs text-slate-500">{p.slug}{p.description ? ` · ${p.description}` : ''}</p>
                 </div>
-                <form action={async () => { await deletePracticeArea(slug, p.id) }}>
+                <form action={async () => { await deletePracticeArea(slug, p.id); router.refresh() }}>
                   <button className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
                 </form>
               </li>

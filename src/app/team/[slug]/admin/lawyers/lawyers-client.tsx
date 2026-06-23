@@ -1,6 +1,7 @@
 'use client'
 
 import { useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2 } from 'lucide-react'
 import { createAdvocate, deleteAdvocate } from '../actions'
 
@@ -8,10 +9,11 @@ type A = { id: string; name: string; email: string; isActive: boolean }
 
 export function LawyersClient({ slug, items }: { slug: string; items: A[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
   const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const fd = new FormData(e.currentTarget)
-    start(async () => { await createAdvocate(slug, fd); (e.target as HTMLFormElement).reset() })
+    start(async () => { await createAdvocate(slug, fd); (e.target as HTMLFormElement).reset(); router.refresh() })
   }
   return (
     <div className="space-y-4">
@@ -46,7 +48,7 @@ export function LawyersClient({ slug, items }: { slug: string; items: A[] }) {
                       : <span className="text-amber-600">awaiting activation</span>}
                   </p>
                 </div>
-                <form action={async () => { await deleteAdvocate(slug, a.id) }}>
+                <form action={async () => { await deleteAdvocate(slug, a.id); router.refresh() }}>
                   <button className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
                 </form>
               </li>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon } from 'lucide-react'
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 
@@ -10,6 +11,7 @@ type Item = { description: string; qty: number; rate: number }
 
 export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipts: R[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
   const [items, setItems] = useState<Item[]>([{ description: 'Legal services', qty: 1, rate: 0 }])
@@ -46,6 +48,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
         setOpen(false)
         setItems([{ description: 'Legal services', qty: 1, rate: 0 }])
         setClientName(''); setClientEmail('')
+        router.refresh()
       } catch (err: any) { setError(err.message || 'Failed') }
     })
   }
@@ -99,7 +102,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                       <form action={async () => {
                         const next = r.clientEmail || window.prompt('Send receipt PDF to which email?', '')
                         if (!next) return
-                        await emailReceiptToClient(slug, r.id, next)
+                        await emailReceiptToClient(slug, r.id, next); router.refresh()
                       }}>
                         <button
                           title={r.clientEmail ? `Re-send to ${r.clientEmail}` : 'Send by email'}
@@ -108,7 +111,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                           <Send className="h-4 w-4" />
                         </button>
                       </form>
-                      <form action={async () => { await deleteReceipt(slug, r.id) }}>
+                      <form action={async () => { await deleteReceipt(slug, r.id); router.refresh() }}>
                         <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
                       </form>
                     </div>

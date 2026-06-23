@@ -21,7 +21,7 @@ export default async function TenantTeamPage({ params }: { params: Promise<{ slu
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
       <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Team</h2>
-      <TeamClient slug={slug} items={members.map((m) => ({ id: m.id, name: m.name, title: m.title, bio: m.bio, email: m.email, isActive: m.isActive }))} />
+      <TeamClient slug={slug} items={members.map((m) => ({ id: m.id, name: m.name, title: m.title, bio: m.bio, email: m.email, image: m.image || null, isActive: m.isActive }))} />
     </TenantAdminShell>
   )
 }

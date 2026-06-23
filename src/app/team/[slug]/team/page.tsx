@@ -36,11 +36,16 @@ export default async function TenantTeamPage({ params }: { params: Promise<{ slu
         ) : (
           <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((m) => (
-              <article key={m.id} className="rounded-2xl border border-[#F4E8D8] bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
-                <h2 className="text-lg font-semibold text-primary dark:text-white">{m.name}</h2>
-                <p className="text-xs uppercase tracking-wide text-secondary">{m.title}</p>
-                {m.bio && <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{m.bio}</p>}
-                {m.email && <p className="mt-3 text-xs text-slate-500"><a href={`mailto:${m.email}`} className="hover:underline">{m.email}</a></p>}
+              <article key={m.id} className="overflow-hidden rounded-2xl border border-[#F4E8D8] bg-white shadow-sm dark:border-white/10 dark:bg-[#11151f]">
+                {m.image && (
+                  <img src={m.image} alt={m.name} className="h-48 w-full object-cover" />
+                )}
+                <div className="p-6">
+                  <h2 className="text-lg font-semibold text-primary dark:text-white">{m.name}</h2>
+                  <p className="text-xs uppercase tracking-wide text-secondary">{m.title}</p>
+                  {m.bio && <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">{m.bio}</p>}
+                  {m.email && <p className="mt-3 text-xs text-slate-500"><a href={`mailto:${m.email}`} className="hover:underline">{m.email}</a></p>}
+                </div>
               </article>
             ))}
           </div>

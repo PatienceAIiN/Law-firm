@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, FileText, Loader2 } from 'lucide-react'
 import { createCase, deleteCase } from './actions'
 
@@ -9,6 +10,7 @@ type A = { id: string; name: string; email: string }
 
 export function TenantCasesClient({ slug, cases, advocates }: { slug: string; cases: C[]; advocates: A[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
 
@@ -20,6 +22,7 @@ export function TenantCasesClient({ slug, cases, advocates }: { slug: string; ca
       try {
         await createCase(slug, fd)
         setOpen(false)
+        router.refresh()
       } catch (err: any) { setError(err.message || 'Failed') }
     })
   }
@@ -66,7 +69,7 @@ export function TenantCasesClient({ slug, cases, advocates }: { slug: string; ca
                     <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase text-slate-700 dark:bg-white/10 dark:text-slate-200">{c.status}</span>
                   </td>
                   <td className="px-3 py-2 text-right">
-                    <form action={async () => { await deleteCase(slug, c.id) }}>
+                    <form action={async () => { await deleteCase(slug, c.id); router.refresh() }}>
                       <button className="rounded-md p-1 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
                     </form>
                   </td>

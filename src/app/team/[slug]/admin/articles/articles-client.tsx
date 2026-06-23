@@ -2,6 +2,7 @@
 
 import { useRef, useState, useTransition } from 'react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { Plus, Trash2, Loader2, Upload, X } from 'lucide-react'
 import { createBlogPost, deleteBlogPost } from '../actions'
 import { uploadImage } from '@/app/admin/actions/upload'
@@ -12,6 +13,7 @@ const MAX_BYTES = 5 * 1024 * 1024
 
 export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
   const [pending, start] = useTransition()
+  const router = useRouter()
   const [cover, setCover] = useState<string>('')
   const [uploading, setUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
@@ -53,6 +55,7 @@ export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
       await createBlogPost(slug, fd)
       setCover('')
       formRef.current?.reset()
+      router.refresh()
     })
   }
 
@@ -110,7 +113,7 @@ export function ArticlesClient({ slug, items }: { slug: string; items: B[] }) {
                   <p className="truncate text-sm font-semibold text-primary dark:text-white">{b.title}</p>
                   <p className="truncate text-xs text-slate-500">{b.slug} · {b.status}</p>
                 </div>
-                <form action={async () => { await deleteBlogPost(slug, b.id) }}>
+                <form action={async () => { await deleteBlogPost(slug, b.id); router.refresh() }}>
                   <button className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50"><Trash2 className="h-4 w-4" /></button>
                 </form>
               </li>

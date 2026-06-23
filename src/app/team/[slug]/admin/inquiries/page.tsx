@@ -32,7 +32,21 @@ export default async function TenantInquiriesPage({ params }: { params: Promise<
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
       <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Inquiries</h2>
-      <TenantInquiriesClient slug={slug} items={items} advocates={advocates} />
+      <TenantInquiriesClient
+        slug={slug}
+        items={items.map((i) => ({
+          id: i.id,
+          fullName: i.fullName,
+          email: i.email,
+          phone: i.phone || null,
+          subject: i.subject,
+          message: i.message,
+          status: i.status || 'NEW',
+          createdAt: i.createdAt.toISOString(),
+          advocateId: i.advocateId || null,
+        }))}
+        advocates={advocates}
+      />
     </TenantAdminShell>
   )
 }
