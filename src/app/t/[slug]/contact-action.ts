@@ -28,7 +28,7 @@ export async function submitTenantContact(slug: string, formData: FormData) {
     subject: `New inquiry: ${data.subject}`,
     htmlContent: generateContactEmailTemplate(data),
     textContent: `New inquiry from ${data.fullName} <${data.email}>\n\n${data.message}`,
-  }).catch(() => {})
+  }).catch(() => { })
 
   return { ok: true }
 }

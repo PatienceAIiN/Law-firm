@@ -6,11 +6,12 @@ import { addSlot, deleteSlot } from './actions'
 
 type Booking = { id: string; name: string; email: string; phone: string; status: string; meetingMode: string }
 type Slot = { id: string; startTime: string; endTime: string; capacity: number; bookedCount: number; bookings: Booking[] }
-type Day = { id: string; date: string; slots: Slot[] }
+type Day = { id: string; date: string; advocateName: string | null; slots: Slot[] }
+type AdvocateOption = { id: string; name: string }
 
 const time = (iso: string) => new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 
-export function TenantAvailabilityClient({ slug, days }: { slug: string; days: Day[] }) {
+export function TenantAvailabilityClient({ slug, days, advocates }: { slug: string; days: Day[]; advocates: AdvocateOption[] }) {
   const [pending, start] = useTransition()
 
   const onAdd = (e: React.FormEvent<HTMLFormElement>) => {
@@ -27,6 +28,10 @@ export function TenantAvailabilityClient({ slug, days }: { slug: string; days: D
           <input name="date" type="date" required className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
           <input name="startTime" type="time" required defaultValue="10:00" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
           <input name="endTime" type="time" required defaultValue="10:30" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <select name="advocateId" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white">
+            <option value="">Any Advocate (Firm Level)</option>
+            {advocates.map((a) => <option key={a.id} value={a.id}>{a.name}</option>)}
+          </select>
           <input name="capacity" type="number" min={1} defaultValue={1} placeholder="Seats" className="rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
           <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-3 py-2 text-xs font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
             {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Plus className="h-3.5 w-3.5" />}
@@ -42,7 +47,10 @@ export function TenantAvailabilityClient({ slug, days }: { slug: string; days: D
           </div>
         ) : days.map((d) => (
           <div key={d.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white">{new Date(d.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">{new Date(d.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</h3>
+              <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300">{d.advocateName || 'Firm (Any)'}</span>
+            </div>
             {d.slots.length === 0 ? <p className="mt-2 text-xs text-slate-500">No slots.</p> : (
               <ul className="mt-3 space-y-2">
                 {d.slots.map((s) => (

@@ -22,7 +22,20 @@ function parseName(from: string) {
   return m ? m[1].replace(/"/g, '') || m[2] : from
 }
 
-export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }: { basePath?: string; fullScreen?: boolean } = {}) {
+type CaseOption = { id: string; caseNumber: string; title: string; clientName: string; clientEmail: string; nextHearingDate?: string | null }
+type ReceiptOption = { id: string; number: string; clientName: string }
+
+export function MailClient({ 
+  basePath = '/api/admin/mail', 
+  fullScreen = false,
+  cases = [],
+  receipts = [],
+}: { 
+  basePath?: string; 
+  fullScreen?: boolean;
+  cases?: CaseOption[];
+  receipts?: ReceiptOption[];
+} = {}) {
   const fullPagePath = basePath.includes('/lawyer') ? '/lawyer/mail' : '/admin/mail'
   const [status, setStatus] = useState<Status | null>(null)
   const [folder, setFolder] = useState('INBOX')
@@ -57,6 +70,42 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
   }
 
   const closeCompose = () => { setCompose(null); setAttachments([]) }
+
+  const handleCaseSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const c = cases.find(x => x.id === e.target.value)
+    if (c) {
+      setCompose(prev => prev ? {
+        ...prev,
+        to: prev.to || c.clientEmail || '',
+        subject: prev.subject || `Regarding Case: ${c.title} (${c.caseNumber})`,
+        body: prev.body + (c.nextHearingDate ? `\n\nReminder: Your next hearing is scheduled for ${new Date(c.nextHearingDate).toLocaleDateString()}.` : '')
+      } : null)
+    }
+  }
+
+  const handleReceiptAttach = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const rid = e.target.value
+    if (!rid) return
+    const r = receipts.find(x => x.id === rid)
+    if (!r) return
+    e.target.value = '' // reset
+
+    try {
+      const res = await fetch(`/api/receipts/${rid}/pdf`)
+      if (!res.ok) throw new Error('Could not fetch receipt PDF')
+      const blob = await res.blob()
+      
+      const data: string = await new Promise((resolve) => {
+        const reader = new FileReader()
+        reader.onload = () => resolve(String(reader.result).split(',')[1] || '')
+        reader.readAsDataURL(blob)
+      })
+      
+      setAttachments(prev => [...prev, { filename: `Receipt_${r.number}.pdf`, mimeType: 'application/pdf', data, size: blob.size }])
+    } catch (err: any) {
+      setError(err.message || 'Failed to attach receipt')
+    }
+  }
 
   const loadStatus = useCallback(async () => {
     const res = await fetch(`${basePath}/status`)
@@ -338,6 +387,23 @@ export function MailClient({ basePath = '/api/admin/mail', fullScreen = false }:
               <button onClick={closeCompose}><X className="w-4 h-4" /></button>
             </div>
             <div className="p-4 space-y-3">
+              {(cases.length > 0 || receipts.length > 0) && (
+                <div className="flex gap-3 pb-2 border-b border-[#F4E8D8]">
+                  {cases.length > 0 && (
+                    <select onChange={handleCaseSelect} className="flex-1 rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] px-3 py-1.5 text-xs text-slate-700 outline-none">
+                      <option value="">+ Link a Case / Hearing</option>
+                      {cases.map(c => <option key={c.id} value={c.id}>{c.caseNumber} - {c.title} ({c.clientName})</option>)}
+                    </select>
+                  )}
+                  {receipts.length > 0 && (
+                    <select onChange={handleReceiptAttach} className="flex-1 rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] px-3 py-1.5 text-xs text-slate-700 outline-none">
+                      <option value="">+ Attach a Receipt</option>
+                      {receipts.map(r => <option key={r.id} value={r.id}>{r.number} - {r.clientName}</option>)}
+                    </select>
+                  )}
+                </div>
+              )}
+              
               <input value={compose.to} onChange={(e) => setCompose({ ...compose, to: e.target.value })} placeholder="To" className="w-full px-3 py-2 rounded-lg border border-[#F4E8D8] text-sm outline-none" />
               <input value={compose.subject} onChange={(e) => setCompose({ ...compose, subject: e.target.value })} placeholder="Subject" className="w-full px-3 py-2 rounded-lg border border-[#F4E8D8] text-sm outline-none" />
               <textarea value={compose.body} onChange={(e) => setCompose({ ...compose, body: e.target.value })} placeholder="Write your message…" rows={7} className="w-full px-3 py-2 rounded-lg border border-[#F4E8D8] text-sm outline-none resize-y" />

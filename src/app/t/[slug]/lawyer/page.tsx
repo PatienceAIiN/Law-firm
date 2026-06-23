@@ -18,7 +18,7 @@ export default async function TenantLawyerDashboard({ params }: { params: Promis
     redirect(`/t/${tenant.slug}/lawyer/login`)
   }
 
-  const [advocate, cases, accessLogs, bookings] = await Promise.all([
+  const [advocate, cases, accessLogs, bookings, days] = await Promise.all([
     prisma.advocate.findFirst({
       where: { id: sUser.id, tenantId: tenant.id },
       select: { id: true, name: true, email: true, title: true, bio: true, phone: true },
@@ -34,9 +34,15 @@ export default async function TenantLawyerDashboard({ params }: { params: Promis
       take: 10,
     }),
     prisma.consultationBooking.findMany({
-      where: { tenantId: tenant.id },
+      where: { tenantId: tenant.id, advocateId: sUser.id },
       orderBy: { createdAt: 'desc' },
       include: { slot: { include: { day: true } } },
+    }),
+    prisma.availabilityDay.findMany({
+      where: { tenantId: tenant.id, advocateId: sUser.id },
+      orderBy: { date: 'asc' },
+      include: { slots: { include: { bookings: true }, orderBy: { startTime: 'asc' } } },
+      take: 60,
     }),
   ])
 
@@ -59,6 +65,18 @@ export default async function TenantLawyerDashboard({ params }: { params: Promis
         status: b.status,
         startTime: b.slot.startTime.toISOString(),
         meetingLink: b.meetingLink,
+      }))}
+      days={days.map((d) => ({
+        id: d.id,
+        date: d.date.toISOString(),
+        slots: d.slots.map((s) => ({
+          id: s.id,
+          startTime: s.startTime.toISOString(),
+          endTime: s.endTime.toISOString(),
+          capacity: s.capacity,
+          bookedCount: s.bookedCount,
+          bookings: s.bookings.map((bk) => ({ id: bk.id, name: bk.name, email: bk.email, phone: bk.phone, status: bk.status, meetingMode: bk.meetingMode })),
+        })),
       }))}
     />
   )

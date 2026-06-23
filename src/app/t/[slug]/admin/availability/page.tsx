@@ -19,8 +19,14 @@ export default async function TenantAvailabilityPage({ params }: { params: Promi
   const days = await prisma.availabilityDay.findMany({
     where: { tenantId: tenant.id },
     orderBy: { date: 'asc' },
-    include: { slots: { include: { bookings: true }, orderBy: { startTime: 'asc' } } },
+    include: { advocate: { select: { name: true } }, slots: { include: { bookings: true }, orderBy: { startTime: 'asc' } } },
     take: 60,
+  })
+  
+  const advocates = await prisma.advocate.findMany({
+    where: { tenantId: tenant.id, isActive: true },
+    select: { id: true, name: true },
+    orderBy: { name: 'asc' }
   })
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
 
@@ -29,9 +35,11 @@ export default async function TenantAvailabilityPage({ params }: { params: Promi
       <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Availability &amp; Bookings</h2>
       <TenantAvailabilityClient
         slug={slug}
+        advocates={advocates}
         days={days.map((d) => ({
           id: d.id,
           date: d.date.toISOString(),
+          advocateName: d.advocate?.name || null,
           slots: d.slots.map((s) => ({
             id: s.id,
             startTime: s.startTime.toISOString(),

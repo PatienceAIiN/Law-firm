@@ -41,10 +41,11 @@ export function TenantAdminShell({
   const tabs = TABS(tenant.slug)
 
   useEffect(() => {
-    const activeTab = tabs.find((t) => (t.exact ? pathname === t.href : pathname.startsWith(t.href)))
+    const currentTabs = TABS(tenant.slug)
+    const activeTab = currentTabs.find((t) => (t.exact ? pathname === t.href : pathname.startsWith(t.href)))
     const tabName = activeTab ? activeTab.label : 'Admin Portal'
     document.title = `${tabName} | Admin Portal | ${tenant.name}`
-  }, [pathname, tabs, tenant.name])
+  }, [pathname, tenant.slug, tenant.name])
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">

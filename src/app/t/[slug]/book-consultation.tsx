@@ -4,10 +4,13 @@ import { useEffect, useState } from 'react'
 import { Loader2, CheckCircle2, Calendar, Clock } from 'lucide-react'
 
 type Slot = { id: string; startTime: string; endTime: string; seatsLeft: number; modes: string[] }
-type Day = { date: string; slots: Slot[] }
+type Day = { date: string; advocateId: string | null; advocateName: string | null; slots: Slot[] }
+type Advocate = { id: string; name: string; title: string }
 
 export function BookConsultation({ slug }: { slug: string }) {
   const [days, setDays] = useState<Day[]>([])
+  const [advocates, setAdvocates] = useState<Advocate[]>([])
+  const [selectedAdvocateId, setSelectedAdvocateId] = useState<string>('')
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<Slot | null>(null)
   const [submitting, setSubmitting] = useState(false)
@@ -16,8 +19,9 @@ export function BookConsultation({ slug }: { slug: string }) {
 
   useEffect(() => {
     fetch(`/t/${slug}/api/availability`).then(async (r) => {
-      const d = await r.json().catch(() => ({ days: [] }))
+      const d = await r.json().catch(() => ({ days: [], advocates: [] }))
       setDays(d.days || [])
+      setAdvocates(d.advocates || [])
     }).finally(() => setLoading(false))
   }, [slug])
 
@@ -81,14 +85,41 @@ export function BookConsultation({ slug }: { slug: string }) {
     )
   }
 
+  const filteredDays = selectedAdvocateId 
+    ? days.filter(d => d.advocateId === selectedAdvocateId) 
+    : days;
+
   if (!selected) {
     return (
       <div className="space-y-4">
-        {days.map((d) => (
+        {advocates.length > 0 && (
+          <div className="mb-6">
+            <label className="mb-2 block text-sm font-semibold text-white/90">Select a Lawyer (Optional)</label>
+            <select
+              value={selectedAdvocateId}
+              onChange={(e) => setSelectedAdvocateId(e.target.value)}
+              className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white focus:border-[var(--secondary)] focus:outline-none"
+            >
+              <option value="" className="bg-[#11151f] text-white">Any Available Lawyer (Firm Level)</option>
+              {advocates.map(a => (
+                <option key={a.id} value={a.id} className="bg-[#11151f] text-white">{a.name} — {a.title}</option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {filteredDays.length === 0 ? (
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-center text-sm text-white/70">
+            No slots available for the selected lawyer.
+          </div>
+        ) : filteredDays.map((d) => (
           <div key={d.date} className="rounded-2xl border border-white/10 bg-white/5 p-4">
-            <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-white">
-              <Calendar className="h-4 w-4 text-[var(--secondary)]" />
-              {new Date(d.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                <Calendar className="h-4 w-4 text-[var(--secondary)]" />
+                {new Date(d.date).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'short' })}
+              </div>
+              {d.advocateName && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold text-white/70">{d.advocateName}</span>}
             </div>
             <div className="flex flex-wrap gap-2">
               {d.slots.map((s) => (
