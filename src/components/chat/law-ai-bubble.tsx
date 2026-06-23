@@ -100,21 +100,27 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const pathname = usePathname()
   // Derive the current tenant slug from the URL so the LawAI bubble's CTAs
-  // always navigate inside the same workspace.
+  // and the /api/chat lookup stay scoped to the active workspace. Routes
+  // were renamed from /t/<slug> to /team/<slug>; we still match the old
+  // form in case any legacy link is hit.
   const tenantSlug = (() => {
-    const match = (pathname || '').match(/^\/t\/([^\/]+)/)
-    return match ? match[1] : null
+    const m = (pathname || '').match(/^\/(?:team|t)\/([^\/]+)/)
+    return m ? m[1] : null
   })()
   const router = useRouter()
 
-  // Persist conversation id
+  // Persist conversation id PER tenant, so a chat started on workspace A
+  // doesn't carry context into workspace B (the model would otherwise echo
+  // the prior firm's name / details).
+  const convKey = tenantSlug ? `law_ai_conversation_id:${tenantSlug}` : 'law_ai_conversation_id:_root'
   useEffect(() => {
-    const saved = localStorage.getItem('law_ai_conversation_id')
-    if (saved) setConversationId(saved)
-  }, [])
+    const saved = localStorage.getItem(convKey)
+    setConversationId(saved || null)
+    setMessages([])
+  }, [convKey])
   useEffect(() => {
-    if (conversationId) localStorage.setItem('law_ai_conversation_id', conversationId)
-  }, [conversationId])
+    if (conversationId) localStorage.setItem(convKey, conversationId)
+  }, [conversationId, convKey])
 
   // Scroll to bottom on new messages
   useEffect(() => {

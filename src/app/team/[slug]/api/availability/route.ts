@@ -19,7 +19,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
       slots: {
         where: { isActive: true, startTime: { gte: now } },
         orderBy: { startTime: 'asc' },
-        select: { id: true, startTime: true, endTime: true, capacity: true, bookedCount: true, allowedModes: true },
+        select: { id: true, startTime: true, endTime: true, capacity: true, bookedCount: true, allowedModes: true, physicalAddress: true },
       },
     },
   })
@@ -43,6 +43,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
             endTime: s.endTime.toISOString(),
             seatsLeft: s.capacity - s.bookedCount,
             modes: (s.allowedModes || 'VIRTUAL').split(',').map((x) => x.trim()).filter(Boolean),
+            physicalAddress: s.physicalAddress || null,
           })),
       }))
       .filter((d) => d.slots.length > 0),

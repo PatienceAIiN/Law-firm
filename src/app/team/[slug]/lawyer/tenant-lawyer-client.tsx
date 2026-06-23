@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { signOut } from 'next-auth/react'
-import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox } from 'lucide-react'
+import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox, Edit } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { PasswordInput } from '@/components/ui/password-input'
 import { PushSettings } from '@/components/push-settings'
-import { createAdvocateCase, deleteBooking, resendBookingEmail } from './actions'
+import { createAdvocateCase, deleteBooking, resendBookingEmail, updateAdvocateCase, deleteAdvocateCase } from './actions'
 import { addLawyerSlot, deleteLawyerSlot } from './actions-availability'
 
 type T = { id: string; slug: string; name: string }
@@ -314,6 +314,69 @@ function InstantMeetingCard({ slug }: { slug: string }) {
   )
 }
 
+function CaseRow({ slug, c }: { slug: string; c: CaseItem }) {
+  const router = useRouter()
+  const [edit, setEdit] = useState(false)
+  const [busy, start] = useTransition()
+
+  const onSave = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const fd = new FormData(e.currentTarget)
+    start(async () => {
+      const res = await updateAdvocateCase(slug, c.id, fd)
+      if (!res.ok) { alert(res.error); return }
+      setEdit(false); router.refresh()
+    })
+  }
+  const onDel = () => {
+    if (!window.confirm(`Delete case "${c.title}"? This is permanent.`)) return
+    start(async () => {
+      const res = await deleteAdvocateCase(slug, c.id)
+      if (!res.ok) { alert(res.error); return }
+      router.refresh()
+    })
+  }
+
+  if (edit) {
+    return (
+      <li className="py-3">
+        <form onSubmit={onSave} className="grid gap-2 sm:grid-cols-2">
+          <input name="caseNumber" defaultValue={c.caseNumber} placeholder="Case #" required className="rounded-md border border-slate-300 px-2 py-1.5 text-xs dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="title" defaultValue={c.title} placeholder="Title" required className="rounded-md border border-slate-300 px-2 py-1.5 text-xs dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="court" placeholder="Court" required className="rounded-md border border-slate-300 px-2 py-1.5 text-xs dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <select name="status" defaultValue={c.status} className="rounded-md border border-slate-300 px-2 py-1.5 text-xs dark:border-white/15 dark:bg-white/5 dark:text-white">
+            {['ACTIVE', 'PENDING', 'ADJOURNED', 'CLOSED', 'DISPOSED'].map((s) => <option key={s}>{s}</option>)}
+          </select>
+          <input name="clientName" defaultValue={c.clientName} placeholder="Client name" required className="sm:col-span-2 rounded-md border border-slate-300 px-2 py-1.5 text-xs dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <div className="sm:col-span-2 flex justify-end gap-2">
+            <button type="button" onClick={() => setEdit(false)} className="rounded-md border border-slate-300 px-3 py-1 text-xs text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">Cancel</button>
+            <button disabled={busy} className="rounded-md bg-primary px-3 py-1 text-xs font-semibold text-white hover:bg-accent disabled:opacity-60">
+              {busy ? 'Saving…' : 'Save'}
+            </button>
+          </div>
+        </form>
+      </li>
+    )
+  }
+
+  return (
+    <li className="flex items-start justify-between gap-3 py-3">
+      <div className="min-w-0">
+        <p className="text-sm font-semibold text-primary dark:text-white">{c.title}</p>
+        <p className="mt-0.5 text-xs text-slate-500">#{c.caseNumber} · {c.clientName} · {c.status}</p>
+      </div>
+      <div className="flex items-center gap-1">
+        <button onClick={() => setEdit(true)} className="rounded-md p-1.5 text-slate-500 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-white/10" title="Edit">
+          <Edit className="h-4 w-4" />
+        </button>
+        <button onClick={onDel} disabled={busy} className="rounded-md p-1.5 text-rose-500 hover:bg-rose-50 disabled:opacity-60" title="Delete">
+          <Trash2 className="h-4 w-4" />
+        </button>
+      </div>
+    </li>
+  )
+}
+
 function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
   const [modalOpen, setModalOpen] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -351,10 +414,7 @@ function CasesTab({ cases, slug }: { cases: CaseItem[], slug: string }) {
         ) : (
           <ul className="divide-y divide-slate-200 dark:divide-white/10">
             {cases.map((c) => (
-              <li key={c.id} className="py-3">
-                <p className="text-sm font-semibold text-primary dark:text-white">{c.title}</p>
-                <p className="mt-0.5 text-xs text-slate-500">#{c.caseNumber} · {c.clientName} · {c.status}</p>
-              </li>
+              <CaseRow key={c.id} slug={slug} c={c} />
             ))}
           </ul>
         )}

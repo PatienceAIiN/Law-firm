@@ -69,9 +69,12 @@ export async function generateMetadata(): Promise<Metadata> {
   const faviconHref = resolveThemeIcon(theme)
   const type = resolveThemeIconType(theme)
   return {
+    // No `template` so a child page's `generateMetadata` title appears
+    // verbatim. Otherwise every tenant page would render as
+    // "<Tenant page> | Senior Advocate Law Firm".
     title: {
       default: theme.siteTitle,
-      template: `%s | ${theme.siteTitle}`
+      template: '%s',
     },
     description: 'Professional legal services with expertise in corporate law, litigation, and advisory services.',
     manifest: '/manifest.webmanifest',

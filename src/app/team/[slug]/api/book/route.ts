@@ -19,14 +19,8 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const meetingMode = ['PHYSICAL', 'VIRTUAL', 'GOOGLE_MEET', 'ZOOM'].includes((body.meetingMode || '').toString())
     ? body.meetingMode
     : 'VIRTUAL'
-  const physicalAddress = meetingMode === 'PHYSICAL'
-    ? (body.physicalAddress || '').toString().slice(0, 250).trim()
-    : ''
   if (!slotId || !name || !email) {
     return NextResponse.json({ error: 'Slot, name, and email are required' }, { status: 400 })
-  }
-  if (meetingMode === 'PHYSICAL' && !physicalAddress) {
-    return NextResponse.json({ error: 'Address is required for in-person bookings' }, { status: 400 })
   }
 
   // Verify slot belongs to this tenant via its day.
@@ -35,6 +29,14 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     include: { day: true },
   })
   if (!slot) return NextResponse.json({ error: 'Slot not available' }, { status: 404 })
+  // In-person address comes from the slot itself, never from the client.
+  const physicalAddress = meetingMode === 'PHYSICAL' ? (slot.physicalAddress || '').trim() : ''
+  if (meetingMode === 'PHYSICAL' && !physicalAddress) {
+    return NextResponse.json(
+      { error: 'This slot has no published address. Ask the firm to set one or pick a virtual mode.' },
+      { status: 400 },
+    )
+  }
   if (slot.bookedCount >= slot.capacity) {
     return NextResponse.json({ error: 'Slot is full' }, { status: 409 })
   }
@@ -53,7 +55,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
         // For in-person, store the client's address on meetingLink so the
         // admin/lawyer dashboard surfaces it next to the booking.
         meetingLink: meetingMode === 'PHYSICAL' && physicalAddress ? physicalAddress : null,
-        notes: meetingMode === 'PHYSICAL' && physicalAddress ? `Client address: ${physicalAddress}` : null,
+        notes: meetingMode === 'PHYSICAL' && physicalAddress ? `Meeting address: ${physicalAddress}` : null,
         status: 'CONFIRMED',
         tenantId: tenant.id,
       },

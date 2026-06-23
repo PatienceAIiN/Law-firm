@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { Loader2, CheckCircle2, Calendar, Clock } from 'lucide-react'
 
-type Slot = { id: string; startTime: string; endTime: string; seatsLeft: number; modes: string[] }
+type Slot = { id: string; startTime: string; endTime: string; seatsLeft: number; modes: string[]; physicalAddress?: string | null }
 type Day = { date: string; advocateId: string | null; advocateName: string | null; slots: Slot[] }
 type Advocate = { id: string; name: string; title: string }
 
@@ -50,7 +50,6 @@ export function BookConsultation({ slug }: { slug: string }) {
     setSubmitting(true)
     const fd = new FormData(e.currentTarget)
     const chosenMode = mode || (selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0])
-    const physicalAddress = (fd.get('physicalAddress') as string)?.toString().slice(0, 250).trim()
     try {
       const res = await fetch(`/team/${slug}/api/book`, {
         method: 'POST',
@@ -62,7 +61,6 @@ export function BookConsultation({ slug }: { slug: string }) {
           phone: phoneDigits ? `${countryCode} ${phoneDigits}` : '',
           subject: fd.get('subject'),
           meetingMode: chosenMode,
-          physicalAddress: chosenMode === 'PHYSICAL' ? physicalAddress : undefined,
         }),
       })
       const data = await res.json()
@@ -209,14 +207,16 @@ export function BookConsultation({ slug }: { slug: string }) {
         ))}
       </select>
       {(mode || (selected.modes.includes('VIRTUAL') ? 'VIRTUAL' : selected.modes[0])) === 'PHYSICAL' && (
-        <textarea
-          name="physicalAddress"
-          maxLength={250}
-          rows={3}
-          required
-          placeholder="Your address to come and meet (max 250 chars)"
-          className="w-full rounded-lg border border-white/15 bg-white/10 px-3 py-2 text-sm text-white placeholder:text-white/40 focus:border-white focus:outline-none"
-        />
+        selected.physicalAddress ? (
+          <div className="rounded-lg border border-white/15 bg-white/5 px-3 py-2 text-xs text-white/80">
+            <p className="font-semibold uppercase tracking-widest text-white/60">Meeting address</p>
+            <p className="mt-1 whitespace-pre-wrap text-sm text-white">{selected.physicalAddress}</p>
+          </div>
+        ) : (
+          <div className="rounded-lg border border-amber-300/30 bg-amber-500/10 px-3 py-2 text-xs text-amber-100">
+            The firm hasn't published an in-person address for this slot yet. Pick "Online video call" or another time.
+          </div>
+        )
       )}
       {error && <div className="rounded-lg bg-rose-500/20 px-3 py-2 text-sm text-rose-200">{error}</div>}
       <button disabled={submitting} className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 text-sm font-semibold text-primary hover:bg-white/90 disabled:opacity-60">
