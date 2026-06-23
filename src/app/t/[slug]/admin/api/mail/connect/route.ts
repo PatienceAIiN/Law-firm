@@ -12,6 +12,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   if (!u?.id || u.tenantSlug !== slug) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!gmailConfigured()) return NextResponse.json({ error: 'Gmail is not configured.' }, { status: 400 })
   // State carries tenant + role so the callback knows where to land.
-  const state = `tenant-admin:${slug}`
-  return NextResponse.redirect(gmailAuthUrl(state, `/t/${slug}/admin/api/mail/callback`))
+  const state = `tenantadmin:${slug}:${u.tenantId}`
+  return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback'))
 }

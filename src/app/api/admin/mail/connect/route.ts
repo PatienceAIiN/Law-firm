@@ -11,5 +11,5 @@ export async function GET() {
   if (!gmailConfigured()) {
     return NextResponse.json({ error: 'Gmail is not configured. Set GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET.' }, { status: 400 })
   }
-  return NextResponse.redirect(gmailAuthUrl())
+  return NextResponse.redirect(gmailAuthUrl('superadmin', '/api/mail/callback'))
 }

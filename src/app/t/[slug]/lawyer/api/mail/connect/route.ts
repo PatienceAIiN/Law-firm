@@ -11,5 +11,6 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   if (!gmailConfigured()) return NextResponse.json({ error: 'Gmail is not configured.' }, { status: 400 })
-  return NextResponse.redirect(gmailAuthUrl(`tenant-lawyer:${slug}`, `/t/${slug}/lawyer/api/mail/callback`))
+  const state = `advocate:${slug}:${u.id}`
+  return NextResponse.redirect(gmailAuthUrl(state, '/api/mail/callback'))
 }

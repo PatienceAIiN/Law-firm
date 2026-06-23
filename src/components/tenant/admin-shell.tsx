@@ -59,7 +59,11 @@ export function TenantAdminShell({
               <ExternalLink className="h-3.5 w-3.5" /> Site
             </Link>
             <button
-              onClick={() => signOut({ callbackUrl: `/t/${tenant.slug}/admin/login` })}
+              onClick={() => {
+                if (window.confirm('Are you sure you want to log out?')) {
+                  signOut({ callbackUrl: `/t/${tenant.slug}/admin/login` })
+                }
+              }}
               className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-100"
             >
               <LogOut className="h-3.5 w-3.5" /> Logout
