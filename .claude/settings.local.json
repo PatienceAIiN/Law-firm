@@ -115,7 +115,8 @@
       "Bash(grep *)",
       "Bash(REDIS_URL=\"redis-cli -u redis://default:fake@example.com:6379\" npx tsx -e \"import\\('./src/lib/redis.ts'\\).then\\(m => console.log\\('redis instance:', m.redis ? 'connected' : 'disabled'\\)\\)\")",
       "Bash(REDIS_URL='redis-cli -u redis://default:x@example.com:1234' node *)",
-      "Bash(git reset *)"
+      "Bash(git reset *)",
+      "Bash(npx tsc *)"
     ]
   }
 }

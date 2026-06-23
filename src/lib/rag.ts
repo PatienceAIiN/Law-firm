@@ -396,8 +396,10 @@ export function retrieveRelevantDocs(query: string, topK = 3): Document[] {
 
 export function buildSystemPrompt(retrievedDocs: Document[], siteData?: {
   firmName?: string
+  tenantSlug?: string
   practiceAreas?: Array<{ title: string; description: string }>
   teamMembers?: Array<{ name: string; title: string; expertise?: string | null }>
+  articles?: Array<{ title: string; excerpt?: string | null; slug?: string }>
   faqs?: Array<{ question: string; answer: string }>
   officeAddress?: string
   officePhone?: string
@@ -422,12 +424,24 @@ export function buildSystemPrompt(retrievedDocs: Document[], siteData?: {
       parts.push(`Legal Team:`)
       siteData.teamMembers.forEach(m => parts.push(`  • ${m.name} — ${m.title}${m.expertise ? ` (${m.expertise})` : ''}`))
     }
+    if (siteData.articles?.length) {
+      parts.push(`Recent Articles:`)
+      siteData.articles.forEach(a => parts.push(`  • ${a.title}${a.excerpt ? ` — ${a.excerpt}` : ''}`))
+    }
     if (siteData.faqs?.length) {
       parts.push(`FAQs:`)
       siteData.faqs.forEach(f => parts.push(`  Q: ${f.question}\n  A: ${f.answer}`))
     }
-    if (parts.length > 0) siteContext = '\n\nSITE & FIRM INFORMATION:\n' + parts.join('\n')
+    if (parts.length > 0) siteContext = '\n\nCURRENT WORKSPACE INFORMATION:\n' + parts.join('\n')
   }
+
+  const base = siteData?.tenantSlug ? `/t/${siteData.tenantSlug}` : ''
+  const navHome = siteData?.tenantSlug ? base : '/'
+  const navAbout = siteData?.tenantSlug ? `${base}/team` : '/'
+  const navPractice = siteData?.tenantSlug ? `${base}/practice-areas` : '/'
+  const navArticles = siteData?.tenantSlug ? `${base}/articles` : '/'
+  const navConsult = siteData?.tenantSlug ? `${base}/book` : '/signup'
+  const navContact = siteData?.tenantSlug ? `${base}/contact` : '/'
 
   return `You are LAW AI — an expert Indian legal assistant and intelligent guide for this law firm's website. You have deep knowledge of all Indian laws, the Constitution, landmark cases, and the firm's services.
 

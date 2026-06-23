@@ -71,8 +71,13 @@ function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: s
         }`}>
           <p className="whitespace-pre-wrap">{msg.content}</p>
         </div>
-        {navLabel && triggerNav && (
-          <NavChip label={navLabel.label} href={navLabel.href} onClick={() => navAction && triggerNav(navAction)} />
+        {navLabel && (
+          <a
+            href={navLabel.href}
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#F4E8D8]/40 bg-[#F6F0E8]/10 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-[#F6F0E8]/20 transition-colors"
+          >
+            <ExternalLink className="w-3 h-3" />{navLabel.label}
+          </a>
         )}
       </div>
     </div>
@@ -199,7 +204,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: messageText, conversationId }),
+        body: JSON.stringify({ message: messageText, conversationId, tenantSlug }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to get response')

@@ -69,13 +69,30 @@ function getTriggerAction(message: string, reply: string): string | null {
   return null
 }
 
-async function fetchSiteData() {
+// Resolve site data scoped to a tenant when a tenantSlug is provided. If the
+// caller is on the SaaS landing (no slug) or the slug doesn't match, we fall
+// back to the global/default-tenant rows so the assistant still has context.
+async function fetchSiteData(tenantSlug?: string | null) {
   try {
-    const [profile, practiceAreas, teamMembers, faqs] = await Promise.all([
-      (prisma as any).aboutProfile?.findFirst(),
-      (prisma as any).practiceArea?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' }, take: 20 }),
-      (prisma as any).teamMember?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' }, take: 20 }),
+    let tenantId: string | null = null
+    let firmName: string | undefined
+    if (tenantSlug) {
+      const t = await (prisma as any).tenant?.findUnique({ where: { slug: tenantSlug.toLowerCase() } })
+      if (t) { tenantId = t.id; firmName = t.name }
+    }
+
+    // Build prisma `where` clauses that prefer the tenant scope when known,
+    // else fall back to the global (null-tenantId) rows.
+    const scope = (extra: Record<string, any> = {}) =>
+      tenantId ? { ...extra, tenantId } : { ...extra }
+
+    const [profile, practiceAreas, teamMembers, faqs, articles, brandSetting] = await Promise.all([
+      (prisma as any).aboutProfile?.findFirst({ where: tenantId ? { tenantId } : {} }),
+      (prisma as any).practiceArea?.findMany({ where: scope({ isActive: true }), orderBy: { order: 'asc' }, take: 20 }),
+      (prisma as any).teamMember?.findMany({ where: scope({ isActive: true }), orderBy: { order: 'asc' }, take: 20 }),
       (prisma as any).faq?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' }, take: 30 }),
+      (prisma as any).blogPost?.findMany({ where: scope({ status: 'PUBLISHED' }), orderBy: { publishedAt: 'desc' }, take: 10 }),
+      (prisma as any).siteSetting?.findFirst({ where: tenantId ? { tenantId, key: 'brand_config' } : { key: 'brand_config' } }),
     ])
 
     const officeDetails = (() => {
@@ -83,13 +100,19 @@ async function fetchSiteData() {
       try { return JSON.parse(profile.officeDetails) } catch { return {} }
     })()
 
+    let brand: any = {}
+    if (brandSetting?.value) { try { brand = JSON.parse(brandSetting.value) } catch {} }
+    if (!firmName) firmName = brand?.firm_full_name || brand?.firm_name || profile?.name
+
     return {
-      firmName: profile?.name || undefined,
+      firmName,
+      tenantSlug: tenantSlug || undefined,
       officeAddress: officeDetails?.address || undefined,
       officePhone: officeDetails?.phone || undefined,
       officeEmail: officeDetails?.email || undefined,
       practiceAreas: (practiceAreas || []).map((p: any) => ({ title: p.title, description: p.description })),
       teamMembers: (teamMembers || []).map((m: any) => ({ name: m.name, title: m.title, expertise: m.expertise })),
+      articles: (articles || []).map((b: any) => ({ title: b.title, excerpt: b.excerpt, slug: b.slug })),
       faqs: (faqs || []).map((f: any) => ({ question: f.question, answer: f.answer })),
     }
   } catch {
@@ -99,7 +122,8 @@ async function fetchSiteData() {
 
 async function generateAssistantReply(
   message: string,
-  history: Array<{ role: string; content: string }>
+  history: Array<{ role: string; content: string }>,
+  tenantSlug?: string | null,
 ) {
   const relevantDocs = retrieveRelevantDocs(message, 3)
   const groq = getGroqClient()
@@ -108,7 +132,7 @@ async function generateAssistantReply(
     return buildFallbackReply(message, relevantDocs)
   }
 
-  const siteData = await fetchSiteData()
+  const siteData = await fetchSiteData(tenantSlug)
 
   const messages: ChatCompletionMessageParam[] = [
     { role: 'system', content: buildSystemPrompt(relevantDocs, siteData) },
@@ -147,7 +171,7 @@ async function generateAssistantReply(
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, conversationId, action } = await req.json()
+    const { message, conversationId, action, tenantSlug } = await req.json()
 
     if (action === 'deleteConversation') {
       if (!conversationId) {
@@ -178,7 +202,8 @@ export async function POST(req: NextRequest) {
       previousMessages.map((entry) => ({
         role: entry.role,
         content: entry.content,
-      }))
+      })),
+      typeof tenantSlug === 'string' ? tenantSlug : null,
     )
 
     const triggerAction = getTriggerAction(message, assistantMessage)
