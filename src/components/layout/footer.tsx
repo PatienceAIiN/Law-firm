@@ -51,7 +51,7 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
           <div className="lg:col-span-1">
             <BrandMark brand={brand} href={homeHref} imageHeight={36} className="text-[20px]" />
             {tagline && (
-              <p className="mt-3 text-[13px] leading-relaxed text-[var(--primary)]/60 dark:text-white/50">
+              <p className="mt-3 text-[13px] leading-relaxed text-primary/60 dark:text-white/50">
                 {tagline}
               </p>
             )}
@@ -62,13 +62,13 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
 
           {/* Navigation */}
           <div>
-            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--primary)]/70 dark:text-white/60">Explore</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-primary/70 dark:text-white/60">Explore</h4>
             <ul className="mt-4 space-y-2.5 text-[14px]">
               {finalNav.map((n: any, i: number) => (
                 <li key={i}>
                   <Link
                     href={n.href || n.url || homeHref}
-                    className="text-[var(--primary)]/70 transition-colors hover:text-[var(--primary)] dark:text-white/60 dark:hover:text-white"
+                    className="text-primary/70 transition-colors hover:text-primary dark:text-white/60 dark:hover:text-white"
                   >
                     {n.label || n.name || n.title}
                   </Link>
@@ -79,10 +79,10 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
 
           {/* Practice Areas */}
           <div>
-            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--primary)]/70 dark:text-white/60">Practice Areas</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-primary/70 dark:text-white/60">Practice Areas</h4>
             <ul className="mt-4 space-y-2.5 text-[14px]">
               {finalAreas.map((p: any, i: number) => (
-                <li key={i} className="text-[var(--primary)]/70 dark:text-white/60">
+                <li key={i} className="text-primary/70 dark:text-white/60">
                   {p.title || p.name}
                 </li>
               ))}
@@ -91,27 +91,27 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
 
           {/* Contact */}
           <div>
-            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-[var(--primary)]/70 dark:text-white/60">Contact</h4>
+            <h4 className="text-[12px] font-semibold uppercase tracking-[0.12em] text-primary/70 dark:text-white/60">Contact</h4>
             <ul className="mt-4 space-y-2.5 text-[14px]">
               {officeDetails?.email && (
                 <li>
-                  <a href={`mailto:${officeDetails.email}`} className="text-[var(--primary)]/70 transition-colors hover:text-[var(--primary)] dark:text-white/60 dark:hover:text-white">
+                  <a href={`mailto:${officeDetails.email}`} className="text-primary/70 transition-colors hover:text-primary dark:text-white/60 dark:hover:text-white">
                     {officeDetails.email}
                   </a>
                 </li>
               )}
               {officeDetails?.phone && (
                 <li>
-                  <a href={`tel:${officeDetails.phone}`} className="text-[var(--primary)]/70 transition-colors hover:text-[var(--primary)] dark:text-white/60 dark:hover:text-white">
+                  <a href={`tel:${officeDetails.phone}`} className="text-primary/70 transition-colors hover:text-primary dark:text-white/60 dark:hover:text-white">
                     {officeDetails.phone}
                   </a>
                 </li>
               )}
               {officeDetails?.address && (
-                <li className="text-[var(--primary)]/70 dark:text-white/60">{officeDetails.address}</li>
+                <li className="text-primary/70 dark:text-white/60">{officeDetails.address}</li>
               )}
               {!officeDetails?.email && !officeDetails?.phone && !officeDetails?.address && (
-                <li className="text-[var(--primary)]/50 dark:text-white/40">Get in touch via the contact page.</li>
+                <li className="text-primary/50 dark:text-white/40">Get in touch via the contact page.</li>
               )}
             </ul>
           </div>
@@ -119,19 +119,19 @@ export function Footer({ brand, navigation, practiceAreas, officeDetails, tenant
 
         {/* Bottom bar */}
         <div className="mt-12 flex flex-col items-center gap-3 border-t border-[#F4E8D8] pt-6 dark:border-white/10 sm:flex-row sm:justify-between">
-          <p className="text-[13px] text-[var(--primary)]/50 dark:text-white/40">
+          <p className="text-[13px] text-primary/50 dark:text-white/40">
             &copy; {new Date().getFullYear()} {firmName}. All rights reserved.
           </p>
           <nav className="flex items-center gap-6 text-[13px]">
-            <Link href={termsHref} className="text-[var(--primary)]/60 transition-colors hover:text-[var(--primary)] dark:text-white/50 dark:hover:text-white">Terms of Service</Link>
-            <Link href={privacyHref} className="text-[var(--primary)]/60 transition-colors hover:text-[var(--primary)] dark:text-white/50 dark:hover:text-white">Privacy Policy</Link>
+            <Link href={termsHref} className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white">Terms of Service</Link>
+            <Link href={privacyHref} className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white">Privacy Policy</Link>
             <a
               href="https://patienceai.in"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[var(--primary)]/60 transition-colors hover:text-[var(--primary)] dark:text-white/50 dark:hover:text-white"
+              className="text-primary/60 transition-colors hover:text-primary dark:text-white/50 dark:hover:text-white"
             >
-              A product of <span className="font-semibold text-[var(--primary)] dark:text-white">Barrister By Patience AI</span>
+              A product of <span className="font-semibold text-primary dark:text-white">Barrister By Patience AI</span>
             </a>
           </nav>
         </div>

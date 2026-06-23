@@ -17,9 +17,9 @@ export function PracticeAreasClient({ slug, items }: { slug: string; items: P[] 
     <div className="space-y-4">
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
         <form onSubmit={onCreate} className="grid gap-3 sm:grid-cols-[1fr_2fr_auto]">
-          <input name="title" required placeholder="Title (e.g. Corporate Law)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <input name="description" placeholder="Short description" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-[var(--primary)] dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+          <input name="title" required placeholder="Title (e.g. Corporate Law)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <input name="description" placeholder="Short description" className="rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-primary dark:border-white/15 dark:bg-white/5 dark:text-white" />
+          <button disabled={pending} className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Add
           </button>
@@ -33,7 +33,7 @@ export function PracticeAreasClient({ slug, items }: { slug: string; items: P[] 
             {items.map((p) => (
               <li key={p.id} className="flex items-center justify-between px-4 py-3">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">{p.title}</p>
+                  <p className="text-sm font-semibold text-primary dark:text-white">{p.title}</p>
                   <p className="text-xs text-slate-500">{p.slug}{p.description ? ` · ${p.description}` : ''}</p>
                 </div>
                 <form action={async () => { await deletePracticeArea(slug, p.id) }}>

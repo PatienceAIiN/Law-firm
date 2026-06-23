@@ -30,12 +30,12 @@ export function AboutSection({ data, metrics, content }: AboutSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
             <div className="space-y-4">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--primary)]/5 border border-[var(--primary)]/10 text-[var(--primary)] text-sm font-medium">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/5 border border-primary/10 text-primary text-sm font-medium">
                 <span>{section.badge || 'Professional Profile'}</span>
               </div>
               
-              <h2 className="text-3xl lg:text-5xl font-bold text-[var(--primary)] leading-tight">
-                {title} <span className="text-[var(--primary)]">{name}</span>
+              <h2 className="text-3xl lg:text-5xl font-bold text-primary leading-tight">
+                {title} <span className="text-primary">{name}</span>
               </h2>
               
               <div className="prose prose-lg text-gray-600 max-w-none">
@@ -52,9 +52,9 @@ export function AboutSection({ data, metrics, content }: AboutSectionProps) {
                   return (
                     <div key={index} className="text-center">
                       <div className="w-12 h-12 bg-[#F6F0E8]/10 rounded-xl flex items-center justify-center mx-auto mb-3">
-                        <Icon className="w-6 h-6 text-[var(--primary)]" />
+                        <Icon className="w-6 h-6 text-primary" />
                       </div>
-                      <div className="text-2xl font-bold text-[var(--primary)]">{stat.value}</div>
+                      <div className="text-2xl font-bold text-primary">{stat.value}</div>
                       <div className="text-[10px] uppercase tracking-wider font-semibold text-gray-400">{stat.label}</div>
                     </div>
                   )
@@ -63,13 +63,13 @@ export function AboutSection({ data, metrics, content }: AboutSectionProps) {
             )}
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <Button asChild className="bg-[var(--primary)] hover:bg-[#112240] text-white px-8 py-6 rounded-xl text-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+              <Button asChild className="bg-primary hover:bg-[#112240] text-white px-8 py-6 rounded-xl text-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <Link href="/about" className="flex items-center gap-2">
                   {section.ctaPrimaryText || 'Learn More About Us'}
                   <ArrowRight className="w-4 h-4" />
                 </Link>
               </Button>
-              <Button asChild variant="outline" className="border-[var(--primary)]/15 px-8 py-6 rounded-xl text-lg text-[var(--primary)] transition-all duration-300 hover:-translate-y-1 hover:bg-[var(--primary)] hover:text-white hover:shadow-lg">
+              <Button asChild variant="outline" className="border-primary/15 px-8 py-6 rounded-xl text-lg text-primary transition-all duration-300 hover:-translate-y-1 hover:bg-primary hover:text-white hover:shadow-lg">
                 <Link href="/contact">Contact Us</Link>
               </Button>
             </div>
@@ -83,13 +83,13 @@ export function AboutSection({ data, metrics, content }: AboutSectionProps) {
                     {name.split(' ').map((n: string) => n[0]).join('')}
                   </span>
                 </div>
-                <h3 className="text-3xl font-bold text-[var(--primary)] mb-2">{name}</h3>
+                <h3 className="text-3xl font-bold text-primary mb-2">{name}</h3>
                 <p className="text-[#b8872f] font-medium text-lg mb-8">{title}</p>
                 
                 <div className="space-y-4 text-left">
                   {highlights.map((item: string, i: number) => (
                     <div key={i} className="flex items-center gap-3 text-slate-700">
-                      <div className="w-5 h-5 bg-[var(--primary)] rounded-full flex items-center justify-center flex-shrink-0">
+                      <div className="w-5 h-5 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                       <span className="text-sm font-medium">{item}</span>

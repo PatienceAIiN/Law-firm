@@ -26,7 +26,7 @@ export default async function TenantBrandingPage({ params }: { params: Promise<{
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
       <div className="mb-6">
-        <h2 className="text-xl font-bold text-[var(--primary)] dark:text-white">Workspace Branding</h2>
+        <h2 className="text-xl font-bold text-primary dark:text-white">Workspace Branding</h2>
         <p className="text-sm text-slate-500">Configure colors, fonts, and logos for your portal.</p>
       </div>
       <BrandingClient slug={slug} theme={theme} />

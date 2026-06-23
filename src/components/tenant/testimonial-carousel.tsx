@@ -31,7 +31,7 @@ export function TestimonialCarousel({ items, intervalMs = 5500 }: { items: Testi
       <button
         type="button"
         onClick={() => setPaused((p) => !p)}
-        className="absolute right-0 top-0 z-10 flex h-7 items-center gap-1 rounded-full bg-white/90 px-3 text-[10px] font-semibold uppercase tracking-widest text-[var(--primary)] shadow ring-1 ring-black/5 backdrop-blur dark:bg-white/10 dark:text-white"
+        className="absolute right-0 top-0 z-10 flex h-7 items-center gap-1 rounded-full bg-white/90 px-3 text-[10px] font-semibold uppercase tracking-widest text-primary shadow ring-1 ring-black/5 backdrop-blur dark:bg-white/10 dark:text-white"
       >
         {paused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
         {paused ? 'Play' : 'Pause'}
@@ -44,14 +44,14 @@ export function TestimonialCarousel({ items, intervalMs = 5500 }: { items: Testi
       >
         <div className="flex">
           {Array.from({ length: t.rating }).map((_, i) => (
-            <Star key={i} className="h-4 w-4 fill-[var(--secondary)] text-[var(--secondary)]" />
+            <Star key={i} className="h-4 w-4 fill-secondary text-secondary" />
           ))}
         </div>
         <blockquote className="mt-4 text-lg italic leading-relaxed text-slate-800 dark:text-slate-100">
           "{t.content}"
         </blockquote>
         <figcaption className="mt-5 text-sm">
-          <span className="font-semibold text-[var(--primary)] dark:text-white">{t.name}</span>
+          <span className="font-semibold text-primary dark:text-white">{t.name}</span>
           {t.role && <span className="text-slate-500"> · {t.role}</span>}
         </figcaption>
       </figure>
@@ -64,7 +64,7 @@ export function TestimonialCarousel({ items, intervalMs = 5500 }: { items: Testi
                 key={i}
                 onClick={() => { setIndex(i); setPaused(true) }}
                 aria-label={`Go to testimonial ${i + 1}`}
-                className={`h-1.5 w-6 rounded-full transition-all ${i === index ? 'bg-[var(--primary)] dark:bg-white' : 'bg-[var(--primary)]/20 dark:bg-white/20'}`}
+                className={`h-1.5 w-6 rounded-full transition-all ${i === index ? 'bg-primary dark:bg-white' : 'bg-primary/20 dark:bg-white/20'}`}
               />
             ))}
           </div>

@@ -77,8 +77,8 @@ export function ClientSidebar({
     const className = cn(
       'flex items-center justify-between rounded-2xl border px-4 py-3.5 text-xs font-black uppercase tracking-widest transition-all duration-300 group',
       isActive
-        ? 'bg-[var(--primary)] text-white shadow-xl shadow-[#14203E]/15 border-[var(--primary)]'
-        : 'border-gray-200 text-slate-600 hover:bg-slate-50 hover:text-[var(--primary)] hover:border-gray-300',
+        ? 'bg-primary text-white shadow-xl shadow-[#14203E]/15 border-primary'
+        : 'border-gray-200 text-slate-600 hover:bg-slate-50 hover:text-primary hover:border-gray-300',
       isMobile ? 'w-full' : 'w-full'
     )
 
@@ -88,7 +88,7 @@ export function ClientSidebar({
           <span
             className={cn(
               'flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-colors',
-              isActive ? 'bg-white/10 text-[var(--primary)]' : 'bg-slate-100 text-[#0f172a] group-hover:bg-slate-200'
+              isActive ? 'bg-white/10 text-primary' : 'bg-slate-100 text-[#0f172a] group-hover:bg-slate-200'
             )}
           >
             <Icon className="h-4 w-4" />
@@ -118,7 +118,7 @@ export function ClientSidebar({
     <div className="flex h-full flex-col border-r border-gray-200 bg-white">
       <div className="border-b border-gray-200 bg-gray-50/60 px-5 py-5">
         <Link href="/" className="flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--primary)] text-xl font-black text-white shadow-lg">
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary text-xl font-black text-white shadow-lg">
             {brand?.logo_text || 'Firm'}
           </div>
           <div className="min-w-0">
@@ -140,10 +140,10 @@ export function ClientSidebar({
 
       <div className="border-t border-gray-200 bg-gray-50/60 p-4">
         <div className="rounded-2xl border border-gray-200 bg-white p-4">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">Contact</p>
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-primary">Contact</p>
           <div className="mt-3 space-y-3 text-sm text-slate-700">
             <div className="flex items-center gap-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--primary)]/5 text-[#0f172a]">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/5 text-[#0f172a]">
                 <Phone className="h-4 w-4" />
               </span>
               <a href={`tel:${contact?.phone || '+919876543210'}`} className="truncate font-semibold text-[#0f172a]">
@@ -170,7 +170,7 @@ export function ClientSidebar({
       <div className="sticky top-0 z-40 border-b border-gray-200 bg-white/95 backdrop-blur lg:hidden">
         <div className="flex items-center justify-between px-3 py-3 sm:px-4">
           <Link href="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[var(--primary)] text-lg font-black text-white shadow-lg">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-lg font-black text-white shadow-lg">
               {brand?.logo_text || 'Firm'}
             </div>
             <div className="min-w-0">
@@ -184,7 +184,7 @@ export function ClientSidebar({
           </Link>
           <button
             onClick={onToggleMobile}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-white text-slate-500 transition-colors hover:text-[var(--primary)]"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-gray-200 bg-white text-slate-500 transition-colors hover:text-primary"
             aria-label={mobileOpen ? 'Close navigation' : 'Open navigation'}
           >
             {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

@@ -59,7 +59,7 @@ export function LiveKitCall({ room, identity, name, onDisconnected }: LiveKitCal
   if (!token || !url) {
     return (
       <div className="flex min-h-[65vh] flex-col items-center justify-center gap-4 p-8 text-center">
-        <Loader2 className="h-10 w-10 animate-spin text-[var(--primary)]" />
+        <Loader2 className="h-10 w-10 animate-spin text-primary" />
         <p className="text-sm font-medium text-slate-300">Connecting to secure video room…</p>
       </div>
     )

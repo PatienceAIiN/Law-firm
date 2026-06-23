@@ -20,7 +20,7 @@ export default async function TenantTestimonialsPage({ params }: { params: Promi
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Testimonials</h2>
+      <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Testimonials</h2>
       <TestimonialsClient slug={slug} items={items.map((t) => ({ id: t.id, name: t.name, role: t.role, content: t.content, rating: t.rating }))} />
     </TenantAdminShell>
   )

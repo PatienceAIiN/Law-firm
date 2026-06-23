@@ -389,13 +389,13 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
   if (meetingEnded) {
     return (
-      <div className="min-h-screen bg-[var(--primary)] flex items-center justify-center p-8">
+      <div className="min-h-screen bg-primary flex items-center justify-center p-8">
         <div className="text-center space-y-4 max-w-sm">
-          <CheckCircle2 className="w-16 h-16 text-[var(--primary)] mx-auto" />
+          <CheckCircle2 className="w-16 h-16 text-primary mx-auto" />
           <h2 className="text-2xl font-black uppercase tracking-tighter text-white">Meeting Ended</h2>
           <p className="text-slate-300 text-sm">This session has been closed. Thank you for using our virtual workspace.</p>
           {localRecordings.length > 0 && (
-            <p className="text-[var(--primary)] text-xs font-semibold">{localRecordings.length} recording(s) saved.</p>
+            <p className="text-primary text-xs font-semibold">{localRecordings.length} recording(s) saved.</p>
           )}
         </div>
       </div>
@@ -403,11 +403,11 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
   }
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[var(--primary)] text-white">
+    <div ref={containerRef} className="min-h-screen bg-primary text-white">
       {/* End meeting alert */}
       {endAlert && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm">
-          <div className="bg-[var(--primary)] border border-red-500/30 rounded-3xl p-8 max-w-sm w-full mx-4 space-y-5 text-center">
+          <div className="bg-primary border border-red-500/30 rounded-3xl p-8 max-w-sm w-full mx-4 space-y-5 text-center">
             <AlertTriangle className="w-12 h-12 text-red-400 mx-auto" />
             <h3 className="text-lg font-black uppercase tracking-tight text-white">Leave Meeting?</h3>
             <p className="text-slate-300 text-sm">Leaving will end your session and this will be logged. The meeting should continue in this workspace only.</p>
@@ -427,16 +427,16 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
         {/* Header */}
         <div className="mb-6 flex flex-col gap-4 rounded-[2rem] border border-white/10 bg-white/5 p-5 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
-            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">
+            <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">
               {adminView ? 'Admin Virtual Meeting' : 'Secure Meeting Workspace'}
             </div>
             <h1 className="text-2xl font-black uppercase tracking-tighter">
               {booking.meetingMode === 'PHYSICAL' ? 'In-Person Consultation' : 'Virtual Meeting Workspace'}
             </h1>
             <div className="flex flex-wrap gap-4 text-sm text-slate-300">
-              <span className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-[var(--primary)]" />{formatDate(booking.slot.day.date)}</span>
-              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4 text-[var(--primary)]" />{formatTime(booking.slot.startTime)} – {formatTime(booking.slot.endTime)}</span>
-              <span className="inline-flex items-center gap-2"><Video className="w-4 h-4 text-[var(--primary)]" />{booking.meetingMode.replace('_', ' ')}</span>
+              <span className="inline-flex items-center gap-2"><Calendar className="w-4 h-4 text-primary" />{formatDate(booking.slot.day.date)}</span>
+              <span className="inline-flex items-center gap-2"><Clock className="w-4 h-4 text-primary" />{formatTime(booking.slot.startTime)} – {formatTime(booking.slot.endTime)}</span>
+              <span className="inline-flex items-center gap-2"><Video className="w-4 h-4 text-primary" />{booking.meetingMode.replace('_', ' ')}</span>
             </div>
           </div>
           <div className="flex flex-wrap gap-3">
@@ -468,7 +468,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
           <div className="overflow-hidden rounded-[2rem] border border-white/10 bg-black/30 shadow-2xl">
             {booking.meetingMode === 'PHYSICAL' ? (
               <div className="flex min-h-[65vh] flex-col items-center justify-center gap-4 p-8 text-center">
-                <Monitor className="h-14 w-14 text-[var(--primary)]" />
+                <Monitor className="h-14 w-14 text-primary" />
                 <h2 className="text-2xl font-black uppercase tracking-tighter">Office Visit Scheduled</h2>
                 <p className="max-w-xl text-sm font-medium text-slate-300">{booking.slot.physicalAddress || 'The office address will be shared by the advocate team.'}</p>
               </div>
@@ -486,7 +486,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
           <div className="space-y-5">
             {/* Session info */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">Session Info</div>
+              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">Session Info</div>
               <div className="space-y-3">
                 <div className="rounded-2xl bg-black/20 p-3">
                   <div className="text-xs font-black uppercase tracking-widest text-slate-400">Client</div>
@@ -499,7 +499,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
             {/* Meeting notes + Minutes of Meeting */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">
                 <FileText className="w-4 h-4" /> Meeting Notes
               </div>
               <textarea
@@ -518,7 +518,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
               <button
                 onClick={sendMinutes}
                 disabled={momStatus === 'sending'}
-                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[var(--primary)] hover:bg-[var(--accent)] transition-colors disabled:opacity-60"
+                className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-accent transition-colors disabled:opacity-60"
               >
                 {momStatus === 'sending' ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 Email Minutes to Joinees
@@ -532,14 +532,14 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
             {/* Recording controls */}
             {meetingConfig.allowRecording && (
               <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-4">
-                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">Recording</div>
+                <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Recording</div>
 
                 {/* Local folder picker */}
                 <button
                   onClick={pickLocalFolder}
                   className="w-full flex items-center gap-2 px-4 py-3 rounded-2xl border border-white/10 bg-black/20 text-sm hover:bg-white/10 transition-colors"
                 >
-                  <FolderOpen className="w-4 h-4 text-[var(--primary)]" />
+                  <FolderOpen className="w-4 h-4 text-primary" />
                   <span className="text-sm font-medium text-slate-200 truncate">
                     {localFolderName ? `📁 ${localFolderName}` : 'Pick Save Folder (local)'}
                   </span>
@@ -556,7 +556,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                 )}
 
                 {!isRecording ? (
-                  <button onClick={startRecording} className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-[var(--primary)] hover:bg-[var(--accent)] transition-colors">
+                  <button onClick={startRecording} className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#F6F0E8] px-4 py-3 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-accent transition-colors">
                     <Mic className="w-4 h-4" />Start Recording
                   </button>
                 ) : (
@@ -587,7 +587,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                         <div className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">Saved Path</div>
                         <div className="break-all text-xs text-emerald-300">{savedPath}</div>
                         {savedUrl && (
-                          <a href={savedUrl} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-[var(--primary)]">
+                          <a href={savedUrl} className="mt-2 inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-primary">
                             <Download className="w-3.5 h-3.5" />Open File
                           </a>
                         )}
@@ -600,9 +600,9 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
             {/* Storage indicator */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5 space-y-3">
-              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">Storage Config</div>
+              <div className="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Storage Config</div>
               <div className="flex items-center gap-2 text-xs">
-                {meetingConfig.storageMode === 'GOOGLE_DRIVE' ? <Cloud className="w-4 h-4 text-blue-400" /> : <HardDrive className="w-4 h-4 text-[var(--primary)]" />}
+                {meetingConfig.storageMode === 'GOOGLE_DRIVE' ? <Cloud className="w-4 h-4 text-blue-400" /> : <HardDrive className="w-4 h-4 text-primary" />}
                 <span className="font-semibold text-slate-200">{meetingConfig.storageMode}</span>
               </div>
               {meetingConfig.storageMode === 'GOOGLE_DRIVE' && !meetingConfig.googleDriveFolderId && (
@@ -617,7 +617,7 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
 
             {/* Saved recordings */}
             <div className="rounded-[2rem] border border-white/10 bg-white/5 p-5">
-              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--primary)]">Saved Recordings ({localRecordings.length})</div>
+              <div className="mb-3 text-[10px] font-black uppercase tracking-[0.3em] text-primary">Saved Recordings ({localRecordings.length})</div>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {localRecordings.length === 0 && (
                   <div className="rounded-2xl bg-black/20 p-3 text-xs font-medium text-slate-400">No recordings yet.</div>
@@ -625,11 +625,11 @@ export function MeetingWorkspace({ booking, meetingConfig, recordings, adminView
                 {localRecordings.map((r) => (
                   <div key={r.id} className="rounded-2xl bg-black/20 p-3">
                     <div className="flex items-center gap-2 text-xs font-bold text-white mb-1">
-                      <FileVideo className="w-3.5 h-3.5 text-[var(--primary)]" />{r.fileName}
+                      <FileVideo className="w-3.5 h-3.5 text-primary" />{r.fileName}
                     </div>
                     <div className="text-[10px] text-slate-400">{new Date(r.createdAt).toLocaleString('en-IN')}</div>
                     {r.publicUrl && (
-                      <a href={r.publicUrl} className="mt-1 inline-flex items-center gap-1 text-[10px] text-[var(--primary)] font-semibold">
+                      <a href={r.publicUrl} className="mt-1 inline-flex items-center gap-1 text-[10px] text-primary font-semibold">
                         <Download className="w-3 h-3" />Download
                       </a>
                     )}

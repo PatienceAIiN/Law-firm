@@ -92,7 +92,7 @@ export function PushSettings({ role, userId }: { role: 'admin' | 'advocate', use
     <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[var(--primary)]/10 text-[var(--primary)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">
             <Bell className="h-5 w-5" />
           </div>
           <div>
@@ -104,7 +104,7 @@ export function PushSettings({ role, userId }: { role: 'admin' | 'advocate', use
           onClick={handleToggle}
           disabled={loading}
           className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-            isSubscribed ? 'bg-[var(--primary)]' : 'bg-slate-300 dark:bg-slate-700'
+            isSubscribed ? 'bg-primary' : 'bg-slate-300 dark:bg-slate-700'
           }`}
         >
           {loading && <Loader2 className="absolute -left-5 h-4 w-4 animate-spin text-slate-400" />}

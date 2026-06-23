@@ -115,14 +115,14 @@ export function TeamManager({ initialData, createAction, updateAction, deleteAct
                   />
                 ) : (
                   <div className="w-20 h-20 rounded-full bg-[#F6F0E8]/20 border-2 border-[#F4E8D8] flex items-center justify-center">
-                    <span className="text-[var(--primary)] text-xl font-black">
+                    <span className="text-primary text-xl font-black">
                       {member.name.split(' ').map((n) => n[0]).join('')}
                     </span>
                   </div>
                 )}
               </div>
               <h3 className="text-white font-black text-sm uppercase tracking-tight">{member.name}</h3>
-              <p className="text-[var(--primary)] text-[10px] font-bold uppercase tracking-widest mt-1">{member.title}</p>
+              <p className="text-primary text-[10px] font-bold uppercase tracking-widest mt-1">{member.title}</p>
 
               {/* Action buttons — visible on hover */}
               <div className="absolute top-3 right-3 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -168,17 +168,17 @@ export function TeamManager({ initialData, createAction, updateAction, deleteAct
 
               <div className="flex items-center gap-3 pt-3 border-t border-gray-100">
                 {member.email && (
-                  <a href={`mailto:${member.email}`} className="text-slate-400 hover:text-[var(--primary)] transition-colors">
+                  <a href={`mailto:${member.email}`} className="text-slate-400 hover:text-primary transition-colors">
                     <Mail className="w-4 h-4" />
                   </a>
                 )}
                 {member.phone && (
-                  <a href={`tel:${member.phone}`} className="text-slate-400 hover:text-[var(--primary)] transition-colors">
+                  <a href={`tel:${member.phone}`} className="text-slate-400 hover:text-primary transition-colors">
                     <Phone className="w-4 h-4" />
                   </a>
                 )}
                 {member.linkedin && (
-                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-[var(--primary)] transition-colors">
+                  <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors">
                     <Linkedin className="w-4 h-4" />
                   </a>
                 )}

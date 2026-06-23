@@ -23,7 +23,7 @@ export function TestimonialsClient({ slug, items }: { slug: string; items: T[] }
           <select name="rating" defaultValue="5" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white">
             {[5, 4, 3, 2, 1].map((n) => <option key={n} value={n}>{n} star{n === 1 ? '' : 's'}</option>)}
           </select>
-          <button disabled={pending} className="inline-flex items-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+          <button disabled={pending} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Add testimonial
           </button>
@@ -42,7 +42,7 @@ export function TestimonialsClient({ slug, items }: { slug: string; items: T[] }
                   <div className="flex items-center gap-2">
                     <div className="flex">
                       {Array.from({ length: t.rating }).map((_, i) => (
-                        <Star key={i} className="h-3.5 w-3.5 fill-[var(--secondary)] text-[var(--secondary)]" />
+                        <Star key={i} className="h-3.5 w-3.5 fill-secondary text-secondary" />
                       ))}
                     </div>
                     <form action={async () => { await deleteTestimonial(slug, t.id) }}>

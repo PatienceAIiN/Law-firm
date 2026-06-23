@@ -115,7 +115,7 @@ export function BrandingClient({ slug, theme }: { slug: string; theme: any }) {
           <button
             type="submit"
             disabled={pending}
-            className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-[var(--accent)] disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-accent disabled:opacity-60"
             style={{ backgroundColor: 'var(--primary)' }}
           >
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}

@@ -32,7 +32,7 @@ export default async function TenantAvailabilityPage({ params }: { params: Promi
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Availability &amp; Bookings</h2>
+      <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Availability &amp; Bookings</h2>
       <TenantAvailabilityClient
         slug={slug}
         advocates={advocates}

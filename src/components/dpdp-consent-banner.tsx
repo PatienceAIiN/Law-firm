@@ -86,30 +86,30 @@ export function DpdpConsentBanner() {
       <div className="mx-auto max-w-2xl overflow-hidden rounded-2xl border border-[#F4E8D8] bg-white shadow-2xl ring-1 ring-black/5 dark:border-white/10 dark:bg-[#161b28] dark:ring-white/5">
         {/* Header */}
         <div className="flex items-center gap-3 border-b border-[#F4E8D8] bg-[#FFFCF8] px-5 py-3.5 dark:border-white/10 dark:bg-[#1a2033]">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--primary)] text-white dark:bg-white/10">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary text-white dark:bg-white/10">
             <Shield className="h-4 w-4" />
           </div>
-          <h3 className="text-[15px] font-bold text-[var(--primary)] dark:text-white">
+          <h3 className="text-[15px] font-bold text-primary dark:text-white">
             Data Protection Notice
           </h3>
-          <span className="ml-auto rounded-full bg-[var(--primary)]/8 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--primary)]/70 dark:bg-white/10 dark:text-white/60">
+          <span className="ml-auto rounded-full bg-primary/8 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-primary/70 dark:bg-white/10 dark:text-white/60">
             DPDP Act 2023
           </span>
         </div>
 
         {/* Body */}
         <div className="px-5 py-4">
-          <p className="text-[13px] leading-relaxed text-[var(--primary)]/75 dark:text-white/65">
+          <p className="text-[13px] leading-relaxed text-primary/75 dark:text-white/65">
             We value your privacy. In accordance with India&apos;s{' '}
-            <strong className="font-semibold text-[var(--primary)] dark:text-white">
+            <strong className="font-semibold text-primary dark:text-white">
               Digital Personal Data Protection Act, 2023
             </strong>
             , we collect and process your personal data only for providing legal services,
             scheduling consultations, and improving our website. Your data is never sold to third parties.
           </p>
-          <p className="mt-2 text-[12px] text-[var(--primary)]/55 dark:text-white/45">
+          <p className="mt-2 text-[12px] text-primary/55 dark:text-white/45">
             Read our{' '}
-            <Link href="/privacy" className="font-medium text-[var(--primary)] underline decoration-dotted underline-offset-2 hover:text-[var(--primary)]/80 dark:text-white/80 dark:hover:text-white">
+            <Link href="/privacy" className="font-medium text-primary underline decoration-dotted underline-offset-2 hover:text-primary/80 dark:text-white/80 dark:hover:text-white">
               Privacy Policy
             </Link>{' '}
             for full details on data processing, retention, and your rights as a Data Principal.
@@ -121,14 +121,14 @@ export function DpdpConsentBanner() {
           <button
             onClick={() => respond(false)}
             disabled={saving}
-            className="rounded-xl border border-[var(--primary)]/15 px-5 py-2 text-[13px] font-semibold text-[var(--primary)]/70 transition-colors hover:bg-[var(--primary)]/5 disabled:opacity-50 dark:border-white/15 dark:text-white/60 dark:hover:bg-white/5"
+            className="rounded-xl border border-primary/15 px-5 py-2 text-[13px] font-semibold text-primary/70 transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-white/15 dark:text-white/60 dark:hover:bg-white/5"
           >
             Deny
           </button>
           <button
             onClick={() => respond(true)}
             disabled={saving}
-            className="rounded-xl bg-[var(--primary)] px-5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-[var(--accent)] disabled:opacity-50 dark:bg-white dark:text-[var(--primary)] dark:hover:bg-white/90"
+            className="rounded-xl bg-primary px-5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-accent disabled:opacity-50 dark:bg-white dark:text-primary dark:hover:bg-white/90"
           >
             {saving ? 'Saving…' : 'Accept'}
           </button>

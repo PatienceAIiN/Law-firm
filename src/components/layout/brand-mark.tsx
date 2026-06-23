@@ -47,7 +47,7 @@ export function BrandMark({
           className="max-h-full w-auto object-contain"
         />
       ) : (
-        <span style={inlineStyle} className="text-[22px] font-bold tracking-tight text-[var(--primary)] dark:text-white">
+        <span style={inlineStyle} className="text-[22px] font-bold tracking-tight text-primary dark:text-white">
           {text}
         </span>
       )}

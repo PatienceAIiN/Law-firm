@@ -53,7 +53,7 @@ export function TenantAdminShell({
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
           <div className="min-w-0">
             <Link href={`/t/${tenant.slug}/admin`} className="block">
-              <h1 className="truncate text-base font-bold text-[var(--primary)] dark:text-white">{tenant.name}</h1>
+              <h1 className="truncate text-base font-bold text-primary dark:text-white">{tenant.name}</h1>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">{currentUser.email}</p>
             </Link>
           </div>
@@ -91,8 +91,8 @@ export function TenantAdminShell({
                   prefetch={true}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                     active
-                      ? 'bg-[var(--primary)] text-white shadow'
-                      : 'text-slate-600 hover:bg-slate-100 hover:text-[var(--primary)] dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
+                      ? 'bg-primary text-white shadow'
+                      : 'text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
                   }`}
                 >
                   <Icon className="h-3.5 w-3.5" />

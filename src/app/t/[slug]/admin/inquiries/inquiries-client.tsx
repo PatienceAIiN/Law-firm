@@ -30,7 +30,7 @@ export function TenantInquiriesClient({ slug, items, advocates }: { slug: string
             <li key={i.id} className="px-4 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-semibold text-[var(--primary)] dark:text-white">
+                  <p className="text-sm font-semibold text-primary dark:text-white">
                     {i.fullName} <span className="ml-2 text-xs font-normal text-slate-500">{i.email}</span>
                   </p>
                   <span className="text-xs text-slate-400">{new Date(i.createdAt).toLocaleDateString()}</span>

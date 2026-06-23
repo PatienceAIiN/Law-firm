@@ -25,7 +25,7 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Receipts</h2>
+      <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Receipts</h2>
       <TenantReceiptsClient
         slug={slug}
         receipts={receipts.map((r) => ({

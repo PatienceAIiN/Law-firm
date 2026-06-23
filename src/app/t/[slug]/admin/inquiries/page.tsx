@@ -31,7 +31,7 @@ export default async function TenantInquiriesPage({ params }: { params: Promise<
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Inquiries</h2>
+      <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Inquiries</h2>
       <TenantInquiriesClient slug={slug} items={items} advocates={advocates} />
     </TenantAdminShell>
   )

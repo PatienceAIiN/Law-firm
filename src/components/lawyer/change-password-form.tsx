@@ -53,7 +53,7 @@ export function ChangePasswordForm() {
             value={currentPassword}
             onChange={(e) => setCurrent(e.target.value)}
             required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
           />
         </label>
         <label className="block text-sm">
@@ -64,7 +64,7 @@ export function ChangePasswordForm() {
             onChange={(e) => setNew(e.target.value)}
             required
             minLength={8}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
           />
         </label>
         <label className="block text-sm">
@@ -75,7 +75,7 @@ export function ChangePasswordForm() {
             onChange={(e) => setConfirm(e.target.value)}
             required
             minLength={8}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-[#14203E]/20"
           />
         </label>
       </div>
@@ -89,7 +89,7 @@ export function ChangePasswordForm() {
       <button
         type="submit"
         disabled={loading}
-        className="inline-flex items-center justify-center rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[var(--accent)] disabled:opacity-60"
+        className="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-accent disabled:opacity-60"
       >
         {loading ? 'Updating…' : 'Update password'}
       </button>

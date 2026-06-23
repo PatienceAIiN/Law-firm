@@ -33,16 +33,16 @@ export function TenantLawyerLoginForm({ slug }: { slug: string }) {
       <label className="block text-sm">
         <span className="text-slate-700">Email</span>
         <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20" />
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-[#14203E]/20" />
       </label>
       <label className="block text-sm">
         <span className="text-slate-700">Password</span>
         <PasswordInput required value={password} onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-[var(--primary)] focus:outline-none focus:ring-2 focus:ring-[#14203E]/20" />
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-[#14203E]/20" />
       </label>
       {error && <div className="rounded-lg bg-rose-50 px-3 py-2 text-sm text-rose-700">{error}</div>}
       <button type="submit" disabled={busy}
-        className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] px-4 py-3 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+        className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
         {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
         {busy ? 'Signing in…' : 'Sign in'}
       </button>

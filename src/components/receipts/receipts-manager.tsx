@@ -97,8 +97,8 @@ export function ReceiptsManager() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-[var(--primary)] flex items-center gap-2"><FileText className="w-5 h-5 text-[#64748b]" /> Receipts</h2>
-        <button onClick={() => { setForm(blankForm()); setShowForm((s) => !s); setError('') }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold hover:bg-[var(--accent)]">
+        <h2 className="text-lg font-bold text-primary flex items-center gap-2"><FileText className="w-5 h-5 text-[#64748b]" /> Receipts</h2>
+        <button onClick={() => { setForm(blankForm()); setShowForm((s) => !s); setError('') }} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-accent">
           <Plus className="w-4 h-4" /> New Receipt
         </button>
       </div>
@@ -135,13 +135,13 @@ export function ReceiptsManager() {
           </div>
 
           <div className="flex items-center justify-between flex-wrap gap-3 pt-2 border-t border-[#F4E8D8]">
-            <div className="text-sm text-[var(--primary)]">
+            <div className="text-sm text-primary">
               <span className="text-gray-500">Total: </span><span className="font-black">{sym(form.currency)}{total.toFixed(2)}</span>
               <span className="text-gray-400 text-xs ml-2">(sub {sym(form.currency)}{subtotal.toFixed(2)} + tax {sym(form.currency)}{taxAmount.toFixed(2)})</span>
             </div>
             <div className="flex items-center gap-2">
-              <button onClick={() => save(false)} disabled={busy} className="px-4 py-2 rounded-xl border border-[var(--primary)] text-[var(--primary)] text-sm font-semibold disabled:opacity-60">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : (form.id ? 'Update' : 'Generate & Save')}</button>
-              <button onClick={() => save(true)} disabled={busy || !form.clientEmail} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--primary)] text-white text-sm font-semibold disabled:opacity-60"><Send className="w-4 h-4" /> {form.id ? 'Update & Send' : 'Generate & Send'}</button>
+              <button onClick={() => save(false)} disabled={busy} className="px-4 py-2 rounded-xl border border-primary text-primary text-sm font-semibold disabled:opacity-60">{busy ? <Loader2 className="w-4 h-4 animate-spin" /> : (form.id ? 'Update' : 'Generate & Save')}</button>
+              <button onClick={() => save(true)} disabled={busy || !form.clientEmail} className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold disabled:opacity-60"><Send className="w-4 h-4" /> {form.id ? 'Update & Send' : 'Generate & Send'}</button>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ export function ReceiptsManager() {
               <div key={r.id} className="flex items-center justify-between gap-3 px-4 py-3 hover:bg-[#FFFCF8]">
                 <div className="min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="font-bold text-sm text-[var(--primary)]">{r.number}</span>
+                    <span className="font-bold text-sm text-primary">{r.number}</span>
                     <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded ${r.status === 'SENT' ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-500'}`}>{r.status}</span>
                   </div>
                   <div className="text-xs text-gray-500 truncate">{r.clientName} · {r.clientEmail} · {sym(r.currency)}{r.total.toFixed(2)}</div>
@@ -177,7 +177,7 @@ export function ReceiptsManager() {
         )}
       </div>
 
-      {toast && <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[130] bg-[var(--primary)] text-white text-sm px-4 py-2 rounded-xl shadow-lg inline-flex items-center gap-2"><Check className="w-4 h-4" /> {toast}</div>}
+      {toast && <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-[130] bg-primary text-white text-sm px-4 py-2 rounded-xl shadow-lg inline-flex items-center gap-2"><Check className="w-4 h-4" /> {toast}</div>}
     </div>
   )
 }

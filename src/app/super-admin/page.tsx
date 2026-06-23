@@ -64,7 +64,7 @@ export default async function SuperAdminDashboard() {
       <header className="border-b border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f]">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-6 w-6 text-[var(--secondary)]" />
+            <ShieldCheck className="h-6 w-6 text-secondary" />
             <div>
               <h1 className="text-lg font-bold text-slate-900 dark:text-white">Super Admin</h1>
               <p className="text-xs text-slate-500">Platform-wide overview — read only</p>
@@ -112,7 +112,7 @@ export default async function SuperAdminDashboard() {
                     <td className="px-4 py-3 text-xs text-slate-500">{lastLogin ? new Date(lastLogin).toLocaleString() : '—'}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
-                        <Link href={`/t/${tenant.slug}`} target="_blank" className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-[var(--primary)] hover:bg-slate-100 dark:text-white dark:hover:bg-white/10">
+                        <Link href={`/t/${tenant.slug}`} target="_blank" className="inline-flex items-center gap-1 rounded-md px-2 py-1 text-xs font-medium text-primary hover:bg-slate-100 dark:text-white dark:hover:bg-white/10">
                           <ExternalLink className="h-3.5 w-3.5" /> Site
                         </Link>
                         <form action={async () => { 'use server'; await setTenantStatus(tenant.id, tenant.status === 'active' ? 'suspended' : 'active') }}>

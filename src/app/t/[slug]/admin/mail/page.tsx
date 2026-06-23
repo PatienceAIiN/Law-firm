@@ -37,7 +37,7 @@ export default async function TenantAdminMailPage({ params }: { params: Promise<
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
-      <h2 className="mb-4 text-xl font-bold text-[var(--primary)] dark:text-white">Mail</h2>
+      <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Mail</h2>
       <MailClient 
         basePath={`/t/${slug}/admin/api/mail`} 
         fullScreen 

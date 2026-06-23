@@ -94,7 +94,7 @@ function Section({
         onClick={() => setOpen((v) => !v)}
         className="w-full flex items-center justify-between px-5 py-4 bg-gray-50 hover:bg-gray-100 transition-colors text-left"
       >
-        <span className="text-xs font-black uppercase tracking-widest text-[var(--primary)]">{title}</span>
+        <span className="text-xs font-black uppercase tracking-widest text-primary">{title}</span>
         {open ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
       </button>
       {open && <div className="px-5 py-4 space-y-4 bg-white">{children}</div>}
@@ -141,14 +141,14 @@ export function ContentVisualEditor({ initialContent, updateContent, withLoading
         <button
           type="button"
           onClick={() => setTab('visual')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'visual' ? 'bg-white text-[var(--primary)] shadow-sm' : 'text-gray-500 hover:text-[var(--primary)]'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'visual' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-primary'}`}
         >
           <LayoutTemplate className="w-3.5 h-3.5" /> Visual Editor
         </button>
         <button
           type="button"
           onClick={() => setTab('json')}
-          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'json' ? 'bg-white text-[var(--primary)] shadow-sm' : 'text-gray-500 hover:text-[var(--primary)]'}`}
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-black uppercase tracking-widest transition-all ${tab === 'json' ? 'bg-white text-primary shadow-sm' : 'text-gray-500 hover:text-primary'}`}
         >
           <Code2 className="w-3.5 h-3.5" /> Raw JSON
         </button>
@@ -308,7 +308,7 @@ export function ContentVisualEditor({ initialContent, updateContent, withLoading
       <button
         type="button"
         onClick={handleVisualSave}
-        className="w-full bg-[var(--primary)] text-white p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-[var(--accent)] transition-all text-sm"
+        className="w-full bg-primary text-white p-4 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-accent transition-all text-sm"
       >
         <Save className="w-4 h-4" />
         Save All Content

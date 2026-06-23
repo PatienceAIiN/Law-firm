@@ -30,7 +30,7 @@ export function PhilosophySection({ content }: { content?: any }) {
     <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4 mb-16">
-          <div className="inline-flex items-center px-3 py-1 rounded-full bg-[var(--primary)]/5 border border-slate-200 text-[var(--primary)] text-sm font-medium">
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/5 border border-slate-200 text-primary text-sm font-medium">
             <span>{section.badge || 'Our Values'}</span>
           </div>
           
@@ -74,7 +74,7 @@ export function PhilosophySection({ content }: { content?: any }) {
           </div>
           
           <div className="relative text-center space-y-6">
-            <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-[var(--primary)]">
+            <h3 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-primary">
               {section.missionTitle || 'Our Mission'}
             </h3>
             
@@ -89,7 +89,7 @@ export function PhilosophySection({ content }: { content?: any }) {
                 { title: 'Trust', subtitle: 'Building lasting relationships' }
               ]).map((item: any) => (
                 <div key={item.title} className="text-center">
-                  <div className="text-2xl font-black text-[var(--primary)]">{item.title}</div>
+                  <div className="text-2xl font-black text-primary">{item.title}</div>
                   <div className="text-slate-500 text-sm">{item.subtitle}</div>
                 </div>
               ))}

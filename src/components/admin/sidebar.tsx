@@ -76,19 +76,19 @@ export function AdminSidebar() {
                   'flex items-center justify-between px-4 py-3.5 text-xs font-black uppercase tracking-widest rounded-2xl transition-all duration-300 group',
                   isActive
                     ? 'bg-navy-900 text-white shadow-xl shadow-navy-900/20'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-[var(--primary)]'
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-primary'
                 )}
             >
               <div className="flex items-center">
                 <item.icon
                   className={cn(
                     'mr-3 h-4 w-4 transition-colors',
-                    isActive ? 'text-[var(--primary)]' : 'text-slate-400 group-hover:text-[var(--primary)]'
+                    isActive ? 'text-primary' : 'text-slate-400 group-hover:text-primary'
                   )}
                 />
                 <span>{item.name}</span>
               </div>
-              {isActive && <ChevronRight className="h-3 w-3 text-[var(--primary)]" />}
+              {isActive && <ChevronRight className="h-3 w-3 text-primary" />}
             </Link>
           )
         })}

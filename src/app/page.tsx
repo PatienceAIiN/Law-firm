@@ -20,14 +20,14 @@ const FEATURES = [
 
 export default function SaasLandingPage() {
   return (
-    <div className="min-h-screen bg-[#FFFCF8] text-[var(--primary)] dark:bg-[#0b0f17] dark:text-slate-100">
+    <div className="min-h-screen bg-[#FFFCF8] text-primary dark:bg-[#0b0f17] dark:text-slate-100">
       {/* Header */}
       <header className="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-6 py-5">
         <Link href="/" className="text-2xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 animate-pulse">Barrister</Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <OpenWorkspace />
-          <Link href="/signup" className="rounded-xl bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)]">
+          <Link href="/signup" className="rounded-xl bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent">
             Get started
           </Link>
         </div>
@@ -37,7 +37,7 @@ export default function SaasLandingPage() {
       <section className="relative overflow-hidden">
         <VideoCover src={COVER_VIDEOS.home} overlay="medium" />
         <div className="relative z-10 mx-auto max-w-4xl px-6 py-24 text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-[var(--primary)]/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-[var(--primary)] backdrop-blur">
+          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
             <Sparkles className="h-3.5 w-3.5" /> Your law firm, fully online
           </div>
           <h1 className="mt-6 text-5xl font-bold leading-tight tracking-tight md:text-6xl">
@@ -50,13 +50,13 @@ export default function SaasLandingPage() {
           <div className="mt-8 flex items-center justify-center gap-3">
             <Link
               href="/signup"
-              className="inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#14203E]/20 hover:bg-[var(--accent)]"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-[#14203E]/20 hover:bg-accent"
             >
               Create your workspace <ArrowRight className="h-4 w-4" />
             </Link>
             <a
               href="#features"
-              className="inline-flex items-center gap-2 rounded-xl border border-[var(--primary)]/15 bg-white/80 px-6 py-3 text-sm font-semibold text-[var(--primary)] backdrop-blur hover:bg-white"
+              className="inline-flex items-center gap-2 rounded-xl border border-primary/15 bg-white/80 px-6 py-3 text-sm font-semibold text-primary backdrop-blur hover:bg-white"
             >
               See features
             </a>
@@ -79,7 +79,7 @@ export default function SaasLandingPage() {
               key={f.title}
               className="rounded-2xl border border-[#F4E8D8] bg-white p-6 shadow-sm transition hover:shadow-md dark:border-white/10 dark:bg-[#11151f]"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[var(--primary)] text-white">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-white">
                 <f.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-4 text-lg font-semibold">{f.title}</h3>
@@ -120,7 +120,7 @@ export default function SaasLandingPage() {
         </p>
         <Link
           href="/signup"
-          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[var(--primary)] px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-[var(--accent)]"
+          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-accent"
         >
           Create your workspace <ArrowRight className="h-4 w-4" />
         </Link>

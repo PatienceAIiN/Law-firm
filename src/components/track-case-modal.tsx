@@ -53,7 +53,7 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
     } catch (e: any) { setError(e?.message || 'Could not verify') } finally { setBusy(false) }
   }
 
-  const field = 'w-full rounded-xl border border-[#F4E8D8] bg-white px-3.5 py-3 text-sm text-[var(--primary)] outline-none focus:border-[var(--primary)]'
+  const field = 'w-full rounded-xl border border-[#F4E8D8] bg-white px-3.5 py-3 text-sm text-primary outline-none focus:border-primary'
 
   return (
     <>
@@ -63,21 +63,21 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
         <div className="fixed inset-0 z-[140] flex items-start justify-center overflow-y-auto bg-black/50 p-4 sm:p-8" onClick={closeAll}>
           <div className="mt-4 w-full max-w-lg rounded-2xl bg-white shadow-2xl ring-1 ring-[#F4E8D8]" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b border-[#F4E8D8] px-5 py-4">
-              <h3 className="flex items-center gap-2 text-lg font-bold text-[var(--primary)]"><Search className="h-5 w-5" /> Track Your Case</h3>
-              <button onClick={closeAll} className="rounded-lg p-1.5 text-[var(--primary)]/60 hover:bg-[#F6F0E8]"><X className="h-5 w-5" /></button>
+              <h3 className="flex items-center gap-2 text-lg font-bold text-primary"><Search className="h-5 w-5" /> Track Your Case</h3>
+              <button onClick={closeAll} className="rounded-lg p-1.5 text-primary/60 hover:bg-[#F6F0E8]"><X className="h-5 w-5" /></button>
             </div>
 
             <div className="p-5">
               {/* STEP 1 — identify */}
               {step === 'form' && (
                 <div className="space-y-3">
-                  <p className="text-sm text-[var(--primary)]/60">Enter your case number to receive a one-time code on the registered email. Name &amp; phone are optional for extra verification.</p>
+                  <p className="text-sm text-primary/60">Enter your case number to receive a one-time code on the registered email. Name &amp; phone are optional for extra verification.</p>
                   <input className={field} placeholder="Case number *" value={form.caseNumber} onChange={(e) => setForm({ ...form, caseNumber: e.target.value })} />
                   <input className={field} placeholder="Full name (optional)" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                   <input className={field} placeholder="Registered phone (optional)" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
                   {error && <p className="text-sm text-red-500">{error}</p>}
-                  {info && <p className="rounded-lg bg-[#F6F0E8] px-3 py-2 text-sm text-[var(--primary)]">{info}</p>}
-                  <button onClick={requestOtp} disabled={busy || !form.caseNumber.trim()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] py-3 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+                  {info && <p className="rounded-lg bg-[#F6F0E8] px-3 py-2 text-sm text-primary">{info}</p>}
+                  <button onClick={requestOtp} disabled={busy || !form.caseNumber.trim()} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Send Verification Code
                   </button>
                 </div>
@@ -86,11 +86,11 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
               {/* STEP 2 — OTP */}
               {step === 'otp' && (
                 <div className="space-y-3">
-                  <button onClick={() => { setStep('form'); setError('') }} className="inline-flex items-center gap-1 text-xs font-semibold text-[var(--primary)]/60 hover:text-[var(--primary)]"><ArrowLeft className="h-3.5 w-3.5" /> Back</button>
-                  <p className="text-sm text-[var(--primary)]/70">We sent a 6-digit code to <span className="font-semibold">{maskedEmail}</span>. Enter it below.</p>
+                  <button onClick={() => { setStep('form'); setError('') }} className="inline-flex items-center gap-1 text-xs font-semibold text-primary/60 hover:text-primary"><ArrowLeft className="h-3.5 w-3.5" /> Back</button>
+                  <p className="text-sm text-primary/70">We sent a 6-digit code to <span className="font-semibold">{maskedEmail}</span>. Enter it below.</p>
                   <input className={`${field} text-center text-2xl font-bold tracking-[8px]`} placeholder="000000" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, ''))} />
                   {error && <p className="text-sm text-red-500">{error}</p>}
-                  <button onClick={verify} disabled={busy || otp.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--primary)] py-3 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+                  <button onClick={verify} disabled={busy || otp.length !== 6} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
                     {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />} Verify & View Case
                   </button>
                 </div>
@@ -101,8 +101,8 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div>
-                      <div className="text-lg font-bold text-[var(--primary)]">{result.caseNumber}</div>
-                      <div className="text-sm text-[var(--primary)]/70">{result.title}</div>
+                      <div className="text-lg font-bold text-primary">{result.caseNumber}</div>
+                      <div className="text-sm text-primary/70">{result.title}</div>
                     </div>
                     <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${STATUS_COLOR[result.status] || STATUS_COLOR.CLOSED}`}>{result.status}</span>
                   </div>
@@ -115,15 +115,15 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
                   </div>
 
                   <div>
-                    <div className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--primary)]/50">Case Notes</div>
+                    <div className="mb-2 text-xs font-bold uppercase tracking-wide text-primary/50">Case Notes</div>
                     {result.notes.length === 0 ? (
-                      <p className="text-sm text-[var(--primary)]/50">No public notes yet.</p>
+                      <p className="text-sm text-primary/50">No public notes yet.</p>
                     ) : (
                       <div className="max-h-48 space-y-2 overflow-y-auto">
                         {result.notes.map((n, i) => (
                           <div key={i} className="rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] p-3">
-                            <p className="text-sm text-[var(--primary)]">{n.content}</p>
-                            <p className="mt-1 text-[11px] text-[var(--primary)]/40">{n.date}</p>
+                            <p className="text-sm text-primary">{n.content}</p>
+                            <p className="mt-1 text-[11px] text-primary/40">{n.date}</p>
                           </div>
                         ))}
                       </div>
@@ -131,10 +131,10 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
                   </div>
 
                   <a href={`/api/track-case/pdf?token=${token}`} target="_blank" rel="noopener noreferrer"
-                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--primary)] py-3 text-sm font-semibold text-[var(--primary)] hover:bg-[#F6F0E8]">
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-primary py-3 text-sm font-semibold text-primary hover:bg-[#F6F0E8]">
                     <FileDown className="h-4 w-4" /> Print / Download PDF
                   </a>
-                  <p className="text-center text-[11px] text-[var(--primary)]/40">This information is confidential and shown only after email verification.</p>
+                  <p className="text-center text-[11px] text-primary/40">This information is confidential and shown only after email verification.</p>
                 </div>
               )}
             </div>
@@ -148,8 +148,8 @@ export function TrackCaseButton({ className = '', label = 'Track Case' }: { clas
 function Info({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
   return (
     <div className="rounded-lg border border-[#F4E8D8] bg-[#FFFCF8] p-3">
-      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-[var(--primary)]/50"><Icon className="h-3.5 w-3.5" /> {label}</div>
-      <div className="mt-1 text-sm font-medium text-[var(--primary)]">{value}</div>
+      <div className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-primary/50"><Icon className="h-3.5 w-3.5" /> {label}</div>
+      <div className="mt-1 text-sm font-medium text-primary">{value}</div>
     </div>
   )
 }

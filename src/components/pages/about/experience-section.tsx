@@ -42,8 +42,8 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-24 items-center">
           <div className="space-y-8 animate-in fade-in slide-in-from-left duration-700">
             <div className="space-y-4">
-              <h2 className="text-3xl lg:text-4xl font-black text-[var(--primary)] uppercase tracking-tighter">
-                {section.heading?.split(' ').slice(0, 3).join(' ') || 'The Heritage of'} <span className="text-[var(--primary)]">{section.heading?.split(' ').slice(3).join(' ') || 'Advocacy'}</span>
+              <h2 className="text-3xl lg:text-4xl font-black text-primary uppercase tracking-tighter">
+                {section.heading?.split(' ').slice(0, 3).join(' ') || 'The Heritage of'} <span className="text-primary">{section.heading?.split(' ').slice(3).join(' ') || 'Advocacy'}</span>
               </h2>
               <div className="w-20 h-1.5 bg-[#F6F0E8] rounded-full"></div>
             </div>
@@ -63,10 +63,10 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
                 <div className="w-12 h-12 bg-[#F6F0E8]/10 rounded-2xl flex items-center justify-center mb-6">
                   {(() => {
                     const Icon = achievement.icon || fallbackIcons[index] || Award
-                    return <Icon className="w-6 h-6 text-[var(--primary)]" />
+                    return <Icon className="w-6 h-6 text-primary" />
                   })()}
                 </div>
-                <div className="text-3xl font-black text-[var(--primary)] mb-1 tracking-tighter">{achievement.stat}</div>
+                <div className="text-3xl font-black text-primary mb-1 tracking-tighter">{achievement.stat}</div>
                 <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">
                   {achievement.title}
                 </h3>
@@ -83,15 +83,15 @@ export function ExperienceSection({ data, content }: ExperienceSectionProps) {
           <div className="absolute top-0 right-0 h-64 w-64 -mr-32 -mt-32 rounded-full bg-[#F6F0E8]/10 blur-3xl"></div>
           <div className="relative z-10 grid grid-cols-1 gap-12 text-center md:grid-cols-3">
             <div className="space-y-2">
-              <div className="text-[var(--primary)] text-5xl font-black">{section.milestones?.[0]?.year || '2003'}</div>
+              <div className="text-primary text-5xl font-black">{section.milestones?.[0]?.year || '2003'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[0]?.label || 'Foundation Rooted in Ethics'}</p>
             </div>
             <div className="space-y-2">
-              <div className="text-[var(--primary)] text-5xl font-black">{section.milestones?.[1]?.year || '2015'}</div>
+              <div className="text-primary text-5xl font-black">{section.milestones?.[1]?.year || '2015'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[1]?.label || 'Expansion to High Court Chambers'}</p>
             </div>
             <div className="space-y-2">
-              <div className="text-[var(--primary)] text-5xl font-black">{section.milestones?.[2]?.year || '2024'}</div>
+              <div className="text-primary text-5xl font-black">{section.milestones?.[2]?.year || '2024'}</div>
               <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px]">{section.milestones?.[2]?.label || 'Digital Legal Transformation'}</p>
             </div>
           </div>

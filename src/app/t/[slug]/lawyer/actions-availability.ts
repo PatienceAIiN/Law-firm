@@ -18,6 +18,7 @@ export async function addLawyerSlot(slug: string, formData: FormData) {
   const start = (formData.get('startTime') as string) || ''
   const end = (formData.get('endTime') as string) || ''
   const capacity = parseInt((formData.get('capacity') as string) || '1', 10)
+  const modes = (formData.get('modes') as string) || 'VIRTUAL,PHYSICAL'
   
   if (!dateStr || !start || !end) throw new Error('Date, start, and end are required')
 
@@ -31,7 +32,7 @@ export async function addLawyerSlot(slug: string, formData: FormData) {
 
   await prisma.availabilitySlot.create({
     data: {
-      dayId: day.id, startTime: startDate, endTime: endDate, capacity: Math.max(1, capacity), allowedModes: 'VIRTUAL,PHYSICAL',
+      dayId: day.id, startTime: startDate, endTime: endDate, capacity: Math.max(1, capacity), allowedModes: modes,
     },
   })
   revalidatePath(`/t/${slug}/lawyer`)

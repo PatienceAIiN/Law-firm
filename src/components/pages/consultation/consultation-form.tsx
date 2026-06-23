@@ -337,7 +337,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-50">
             <CheckCircle2 className="h-8 w-8 text-emerald-600" />
           </div>
-          <h2 className="mb-3 text-2xl font-black uppercase tracking-tighter text-[var(--primary)]">
+          <h2 className="mb-3 text-2xl font-black uppercase tracking-tighter text-primary">
             {section.form?.successTitle || 'REQUEST SENT'}
           </h2>
           <p className="mb-6 text-sm leading-6 text-slate-600">
@@ -346,32 +346,32 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="space-y-3 rounded-[22px] border border-slate-200 bg-slate-50 p-4 text-left">
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Date</span>
-              <span className="text-sm font-bold text-[var(--primary)]">{formatIstDate(parseIstDate(bookingResult.slot.date))}</span>
+              <span className="text-sm font-bold text-primary">{formatIstDate(parseIstDate(bookingResult.slot.date))}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Time</span>
-              <span className="text-sm font-bold text-[var(--primary)]">{bookingResult.slot.startTime} - {bookingResult.slot.endTime}</span>
+              <span className="text-sm font-bold text-primary">{bookingResult.slot.startTime} - {bookingResult.slot.endTime}</span>
             </div>
             <div className="flex items-center justify-between gap-4">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Mode</span>
-              <span className="text-sm font-bold text-[var(--primary)]">{bookingResult.booking.meetingMode.replace('_', ' ')}</span>
+              <span className="text-sm font-bold text-primary">{bookingResult.booking.meetingMode.replace('_', ' ')}</span>
             </div>
             <div className="pt-3 border-t border-slate-200 space-y-2">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
                 <LinkIcon className="w-3.5 h-3.5" />
                 Scheduled Link / Location
               </span>
-              <div className="text-sm font-bold text-[var(--primary)] break-all">{bookingSuccessMeetingValue}</div>
+              <div className="text-sm font-bold text-primary break-all">{bookingSuccessMeetingValue}</div>
             </div>
           </div>
           <Button
             onClick={inModal ? onClose : () => window.location.href = '/'}
-            className="mt-6 w-full h-14 bg-[var(--primary)] rounded-2xl font-black tracking-widest uppercase"
+            className="mt-6 w-full h-14 bg-primary rounded-2xl font-black tracking-widest uppercase"
           >
             {inModal ? 'CLOSE' : (section.form?.homeText || 'RETURN HOME')}
           </Button>
           {bookingResult.booking.meetingMode !== 'PHYSICAL' && (
-            <Button onClick={() => window.location.href = `/meeting/${bookingResult.booking.id}`} className="mt-3 w-full h-14 bg-[#F6F0E8] text-[var(--primary)] rounded-2xl font-black tracking-widest uppercase">
+            <Button onClick={() => window.location.href = `/meeting/${bookingResult.booking.id}`} className="mt-3 w-full h-14 bg-[#F6F0E8] text-primary rounded-2xl font-black tracking-widest uppercase">
               OPEN MEETING WORKSPACE
             </Button>
           )}
@@ -387,15 +387,15 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="w-full max-w-sm rounded-[26px] border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">Confirm Slot</p>
-                <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[var(--primary)]">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-primary">Confirm Slot</p>
+                <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-primary">
                   {selectedSlot.startTime} - {selectedSlot.endTime}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={resetSlot}
-                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors hover:text-[var(--primary)]"
+                className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-400 transition-colors hover:text-primary"
                 aria-label="Close slot confirmation"
               >
                 <X className="h-4 w-4" />
@@ -404,10 +404,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
             <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <LinkIcon className="h-4 w-4 text-[var(--primary)]" />
+                <LinkIcon className="h-4 w-4 text-primary" />
                 Meeting details
               </div>
-              <div className="mt-2 break-all text-sm font-bold text-[var(--primary)]">
+              <div className="mt-2 break-all text-sm font-bold text-primary">
                 {meetingDetails}
               </div>
             </div>
@@ -416,7 +416,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <Button
                 type="button"
                 onClick={confirmSlot}
-                className="h-12 rounded-2xl bg-[var(--primary)] font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-[var(--primary)]"
+                className="h-12 rounded-2xl bg-primary font-black uppercase tracking-widest text-white hover:bg-[#F6F0E8] hover:text-primary"
               >
                 Confirm and Continue
               </Button>
@@ -438,7 +438,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="mb-4 flex flex-col gap-3 text-center">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#b8872f]">Consultation Date *</p>
-              <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-[var(--primary)]">
+              <h3 className="mt-1 text-lg font-black uppercase tracking-tight text-primary">
                 {monthLabel(visibleMonth)}
               </h3>
             </div>
@@ -446,7 +446,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <button
                 type="button"
                 onClick={() => setVisibleMonth((value) => shiftMonth(value, -1))}
-                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-[var(--primary)]"
+                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-primary"
                 aria-label="Previous month"
               >
                 <Calendar className="h-4 w-4 rotate-180" />
@@ -454,7 +454,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <button
                 type="button"
                 onClick={() => setVisibleMonth((value) => shiftMonth(value, 1))}
-                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-[var(--primary)]"
+                className="flex h-9 w-9 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition-colors hover:border-[#F4E8D8]/40 hover:text-primary"
                 aria-label="Next month"
               >
                 <Calendar className="h-4 w-4" />
@@ -564,7 +564,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                   required
                   className="peer sr-only"
                 />
-                <div className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition-all peer-checked:bg-[var(--primary)] peer-checked:text-white">
+                <div className="cursor-pointer rounded-xl border border-slate-200 bg-slate-50 p-3 text-center transition-all peer-checked:bg-primary peer-checked:text-white">
                   <span className="text-[8px] font-black uppercase tracking-widest">{mode === 'PHYSICAL' ? 'In-Person' : 'Virtual Meeting'}</span>
                 </div>
               </label>
@@ -586,10 +586,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
           <div className="grid gap-3 lg:grid-cols-[0.9fr_1.1fr]">
             <div className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4">
               <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-                <Clock className="h-4 w-4 text-[var(--primary)]" />
+                <Clock className="h-4 w-4 text-primary" />
                 Selected Date
               </div>
-              <div className="mt-2 text-sm font-bold text-[var(--primary)]">
+              <div className="mt-2 text-sm font-bold text-primary">
                 {formatIstDate(parseIstDate(selectedDate))}
               </div>
               <div className="mt-2 text-xs text-slate-500">
@@ -644,7 +644,7 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
                           {slot.availableCount} seat{slot.availableCount === 1 ? '' : 's'} left
                         </div>
                       </div>
-                      <div className="text-[9px] font-black uppercase tracking-widest text-[var(--primary)]">
+                      <div className="text-[9px] font-black uppercase tracking-widest text-primary">
                         Select
                       </div>
                     </div>
@@ -657,10 +657,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
 
         <div className="rounded-3xl border border-slate-200 bg-gradient-to-b from-white to-slate-50 p-4">
           <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-400">
-            <Clock className="h-4 w-4 text-[var(--primary)]" />
+            <Clock className="h-4 w-4 text-primary" />
             Selected Slot
           </div>
-          <div className="mt-2 text-sm font-bold text-[var(--primary)]">
+          <div className="mt-2 text-sm font-bold text-primary">
             {selectedSlotLabel || 'Pick a slot to continue'}
           </div>
           <div className="mt-2 text-xs text-slate-500">
@@ -706,8 +706,8 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               <textarea name="notes" required rows={4} className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-4 font-bold outline-none focus:ring-2 focus:ring-[#14203E]" placeholder="Provide context about your legal requirements..." />
             </div>
 
-            <Button disabled={loading} type="submit" className="h-14 w-full rounded-2xl bg-[var(--primary)] font-black uppercase tracking-widest text-white transition-all hover:bg-[#F6F0E8] hover:text-[var(--primary)]">
-              {loading ? <Loader2 className="h-6 w-6 animate-spin text-[var(--primary)]" /> : (section.form?.submitText || 'BOOK PRIORITY SLOT')}
+            <Button disabled={loading} type="submit" className="h-14 w-full rounded-2xl bg-primary font-black uppercase tracking-widest text-white transition-all hover:bg-[#F6F0E8] hover:text-primary">
+              {loading ? <Loader2 className="h-6 w-6 animate-spin text-primary" /> : (section.form?.submitText || 'BOOK PRIORITY SLOT')}
             </Button>
           </form>
         )}
@@ -724,10 +724,10 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
       <div className="mx-auto grid max-w-6xl grid-cols-1 gap-6 lg:grid-cols-2 lg:items-stretch">
         <div className="space-y-6">
           <div className={`${surfaceClass} p-5 text-center sm:p-7`}>
-            <div className="inline-flex items-center justify-center rounded-full border border-[#F4E8D8]/20 bg-[#F6F0E8]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-[var(--primary)]">
+            <div className="inline-flex items-center justify-center rounded-full border border-[#F4E8D8]/20 bg-[#F6F0E8]/10 px-4 py-1.5 text-[10px] font-black uppercase tracking-[0.24em] text-primary">
               {section.hero?.badge || 'PRIORITY BOOKING'}
             </div>
-            <h1 className="mt-5 text-3xl font-black uppercase tracking-tight text-[var(--primary)] sm:text-5xl">
+            <h1 className="mt-5 text-3xl font-black uppercase tracking-tight text-primary sm:text-5xl">
               {section.hero?.title || 'LEGAL CONSULTATION'}
             </h1>
             <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-600 sm:text-lg">
@@ -742,11 +742,11 @@ export function ConsultationForm({ content, inModal, onClose }: ConsultationForm
               { Icon: Calendar, title: 'Flexible Timing', desc: 'Available Mon-Fri, 10:00 AM - 6:00 PM.' },
             ].map(({ Icon, title, desc }) => (
               <div key={title} className="flex items-start gap-4 rounded-[22px] border border-slate-200 bg-gradient-to-br from-white via-slate-50 to-white p-4 shadow-[0_10px_24px_rgba(15,23,42,0.04)]">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[var(--primary)]/5 text-[var(--primary)]">
+                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/5 text-primary">
                   <Icon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-black uppercase tracking-[0.2em] text-[var(--primary)]">{title}</h2>
+                  <h2 className="text-sm font-black uppercase tracking-[0.2em] text-primary">{title}</h2>
                   <p className="mt-1 text-sm leading-6 text-slate-600">{desc}</p>
                 </div>
               </div>

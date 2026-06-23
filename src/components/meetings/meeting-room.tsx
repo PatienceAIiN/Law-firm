@@ -189,7 +189,7 @@ export function MeetingRoom({ booking, allowRecording, adminView = false }: Meet
   if (booking.meetingMode === 'PHYSICAL') {
     return (
       <div className="flex h-[100dvh] w-screen flex-col items-center justify-center gap-4 bg-[#0b0f17] p-8 text-center text-white">
-        <Monitor className="h-14 w-14 text-[var(--secondary)]" />
+        <Monitor className="h-14 w-14 text-secondary" />
         <h2 className="text-2xl font-bold">In-Person Consultation</h2>
         <p className="max-w-lg text-white/70">{booking.meetingLink || 'The office address will be shared by the advocate team.'}</p>
       </div>
@@ -209,7 +209,7 @@ export function MeetingRoom({ booking, allowRecording, adminView = false }: Meet
   if (!token || !url) {
     return (
       <div className="flex h-[100dvh] w-screen flex-col items-center justify-center gap-4 bg-[#0b0f17] text-white">
-        <Loader2 className="h-10 w-10 animate-spin text-[var(--secondary)]" />
+        <Loader2 className="h-10 w-10 animate-spin text-secondary" />
         <p className="text-sm text-white/70">Joining secure meeting…</p>
       </div>
     )
@@ -283,7 +283,7 @@ export function MeetingRoom({ booking, allowRecording, adminView = false }: Meet
               className="min-h-0 flex-1 resize-none bg-transparent p-4 text-sm text-white/90 outline-none placeholder:text-white/30"
             />
             <div className="border-t border-white/10 p-3">
-              <button onClick={sendMoM} disabled={momBusy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-[var(--secondary)] px-4 py-2.5 text-sm font-semibold text-[#0b0f17] hover:bg-[#d8b33a] disabled:opacity-60">
+              <button onClick={sendMoM} disabled={momBusy} className="flex w-full items-center justify-center gap-2 rounded-lg bg-secondary px-4 py-2.5 text-sm font-semibold text-[#0b0f17] hover:bg-[#d8b33a] disabled:opacity-60">
                 {momBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />} Email Minutes to Joinees
               </button>
             </div>
@@ -301,7 +301,7 @@ export function MeetingRoom({ booking, allowRecording, adminView = false }: Meet
             </div>
             <div className="flex items-center gap-2 rounded-lg bg-black/30 p-2">
               <input readOnly value={shareUrl} className="min-w-0 flex-1 bg-transparent px-2 text-sm text-white/80 outline-none" />
-              <button onClick={copyLink} className="flex shrink-0 items-center gap-1.5 rounded-md bg-[var(--secondary)] px-3 py-1.5 text-xs font-semibold text-[#0b0f17]"><Copy className="h-3.5 w-3.5" /> Copy</button>
+              <button onClick={copyLink} className="flex shrink-0 items-center gap-1.5 rounded-md bg-secondary px-3 py-1.5 text-xs font-semibold text-[#0b0f17]"><Copy className="h-3.5 w-3.5" /> Copy</button>
             </div>
             <p className="mt-3 text-xs text-white/40">Anyone with this link can join this consultation room.</p>
           </div>

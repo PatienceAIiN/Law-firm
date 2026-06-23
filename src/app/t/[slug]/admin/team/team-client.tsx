@@ -21,7 +21,7 @@ export function TeamClient({ slug, items }: { slug: string; items: M[] }) {
           <input name="title" placeholder="Title (e.g. Associate)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
           <input name="email" type="email" placeholder="Email (optional)" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
           <textarea name="bio" rows={2} placeholder="Short bio" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
-          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-[var(--primary)] px-4 py-2 text-sm font-semibold text-white hover:bg-[var(--accent)] disabled:opacity-60">
+          <button disabled={pending} className="sm:col-span-2 inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
             {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />}
             Add member
           </button>

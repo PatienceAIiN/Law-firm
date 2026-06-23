@@ -119,11 +119,11 @@ export function RecentActivity() {
             <p className="text-gray-600">{selectedActivity.description}</p>
             <p className="text-sm font-medium text-gray-500">{selectedActivity.detail}</p>
             <div className="flex gap-3">
-              <a href="/admin/virtual-meetings" className="inline-flex items-center gap-2 rounded-2xl bg-[var(--primary)] px-4 py-3 text-white text-xs font-black uppercase tracking-widest">
+              <a href="/admin/virtual-meetings" className="inline-flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-white text-xs font-black uppercase tracking-widest">
                 Open Meeting Hub
                 <ArrowRight className="w-4 h-4" />
               </a>
-              <a href="/admin/inbox" className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-3 text-[var(--primary)] text-xs font-black uppercase tracking-widest">
+              <a href="/admin/inbox" className="inline-flex items-center gap-2 rounded-2xl border border-gray-200 px-4 py-3 text-primary text-xs font-black uppercase tracking-widest">
                 Open Inbox
               </a>
             </div>

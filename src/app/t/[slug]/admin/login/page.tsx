@@ -19,12 +19,12 @@ export default async function TenantAdminLoginPage({
       <VideoCover src={COVER_VIDEOS.home} overlay="strong" />
       <div className="relative z-10 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[var(--primary)] shadow-md">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary shadow-md">
             <span className="text-xl font-bold text-white">{tenant.name.slice(0, 2).toUpperCase()}</span>
           </div>
         </div>
-        <h2 className="mt-6 text-center text-3xl font-extrabold text-[var(--primary)]">{tenant.name}</h2>
-        <p className="mt-2 text-center text-sm text-[var(--primary)]/70">Admin sign-in</p>
+        <h2 className="mt-6 text-center text-3xl font-extrabold text-primary">{tenant.name}</h2>
+        <p className="mt-2 text-center text-sm text-primary/70">Admin sign-in</p>
       </div>
 
       <div className="relative z-10 mt-8 sm:mx-auto sm:w-full sm:max-w-md">
