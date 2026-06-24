@@ -32,6 +32,8 @@ export async function loadTenantPublicShell(slug: string): Promise<TenantPublicD
         logo_text: theme.siteTitle || tenant.name,
         use_image_logo: !!theme.logoUrl,
         logo_image_url: theme.logoUrl,
+        home_cover_url: theme.homeCoverUrl || (brand as any)?.home_cover_url || '',
+        firm_address: theme.firmAddress || (brand as any)?.firm_address || '',
         ...(brand || {})
       }
       

@@ -26,6 +26,8 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     borderRadius: theme.borderRadius || DEFAULTS.borderRadius,
     fontFamily: theme.fontFamily || DEFAULTS.fontFamily,
     logoUrl: theme.logoUrl || '',
+    homeCoverUrl: theme.homeCoverUrl || '',
+    firmAddress: theme.firmAddress || '',
   }
 
   const [primaryColor, setPrimary] = useState(initial.primaryColor)
@@ -34,25 +36,42 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
   const [borderRadius, setRadius] = useState(initial.borderRadius)
   const [fontFamily, setFont] = useState(initial.fontFamily)
   const [logoUrl, setLogoUrl] = useState(initial.logoUrl)
+  const [homeCoverUrl, setHomeCoverUrl] = useState(initial.homeCoverUrl)
+  const [firmAddress, setFirmAddress] = useState(initial.firmAddress)
+  const [coverUploading, setCoverUploading] = useState(false)
   const [uploadError, setUploadError] = useState('')
   const [uploading, setUploading] = useState(false)
+
+  const uploadPickedFile = async (file: File) => {
+    const fd = new FormData(); fd.set('file', file)
+    return uploadImage(fd)
+  }
 
   const onPickIconPng = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
     setUploadError('')
-    if (file.size > 2 * 1024 * 1024) { setUploadError('Icon PNG must be under 2 MB'); e.target.value = ''; return }
-    if (file.type !== 'image/png' && file.type !== 'image/svg+xml') {
-      // We accept any image but recommend PNG for best favicon results.
-      if (!file.type.startsWith('image/')) { setUploadError('Pick an image file (PNG recommended).'); e.target.value = ''; return }
-    }
+    if (file.size > 10 * 1024 * 1024) { setUploadError('Logo PNG must be under 10 MB'); e.target.value = ''; return }
+    if (file.type !== 'image/png') { setUploadError('Pick a PNG logo file.'); e.target.value = ''; return }
     setUploading(true)
     try {
-      const fd = new FormData(); fd.set('file', file)
-      const url = await uploadImage(fd)
+      const url = await uploadPickedFile(file)
       setLogoUrl(url)
     } catch (err: any) { setUploadError(err?.message || 'Upload failed') }
     finally { setUploading(false); e.target.value = '' }
+  }
+
+  const onPickHomeCover = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploadError('')
+    if (!file.type.startsWith('video/')) { setUploadError('Pick a video file for the home page background.'); e.target.value = ''; return }
+    setCoverUploading(true)
+    try {
+      const url = await uploadPickedFile(file)
+      setHomeCoverUrl(url)
+    } catch (err: any) { setUploadError(err?.message || 'Upload failed') }
+    finally { setCoverUploading(false); e.target.value = '' }
   }
 
   const reset = () => {
@@ -62,6 +81,8 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     setRadius(initial.borderRadius)
     setFont(initial.fontFamily)
     setLogoUrl(initial.logoUrl)
+    setHomeCoverUrl(initial.homeCoverUrl)
+    setFirmAddress(initial.firmAddress)
     setStatus(null)
   }
 
@@ -77,6 +98,8 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
     fd.set('borderRadius', borderRadius)
     fd.set('fontFamily', fontFamily)
     fd.set('logoUrl', logoUrl)
+    fd.set('homeCoverUrl', homeCoverUrl)
+    fd.set('firmAddress', firmAddress)
     // Site title always reflects the firm name; no separate field.
     fd.set('siteTitle', firmName)
     start(async () => {
@@ -134,9 +157,16 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
           ))}
         </div>
 
+
+        <div className="rounded-xl border border-slate-200 p-4 dark:border-white/10">
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Firm address</label>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Shown on payment receipts and saved with workspace branding.</p>
+          <textarea value={firmAddress} onChange={(e) => setFirmAddress(e.target.value)} rows={3} placeholder="Chambers / office address" className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
+        </div>
+
         <div className="rounded-xl border border-dashed border-slate-300 p-4">
-          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Logo (PNG/SVG, ≤ 2 MB)</label>
-          <p className="mb-3 text-xs text-slate-500">Upload your logo. We will automatically use it as your browser icon too.</p>
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Logo (PNG, ≤ 10 MB)</label>
+          <p className="mb-3 text-xs text-slate-500">Upload a PNG logo to Cloudflare R2/Cloudinary. We will automatically use it as your browser icon too.</p>
           {logoUrl ? (
             <div className="flex items-center gap-3">
               <img src={logoUrl} alt="Logo" className="h-12 w-12 rounded-md border border-slate-200 object-contain" />
@@ -148,11 +178,34 @@ export function BrandingClient({ slug, theme, firmName }: { slug: string; theme:
           ) : (
             <label className="flex h-24 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white text-xs text-slate-500 hover:bg-slate-50 dark:border-white/15 dark:bg-white/5">
               {uploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
-              <span className="mt-2">{uploading ? 'Uploading…' : 'Click to upload a PNG / SVG'}</span>
-              <input type="file" accept="image/png,image/svg+xml,image/*" onChange={onPickIconPng} disabled={uploading} className="hidden" />
+              <span className="mt-2">{uploading ? 'Uploading…' : 'Click to upload a PNG'}</span>
+              <input type="file" accept="image/png" onChange={onPickIconPng} disabled={uploading} className="hidden" />
             </label>
           )}
           {uploadError && <p className="mt-2 text-xs text-rose-600">{uploadError}</p>}
+        </div>
+
+
+        <div className="rounded-xl border border-dashed border-slate-300 p-4 dark:border-white/15">
+          <label className="block text-sm font-semibold text-slate-700 dark:text-slate-200">Home page background video</label>
+          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Upload a video to use as the cover background on the public home page.</p>
+          {homeCoverUrl ? (
+            <div className="space-y-3">
+              <video src={homeCoverUrl} className="h-36 w-full rounded-lg border border-slate-200 object-cover dark:border-white/10" muted playsInline controls />
+              <div className="flex items-center gap-3">
+                <code className="truncate text-xs text-slate-500">{homeCoverUrl}</code>
+                <button type="button" onClick={() => setHomeCoverUrl('')} className="ml-auto inline-flex items-center gap-1 rounded-md border border-rose-200 px-2 py-1 text-xs text-rose-600 hover:bg-rose-50">
+                  <X className="h-3 w-3" /> Remove
+                </button>
+              </div>
+            </div>
+          ) : (
+            <label className="flex h-24 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-white text-xs text-slate-500 hover:bg-slate-50 dark:border-white/15 dark:bg-white/5">
+              {coverUploading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Upload className="h-5 w-5" />}
+              <span className="mt-2">{coverUploading ? 'Uploading…' : 'Click to upload a video'}</span>
+              <input type="file" accept="video/*" onChange={onPickHomeCover} disabled={coverUploading} className="hidden" />
+            </label>
+          )}
         </div>
 
         {status && (
