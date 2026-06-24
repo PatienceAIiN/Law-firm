@@ -43,7 +43,10 @@ function buildNavMap(tenantSlug?: string | null) {
   const base = tenantSlug ? `/team/${tenantSlug}` : ''
   return {
     navigate_home:            { label: 'Open home',            href: base || '/' },
-    navigate_about:           { label: 'Open team',            href: tenantSlug ? `${base}/team` : '/' },
+    // Team page — what the user asked for when they said "open team", "team page", "lawyers", etc.
+    navigate_team:            { label: 'Open team page',       href: tenantSlug ? `${base}/team` : '/' },
+    // Kept as an alias for legacy assistant replies — same destination as navigate_team.
+    navigate_about:           { label: 'Open team page',       href: tenantSlug ? `${base}/team` : '/' },
     navigate_practice_areas:  { label: 'Open practice areas',  href: tenantSlug ? `${base}/practice-areas` : '/' },
     navigate_blog:            { label: 'Open articles',        href: tenantSlug ? `${base}/articles` : '/' },
     navigate_testimonials:    { label: 'Open testimonials',    href: tenantSlug ? `${base}/team` : '/' },
@@ -52,7 +55,7 @@ function buildNavMap(tenantSlug?: string | null) {
   } as Record<string, { label: string; href: string }>
 }
 
-function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: string }; tenantSlug?: string | null }) {
+function MessageBubble({ msg, tenantSlug, onNavigate }: { msg: Message & { triggerAction?: string }; tenantSlug?: string | null; onNavigate: (href: string) => void }) {
   const isUser = msg.role === 'user'
   const navAction: string | undefined = (msg as any).triggerAction
   const navMap = buildNavMap(tenantSlug)
@@ -77,11 +80,7 @@ function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: s
           <NavChip
             label={navLabel.label}
             href={navLabel.href}
-            onClick={() => {
-              // Let the parent shell handle in-app vs. router navigation; the
-              // link itself is just a hint, the click triggers the real route.
-              window.location.assign(navLabel.href)
-            }}
+            onClick={() => onNavigate(navLabel.href)}
           />
         )}
       </div>
@@ -325,7 +324,12 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
             )}
 
             {messages.map((msg, i) => (
-              <MessageBubble key={i} msg={msg} tenantSlug={tenantSlug} />
+              <MessageBubble
+                key={i}
+                msg={msg}
+                tenantSlug={tenantSlug}
+                onNavigate={(href) => { router.push(href); setOpen(false) }}
+              />
             ))}
 
             {loading && (

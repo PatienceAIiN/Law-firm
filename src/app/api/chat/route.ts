@@ -37,21 +37,26 @@ function getGroqModelCandidates() {
 }
 
 function getTriggerAction(message: string, _reply: string): string | null {
-  const m = message.toLowerCase()
+  const m = message.toLowerCase().trim()
 
   // Imperative intents — "open X", "show me Y", "take me to Z", "go to W".
   const wantsAction = /\b(open|show( me)?|take me to|go to|navigate|visit|see)\b/.test(m)
 
+  // IMPORTANT: keep these checks ordered MOST SPECIFIC first. The team check
+  // sits above navigate_home so "open team" never falls through to home.
   if (/\b(book|consultation|appointment|schedule( a)? slot|consult|meet(ing)?)\b/.test(m)) return 'open_consultation'
   if (/\b(contact|inquir|reach (out|us)|message|email( us)?|address|phone|directions?)\b/.test(m)) return 'open_contact'
   if (/\b(practice areas?|services|legal services|specializ|expertise|criminal|corporate|family law|property law|labour|civil|matrimonial)\b/.test(m)) return 'navigate_practice_areas'
-  if (/\b(team|lawyers?|advocates?|partners?|members?|who (are|is) (you|we)|our firm|firm history|about( us)?|philosophy)\b/.test(m)) return 'navigate_about'
+  // Team-page words get their own action so the chip label reads "Open team".
+  if (/\b(team|lawyers?|advocates?|partners?|members?|our firm|firm history)\b/.test(m)) return 'navigate_team'
+  // "About us / who are you / philosophy" still routes to the team page (that's where the firm bio lives) — same action key so the chip label stays accurate.
+  if (/\b(about( us)?|who (are|is) (you|we)|philosophy)\b/.test(m)) return 'navigate_team'
   if (/\b(articles?|blog|legal news|updates?|posts?|insights?)\b/.test(m)) return 'navigate_blog'
   if (/\b(testimonials?|reviews?|client feedback|client stories)\b/.test(m)) return 'navigate_testimonials'
   if (/\b(home(page)?|main page|landing|start|back to home)\b/.test(m)) return 'navigate_home'
 
-  // Generic "open/show/take me to" with no specific page mentioned — default
-  // to the home page so users always get a button.
+  // Generic "open/show/take me to" with no specific page named — default to
+  // home so the user always gets a button.
   if (wantsAction) return 'navigate_home'
 
   return null
