@@ -18,33 +18,43 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) redirect(`/team/${slug}/admin/login`)
 
-  // Use a typed SELECT so we never query the new `paymentMethod` column
-  // before its migration has run on production — otherwise the whole page
-  // crashes for tenants on the old schema.
-  const receipts = await prisma.receipt.findMany({
-    where: { tenantId: tenant.id },
-    orderBy: { createdAt: 'desc' },
-    take: 200,
-    select: {
-      id: true, number: true, clientName: true, clientEmail: true,
-      total: true, currency: true, status: true, createdAt: true,
-      advocateId: true,
-    },
-  })
-  // Single follow-up query to resolve advocate names for the chips — far
-  // cheaper than includeing the relation on every row.
-  const advocateIds = Array.from(new Set(receipts.map((r) => r.advocateId).filter(Boolean))) as string[]
-  const advocates = advocateIds.length
-    ? await prisma.advocate.findMany({ where: { id: { in: advocateIds }, tenantId: tenant.id }, select: { id: true, name: true } })
-    : []
-  const advocateName: Record<string, string> = Object.fromEntries(advocates.map((a) => [a.id, a.name]))
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
 
-  // Per-tenant payment history. The query is filtered by tenantId so one
-  // workspace can NEVER see another's payments. Failures fall back to an
-  // empty list (e.g. before the Payment migration runs).
+  // Each chunk is wrapped — any single failure leaves the others intact and
+  // never 500s the whole route. This is what made the previous build of
+  // /receipts crash for tenants on the pre-Payment schema.
+  let receipts: any[] = []
+  try {
+    receipts = await prisma.receipt.findMany({
+      where: { tenantId: tenant.id },
+      orderBy: { createdAt: 'desc' },
+      take: 200,
+      select: {
+        id: true, number: true, clientName: true, clientEmail: true,
+        total: true, currency: true, status: true, createdAt: true,
+        advocateId: true,
+      },
+    })
+  } catch (e) { console.error('[receipts/page] receipts query failed:', (e as any)?.message) }
+
+  // Single follow-up query to resolve advocate names for the chips — far
+  // cheaper than includeing the relation on every row.
+  const advocateIds = Array.from(new Set(receipts.map((r: any) => r.advocateId).filter(Boolean))) as string[]
+  let advocateName: Record<string, string> = {}
+  try {
+    if (advocateIds.length) {
+      const advocates = await prisma.advocate.findMany({
+        where: { id: { in: advocateIds }, tenantId: tenant.id },
+        select: { id: true, name: true },
+      })
+      advocateName = Object.fromEntries(advocates.map((a) => [a.id, a.name]))
+    }
+  } catch (e) { console.warn('[receipts/page] advocate lookup skipped:', (e as any)?.message) }
+
+  // Per-tenant payment history. listPaymentsForTenant already swallows
+  // table-missing errors. Wrapped again here for full safety.
   let payments: any[] = []
-  try { payments = await listPaymentsForTenant(tenant.id, { take: 100 }) } catch (e) { console.warn('[receipts/page] payments query skipped:', (e as any)?.message) }
+  try { payments = await listPaymentsForTenant(tenant.id, { take: 100 }) } catch (e) { console.warn('[receipts/page] payments skipped:', (e as any)?.message) }
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>

@@ -1,8 +1,32 @@
-import Razorpay from 'razorpay'
 import crypto from 'crypto'
-import QRCode from 'qrcode'
 import { prisma } from './prisma'
 import { getTenantSettingJson, setTenantSettingJson } from './tenant-settings'
+
+// Lazy-load razorpay + qrcode so importing this module from a page bundle
+// doesn't pull in node-only deps at route-init time. A broken require here
+// (CJS interop on some hosts) was crashing the admin/receipts page with a
+// generic "Server Components render" 500.
+type RazorpayType = any
+let _RazorpayCtor: RazorpayType | null = null
+function getRazorpayCtor(): RazorpayType | null {
+  if (_RazorpayCtor) return _RazorpayCtor
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const mod = require('razorpay')
+    _RazorpayCtor = mod.default || mod
+    return _RazorpayCtor
+  } catch (e) {
+    console.warn('[payments] razorpay sdk unavailable:', (e as any)?.message)
+    return null
+  }
+}
+
+async function getQRCode(): Promise<any | null> {
+  try { return (await import('qrcode')).default || (await import('qrcode')) } catch (e) {
+    console.warn('[payments] qrcode sdk unavailable:', (e as any)?.message)
+    return null
+  }
+}
 
 export type PaymentConfig = {
   razorpayKeyId?: string
@@ -35,9 +59,11 @@ export async function setPaymentConfig(tenantId: string, patch: Partial<PaymentC
  * platform-wide keys for collecting money — every workspace pays into its
  * own connected account.
  */
-export function razorpayClientFor(cfg: PaymentConfig): Razorpay | null {
+export function razorpayClientFor(cfg: PaymentConfig): any | null {
   if (!cfg?.razorpayKeyId || !cfg?.razorpayKeySecret) return null
-  return new Razorpay({
+  const Ctor = getRazorpayCtor()
+  if (!Ctor) return null
+  return new Ctor({
     key_id: cfg.razorpayKeyId,
     key_secret: cfg.razorpayKeySecret,
   })
@@ -87,7 +113,9 @@ export function buildUpiUrl(opts: {
   return `upi://pay?${params.toString()}`
 }
 
-export async function buildUpiQrPng(url: string): Promise<Buffer> {
+export async function buildUpiQrPng(url: string): Promise<Buffer | null> {
+  const QRCode = await getQRCode()
+  if (!QRCode) return null
   return QRCode.toBuffer(url, {
     type: 'png',
     errorCorrectionLevel: 'M',
@@ -97,7 +125,9 @@ export async function buildUpiQrPng(url: string): Promise<Buffer> {
   })
 }
 
-export async function buildUpiQrDataUrl(url: string): Promise<string> {
+export async function buildUpiQrDataUrl(url: string): Promise<string | null> {
+  const QRCode = await getQRCode()
+  if (!QRCode) return null
   return QRCode.toDataURL(url, {
     errorCorrectionLevel: 'M',
     margin: 2,
@@ -106,16 +136,23 @@ export async function buildUpiQrDataUrl(url: string): Promise<string> {
   })
 }
 
-export async function listPaymentsForTenant(tenantId: string, opts?: { receiptId?: string; status?: string; take?: number }) {
-  return prisma.payment.findMany({
-    where: {
-      tenantId,
-      ...(opts?.receiptId ? { receiptId: opts.receiptId } : {}),
-      ...(opts?.status ? { status: opts.status } : {}),
-    },
-    orderBy: { createdAt: 'desc' },
-    take: opts?.take || 100,
-  })
+export async function listPaymentsForTenant(tenantId: string, opts?: { receiptId?: string; status?: string; take?: number; advocateId?: string }) {
+  // Defensive: if the Payment table hasn't been migrated yet, return [].
+  try {
+    return await prisma.payment.findMany({
+      where: {
+        tenantId,
+        ...(opts?.receiptId ? { receiptId: opts.receiptId } : {}),
+        ...(opts?.status ? { status: opts.status } : {}),
+        ...(opts?.advocateId ? { advocateId: opts.advocateId } : {}),
+      },
+      orderBy: { createdAt: 'desc' },
+      take: opts?.take || 100,
+    })
+  } catch (e) {
+    console.warn('[listPaymentsForTenant] payments table unavailable:', (e as any)?.message)
+    return []
+  }
 }
 
 export async function recordPayment(args: {

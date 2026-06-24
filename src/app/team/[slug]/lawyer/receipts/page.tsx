@@ -20,16 +20,21 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
 
   const advocateId = u.id as string
 
-  // EVERY query below scopes to (tenantId, advocateId). One lawyer cannot
-  // read another lawyer's cases, receipts, or payments by construction.
-  const [cases, receiptRows, advocate] = await Promise.all([
-    prisma.courtCase.findMany({
+  // EVERY query is wrapped — pre-migration tenants don't 500. Scoped to
+  // (tenantId, advocateId) so one lawyer can't see another's data.
+  let cases: any[] = []
+  let receiptRows: any[] = []
+  let advocate: { id: string; name: string; email: string } | null = null
+  try {
+    cases = await prisma.courtCase.findMany({
       where: { tenantId: tenant.id, advocateId, status: { in: ['ACTIVE', 'PENDING', 'ADJOURNED'] } },
       orderBy: { updatedAt: 'desc' },
       select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, clientPhone: true, status: true },
       take: 200,
-    }),
-    prisma.receipt.findMany({
+    })
+  } catch (e) { console.warn('[lawyer/receipts] cases skipped:', (e as any)?.message) }
+  try {
+    receiptRows = await prisma.receipt.findMany({
       where: { tenantId: tenant.id, advocateId },
       orderBy: { createdAt: 'desc' },
       take: 200,
@@ -37,9 +42,11 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
         id: true, number: true, clientName: true, clientEmail: true,
         total: true, currency: true, status: true, createdAt: true,
       },
-    }),
-    prisma.advocate.findUnique({ where: { id: advocateId }, select: { id: true, name: true, email: true } }),
-  ])
+    })
+  } catch (e) { console.warn('[lawyer/receipts] receipts skipped:', (e as any)?.message) }
+  try {
+    advocate = await prisma.advocate.findUnique({ where: { id: advocateId }, select: { id: true, name: true, email: true } })
+  } catch (e) { console.warn('[lawyer/receipts] advocate lookup skipped:', (e as any)?.message) }
 
   let payments: any[] = []
   try {

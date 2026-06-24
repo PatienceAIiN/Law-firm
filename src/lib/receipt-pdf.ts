@@ -114,16 +114,24 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
           note: `Receipt ${data.number}`,
           currency: data.currency,
         })
-        const qrPng = await buildUpiQrPng(url)
-        const qrImage = await pdf.embedPng(qrPng)
-        const qrSize = 110
-        page.drawImage(qrImage, { x: 40, y: y - qrSize, width: qrSize, height: qrSize })
-        text('Scan to pay with any UPI app', 160, y - 12, 9, bold, navy)
-        text(`UPI ID: ${cfg.upiVpa}`, 160, y - 28, 10, font, navy)
-        if (cfg.upiName) text(`Payee: ${cfg.upiName}`, 160, y - 42, 9, font, gray)
-        text(`Amount: ${money(data.total, data.currency)}`, 160, y - 58, 9, font, gray)
-        text(`Reference: ${data.number}`, 160, y - 72, 9, font, gray)
-        y -= qrSize + 12
+        const qrPng = await buildUpiQrPng(url).catch(() => null)
+        if (qrPng) {
+          const qrImage = await pdf.embedPng(qrPng)
+          const qrSize = 110
+          page.drawImage(qrImage, { x: 40, y: y - qrSize, width: qrSize, height: qrSize })
+          text('Scan to pay with any UPI app', 160, y - 12, 9, bold, navy)
+          text(`UPI ID: ${cfg.upiVpa}`, 160, y - 28, 10, font, navy)
+          if (cfg.upiName) text(`Payee: ${cfg.upiName}`, 160, y - 42, 9, font, gray)
+          text(`Amount: ${money(data.total, data.currency)}`, 160, y - 58, 9, font, gray)
+          text(`Reference: ${data.number}`, 160, y - 72, 9, font, gray)
+          y -= qrSize + 12
+        } else {
+          // QR lib missing — fall back to plain text UPI line.
+          text('Pay via UPI', 40, y, 9, bold, gray);                       y -= 14
+          text(`UPI ID: ${cfg.upiVpa}`, 40, y, 10);                        y -= 13
+          if (cfg.upiName) { text(`Payee: ${cfg.upiName}`, 40, y, 9);     y -= 13 }
+          text(`Reference: ${data.number}`, 40, y, 9, font, gray);        y -= 13
+        }
       } else if (pmKey === 'NEFT' && cfg.bankAccountNumber) {
         text('Bank transfer details', 40, y, 9, bold, gray)
         y -= 14

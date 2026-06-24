@@ -47,7 +47,8 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
     }
     start(async () => {
       try {
-        await createReceipt(slug, fd)
+        const r = await createReceipt(slug, fd)
+        if (!r.ok) { setError(r.error); return }
         setOpen(false)
         setItems([{ description: 'Legal services', qty: 1, rate: 0 }])
         setClientName(''); setClientEmail(''); setPaymentMethod('UPI')

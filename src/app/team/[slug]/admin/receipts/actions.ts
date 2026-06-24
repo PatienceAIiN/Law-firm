@@ -17,7 +17,11 @@ function nextReceiptNumber(tenantId: string) {
   return `R-${tenantId.slice(-4).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`
 }
 
-export async function createReceipt(slug: string, formData: FormData) {
+export async function createReceipt(
+  slug: string,
+  formData: FormData,
+): Promise<{ ok: true; receiptId: string } | { ok: false; error: string }> {
+ try {
   const { tenantId, name: createdByName } = await authed(slug)
   const clientName = (formData.get('clientName') as string)?.trim()
   const clientEmailRaw = (formData.get('clientEmail') as string)?.trim() || ''
@@ -44,12 +48,12 @@ export async function createReceipt(slug: string, formData: FormData) {
   if (lines.length === 0) {
     const description = (formData.get('description') as string)?.trim() || 'Legal services'
     const amount = parseFloat((formData.get('amount') as string) || '0')
-    if (!amount || isNaN(amount) || amount <= 0) throw new Error('Add at least one line item with a positive amount.')
+    if (!amount || isNaN(amount) || amount <= 0) return { ok: false, error: 'Add at least one line item with a positive amount.' }
     lines = [{ description, qty: 1, rate: amount }]
   }
-  if (!clientName) throw new Error('Client name is required')
+  if (!clientName) return { ok: false, error: 'Client name is required' }
   if (clientEmailRaw && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clientEmailRaw)) {
-    throw new Error('Enter a valid client email or leave it blank')
+    return { ok: false, error: 'Enter a valid client email or leave it blank' }
   }
 
   const enriched = lines.map((l) => ({ ...l, amount: +(l.qty * l.rate).toFixed(2) }))
@@ -78,12 +82,19 @@ export async function createReceipt(slug: string, formData: FormData) {
   }
 
   // If an email was supplied, generate the PDF and send it to the client.
+  // PDF / email failures must NOT abort the receipt creation — the row is
+  // already saved. We just log and continue.
   if (clientEmailRaw) {
     try { await emailReceipt(receipt) }
-    catch (err) { console.error('emailReceipt failed:', err) }
+    catch (err) { console.error('[createReceipt] emailReceipt failed:', err) }
   }
 
   revalidatePath(`/team/${slug}/admin/receipts`)
+  return { ok: true, receiptId: receipt.id }
+ } catch (e: any) {
+  console.error('[createReceipt] failed:', e)
+  return { ok: false, error: e?.message || 'Could not create the receipt. Try again.' }
+ }
 }
 
 export async function emailReceiptToClient(slug: string, id: string, overrideEmail?: string) {
