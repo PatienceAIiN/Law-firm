@@ -27,6 +27,8 @@ export async function updateBranding(slug: string, formData: FormData) {
     fontFamily: formData.get('fontFamily') as string,
     logoUrl,
     faviconUrl: logoUrl, // keep in sync — favicon mirrors the logo
+    homeCoverUrl: (formData.get('homeCoverUrl') as string) || '',
+    firmAddress: ((formData.get('firmAddress') as string) || '').trim(),
     siteTitle: formData.get('siteTitle') as string,
   }
 

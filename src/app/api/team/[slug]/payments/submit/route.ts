@@ -16,7 +16,11 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
   const receipt = await prisma.receipt.findFirst({ where: { id: receiptId, tenantId: tenant.id } })
   if (!receipt) return NextResponse.json({ error: 'Receipt not found in this workspace' }, { status: 404 })
   let screenshotUrl: string | undefined
-  if (file instanceof File && file.size > 0) screenshotUrl = await uploadFile(file)
+  if (file instanceof File && file.size > 0) {
+    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') return NextResponse.json({ error: 'Upload an image or PDF proof file' }, { status: 400 })
+    if (file.size > 10 * 1024 * 1024) return NextResponse.json({ error: 'Proof file must be 10 MB or less' }, { status: 400 })
+    screenshotUrl = await uploadFile(file)
+  }
   const payment = await prisma.payment.create({
     data: {
       tenantId: tenant.id,
@@ -35,5 +39,5 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ slu
     } as any,
   })
   await prisma.paymentLog.create({ data: { paymentId: payment.id, tenantId: tenant.id, actorType: 'CLIENT', actorName: receipt.clientName, action: 'CLIENT_SUBMITTED_PROOF', toStatus: 'RECEIVED', details: JSON.stringify({ receiptId: receipt.id, transactionNumber, screenshotUrl }) } as any }).catch(() => null)
-  return NextResponse.json({ ok: true, paymentId: payment.id })
+  return NextResponse.redirect(new URL(`/team/${slug}/payment-done/${receipt.id}?submitted=1`, req.url), { status: 303 })
 }

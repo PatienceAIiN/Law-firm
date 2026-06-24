@@ -90,8 +90,8 @@ export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: str
       </div>
 
       <div className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#11151f] sm:grid-cols-[1fr_180px]">
-        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search receipt # or case #" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
-        <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search receipt # or case #" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/15 dark:bg-[#1a2030] dark:text-white dark:placeholder:text-slate-500" />
+        <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none placeholder:text-slate-400 focus:border-primary focus:ring-2 focus:ring-primary/15 dark:border-white/15 dark:bg-[#1a2030] dark:text-white dark:placeholder:text-slate-500" />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
