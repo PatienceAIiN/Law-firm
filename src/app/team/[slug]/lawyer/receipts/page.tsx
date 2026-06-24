@@ -40,7 +40,7 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
       take: 200,
       select: {
         id: true, number: true, clientName: true, clientEmail: true,
-        total: true, currency: true, status: true, createdAt: true,
+        total: true, currency: true, status: true, createdAt: true, caseNumber: true,
       },
     })
   } catch (e) { console.warn('[lawyer/receipts] receipts skipped:', (e as any)?.message) }
@@ -75,7 +75,7 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
         receipts={receiptRows.map((r) => ({
           id: r.id, number: r.number, clientName: r.clientName, clientEmail: r.clientEmail,
           total: r.total, currency: r.currency, status: r.status,
-          createdAt: r.createdAt.toISOString(),
+          createdAt: r.createdAt.toISOString(), caseNumber: r.caseNumber,
         }))}
       />
 

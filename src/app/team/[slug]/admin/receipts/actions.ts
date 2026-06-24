@@ -10,11 +10,20 @@ async function authed(slug: string) {
   const session = await getServerSession(tenantAdminAuthOptions)
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) throw new Error('Unauthorized')
-  return { tenantId: u.tenantId as string, name: (session!.user!.name || (u.email as string)) as string }
+  const tenant = await prisma.tenant.findUnique({ where: { id: u.tenantId as string }, select: { name: true } })
+  return { tenantId: u.tenantId as string, workspaceName: tenant?.name || slug, name: (session!.user!.name || (u.email as string)) as string }
 }
 
-function nextReceiptNumber(tenantId: string) {
-  return `R-${tenantId.slice(-4).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`
+function receiptPrefix(workspaceName: string) {
+  return workspaceName.replace(/[^a-z0-9]/gi, '').slice(0, 12).toUpperCase() || 'WORKSPACE'
+}
+
+function randomCode() {
+  return Math.random().toString(36).replace(/[^a-z0-9]/gi, '').slice(2, 6).toUpperCase().padEnd(4, '0')
+}
+
+function nextReceiptNumber(workspaceName: string) {
+  return `${receiptPrefix(workspaceName)}-${randomCode()}`
 }
 
 export async function createReceipt(
@@ -22,7 +31,7 @@ export async function createReceipt(
   formData: FormData,
 ): Promise<{ ok: true; receiptId: string } | { ok: false; error: string }> {
  try {
-  const { tenantId, name: createdByName } = await authed(slug)
+  const { tenantId, workspaceName, name: createdByName } = await authed(slug)
   const clientName = (formData.get('clientName') as string)?.trim()
   const clientEmailRaw = (formData.get('clientEmail') as string)?.trim() || ''
   const paymentMethodRaw = ((formData.get('paymentMethod') as string) || 'OTHER').toUpperCase()
@@ -54,14 +63,14 @@ export async function createReceipt(
             qty: Math.max(0, Number(it?.qty) || 0),
             rate: Math.max(0, Number(it?.rate) || 0),
           }))
-          .filter((it) => it.qty > 0 && it.rate > 0)
+          .filter((it) => it.description || it.qty > 0 || it.rate > 0)
       }
     } catch {}
   }
   if (lines.length === 0) {
     const description = (formData.get('description') as string)?.trim() || 'Legal services'
     const amount = parseFloat((formData.get('amount') as string) || '0')
-    if (!amount || isNaN(amount) || amount <= 0) return { ok: false, error: 'Add at least one line item with a positive amount.' }
+    if (isNaN(amount) || amount < 0) return { ok: false, error: 'Amount cannot be negative.' }
     lines = [{ description, qty: 1, rate: amount }]
   }
   if (!clientName) return { ok: false, error: 'Client name is required' }
@@ -74,7 +83,7 @@ export async function createReceipt(
   const total = subtotal
 
   const baseData: any = {
-    number: nextReceiptNumber(tenantId),
+    number: nextReceiptNumber(workspaceName),
     clientName,
     clientEmail: clientEmailRaw,
     createdByName,

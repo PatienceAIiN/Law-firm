@@ -23,17 +23,22 @@ export default async function TenantAdminMailPage({ params }: { params: Promise<
   if (!u?.id || u.tenantSlug !== slug) redirect(`/team/${slug}/admin/login`)
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
   
-  const cases = await prisma.courtCase.findMany({
-    where: { tenantId: tenant.id },
-    select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, nextHearingDate: true },
-    orderBy: { createdAt: 'desc' }
-  })
-  
-  const receipts = await prisma.receipt.findMany({
-    where: { tenantId: tenant.id },
-    select: { id: true, number: true, clientName: true },
-    orderBy: { createdAt: 'desc' }
-  })
+  let cases: any[] = []
+  let receipts: any[] = []
+  try {
+    cases = await prisma.courtCase.findMany({
+      where: { tenantId: tenant.id },
+      select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, nextHearingDate: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) { console.warn('[admin/mail] cases skipped:', (e as any)?.message) }
+  try {
+    receipts = await prisma.receipt.findMany({
+      where: { tenantId: tenant.id },
+      select: { id: true, number: true, clientName: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) { console.warn('[admin/mail] receipts skipped:', (e as any)?.message) }
 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>

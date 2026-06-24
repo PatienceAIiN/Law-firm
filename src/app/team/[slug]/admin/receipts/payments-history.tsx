@@ -59,11 +59,18 @@ export function PaymentsHistory({ slug, payments }: { slug: string; payments: Pa
     setOpen((current) => (current?.id === payment.id ? { ...current, ...payment } : current))
   }
   const filtered = rows.filter((p) => (tab === 'all' ? true : p.status === tab || (tab === 'PENDING' && p.status === 'IN_PROGRESS')))
+  const updateRowStatus = async (payment: Payment, status: string) => {
+    const res = await fetch(`/api/payments/${payment.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) { setOpen(payment); return }
+    if (data.payment) replacePayment(data.payment)
+  }
+
 
   return (
     <section className="mt-10">
       <h3 className="text-lg font-bold text-primary dark:text-white">Payment history</h3>
-      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Razorpay collections for this workspace. Click any row to view details or refund.</p>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Collections for this workspace. Use the status selector on each row, or click a row to view proof/refund details.</p>
 
       <nav className="mt-4 flex flex-wrap gap-1 rounded-xl bg-slate-100 p-1 dark:bg-white/5">
         {TABS.map((t) => (
@@ -105,7 +112,28 @@ export function PaymentsHistory({ slug, payments }: { slug: string; payments: Pa
                     </p>
                   </div>
                 </div>
-                <span className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${statusBadge(p.status)}`}>{p.status}</span>
+                <div className="flex flex-shrink-0 items-center gap-2">
+                  <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${statusBadge(p.status)}`}>{p.status}</span>
+                  <select
+                    value=""
+                    aria-label={`Change payment status for ${p.payerName || p.id}`}
+                    onClick={(e) => e.stopPropagation()}
+                    onChange={(e) => {
+                      e.stopPropagation()
+                      const next = e.target.value
+                      e.currentTarget.value = ''
+                      if (next) updateRowStatus(p, next)
+                    }}
+                    className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
+                  >
+                    <option value="">Status…</option>
+                    <option value="RECEIVED">Received</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="RECONCILIATION">Reconciliation</option>
+                    <option value="COMPLETED">Completed / verified</option>
+                    <option value="FAILED">Failed</option>
+                  </select>
+                </div>
               </li>
             ))}
           </ul>

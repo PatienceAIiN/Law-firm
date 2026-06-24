@@ -1,5 +1,7 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 import { buildUpiUrl, buildUpiQrPng, getPaymentConfig } from './payments'
+import { prisma } from './prisma'
+import { getTenantSettingJson } from './tenant-settings'
 
 export type ReceiptItem = { description: string; qty: number; rate: number; amount: number }
 
@@ -32,6 +34,8 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 }
 
 const FIRM_NAME = process.env.BREVO_SENDER_NAME || 'Law Firm'
+const BARRISTER_NAME = 'Barrister'
+const BARRISTER_URL = 'https://patienceai.in'
 
 function money(v: number, currency: string) {
   const symbol = currency === 'INR' ? 'Rs. ' : currency === 'USD' ? '$' : `${currency} `
@@ -39,6 +43,13 @@ function money(v: number, currency: string) {
 }
 
 export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array> {
+  const tenant = data.tenantId
+    ? await prisma.tenant.findUnique({ where: { id: data.tenantId }, select: { name: true, slug: true } }).catch(() => null)
+    : null
+  const brand = data.tenantId ? await getTenantSettingJson<any>(data.tenantId, 'brand_config').catch(() => null) : null
+  const theme = data.tenantId ? await getTenantSettingJson<any>(data.tenantId, 'site_theme').catch(() => null) : null
+  const workspaceName = brand?.firm_name || brand?.firm_full_name || theme?.siteTitle || tenant?.name || FIRM_NAME
+  const brandText = `${BARRISTER_NAME} | ${workspaceName}`
   const pdf = await PDFDocument.create()
   const page = pdf.addPage([595, 842]) // A4
   const font = await pdf.embedFont(StandardFonts.Helvetica)
@@ -51,17 +62,22 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
   const text = (t: string, x: number, yy: number, size = 10, f = font, color = rgb(0, 0, 0)) =>
     page.drawText(t, { x, y: yy, size, font: f, color })
 
-  // Header
-  page.drawRectangle({ x: 0, y: 792, width: 595, height: 50, color: navy })
-  text(FIRM_NAME, 40, 810, 18, bold, rgb(1, 1, 1))
-  text('PAYMENT RECEIPT', 420, 810, 12, bold, gold)
+  // Enterprise header
+  page.drawRectangle({ x: 0, y: 764, width: 595, height: 78, color: navy })
+  page.drawRectangle({ x: 40, y: 795, width: 28, height: 28, color: gold })
+  text('B', 49, 803, 16, bold, navy)
+  text(brandText.slice(0, 58), 76, 809, 16, bold, rgb(1, 1, 1))
+  text('PAYMENT RECEIPT', 430, 812, 12, bold, gold)
+  text('Professional fee receipt / client copy', 430, 796, 8, font, rgb(0.83, 0.87, 0.94))
 
-  y = 760
-  text(`Receipt No: ${data.number}`, 40, y, 10, bold)
-  text(`Date: ${new Date(data.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`, 400, y, 10)
-  y -= 30
+  y = 738
+  page.drawRectangle({ x: 40, y: y - 12, width: 515, height: 42, color: rgb(0.98, 0.96, 0.91) })
+  text(`Receipt No: ${data.number}`, 52, y + 8, 10, bold, navy)
+  text(`Workspace: ${workspaceName}`.slice(0, 72), 52, y - 7, 8, font, gray)
+  text(`Date: ${new Date(data.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}`, 390, y + 8, 10, bold, navy)
+  y -= 56
 
-  text('Billed To', 40, y, 9, bold, gray)
+  text('Client details', 40, y, 9, bold, gray)
   y -= 16
   text(data.clientName, 40, y, 11, bold)
   y -= 14
@@ -170,7 +186,6 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
 
   if (data.id && data.tenantId) {
     const base = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || '').replace(/\/$/, '')
-    const tenant = await (await import('./prisma')).prisma.tenant.findUnique({ where: { id: data.tenantId }, select: { slug: true } }).catch(() => null)
     if (base && tenant?.slug) {
       const proofUrl = `${base}/team/${tenant.slug}/payment-done/${data.id}`
       text('Submit UTR / transaction number and payment screenshot:', 40, y, 9, bold, gray)
@@ -187,8 +202,11 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
     y -= 30
   }
 
-  text(`Issued by: ${data.createdByName}`, 40, 70, 9, font, gray)
-  text('This is a computer-generated receipt.', 40, 56, 8, font, gray)
+  page.drawRectangle({ x: 0, y: 0, width: 595, height: 46, color: navy })
+  text(`Issued by: ${data.createdByName}`, 40, 62, 9, font, gray)
+  text('This is a computer-generated receipt.', 40, 50, 8, font, gray)
+  text('Barrister by Patience AI', 40, 18, 10, bold, gold)
+  text(BARRISTER_URL, 180, 18, 9, font, rgb(0.83, 0.87, 0.94))
 
   return pdf.save()
 }

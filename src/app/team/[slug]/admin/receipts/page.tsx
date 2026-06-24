@@ -32,7 +32,7 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
       select: {
         id: true, number: true, clientName: true, clientEmail: true,
         total: true, currency: true, status: true, createdAt: true,
-        advocateId: true,
+        advocateId: true, caseNumber: true,
       },
     })
   } catch (e) { console.error('[receipts/page] receipts query failed:', (e as any)?.message) }
@@ -90,7 +90,7 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
           id: r.id, number: r.number, clientName: r.clientName, clientEmail: r.clientEmail,
           total: r.total, currency: r.currency, status: r.status,
           createdAt: r.createdAt.toISOString(),
-          advocateId: r.advocateId,
+          advocateId: r.advocateId, caseNumber: r.caseNumber,
           advocateName: r.advocateId ? advocateName[r.advocateId] || null : null,
         }))}
       />
