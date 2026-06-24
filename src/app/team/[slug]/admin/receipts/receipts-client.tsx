@@ -2,15 +2,16 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon } from 'lucide-react'
+import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon, Briefcase } from 'lucide-react'
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 import { DeleteButton } from '@/components/ui/delete-button'
 
 type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string; advocateId?: string | null; advocateName?: string | null }
+type Case = { id: string; caseNumber: string; title: string; clientName: string; clientEmail: string | null; advocateName?: string | null }
 
 type Item = { description: string; qty: number; rate: number }
 
-export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipts: R[] }) {
+export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: string; cases?: Case[]; receipts: R[] }) {
   const [pending, start] = useTransition()
   const router = useRouter()
   const [open, setOpen] = useState(false)
@@ -19,6 +20,16 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
   const [clientName, setClientName] = useState('')
   const [clientEmail, setClientEmail] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('UPI')
+  const [caseId, setCaseId] = useState<string>('')
+
+  const onPickCase = (id: string) => {
+    setCaseId(id)
+    const c = cases.find((x) => x.id === id)
+    if (c) {
+      setClientName(c.clientName)
+      if (c.clientEmail) setClientEmail(c.clientEmail)
+    }
+  }
 
   const addItem = () => setItems((arr) => [...arr, { description: '', qty: 1, rate: 0 }])
   const removeItem = (i: number) => setItems((arr) => arr.filter((_, idx) => idx !== i))
@@ -34,6 +45,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
     fd.set('clientName', clientName)
     fd.set('clientEmail', clientEmail)
     fd.set('paymentMethod', paymentMethod)
+    if (caseId) fd.set('caseId', caseId)
     fd.set('itemsJson', JSON.stringify(items.map((it) => ({
       description: it.description.trim() || 'Item',
       qty: Number(it.qty) || 0,
@@ -51,7 +63,7 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
         if (!r.ok) { setError(r.error); return }
         setOpen(false)
         setItems([{ description: 'Legal services', qty: 1, rate: 0 }])
-        setClientName(''); setClientEmail(''); setPaymentMethod('UPI')
+        setClientName(''); setClientEmail(''); setPaymentMethod('UPI'); setCaseId('')
         router.refresh()
       } catch (err: any) { setError(err.message || 'Failed') }
     })
@@ -145,6 +157,26 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
           <div className="max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f]" onClick={(e) => e.stopPropagation()}>
             <div className="mb-4 flex items-center gap-2"><ReceiptText className="h-5 w-5 text-primary dark:text-white" /><h3 className="text-lg font-bold text-slate-900 dark:text-white">New receipt</h3></div>
             <form onSubmit={onCreate} className="space-y-3 text-sm">
+              <label className="block text-sm">
+                <span className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-widest text-slate-500">
+                  <Briefcase className="h-3 w-3" /> Link to a case (optional)
+                </span>
+                <select
+                  value={caseId}
+                  onChange={(e) => onPickCase(e.target.value)}
+                  className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
+                >
+                  <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="">No case — standalone receipt</option>
+                  {cases.map((c) => (
+                    <option key={c.id} className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value={c.id}>
+                      {c.caseNumber} — {c.title.slice(0, 48)} ({c.clientName}){c.advocateName ? ` · ${c.advocateName}` : ''}
+                    </option>
+                  ))}
+                </select>
+                <span className="mt-1 block text-[11px] text-slate-500 dark:text-slate-400">
+                  Firm-wide. Linking a case pre-fills client info and prints the case number on the PDF.
+                </span>
+              </label>
               <input value={clientName} onChange={(e) => setClientName(e.target.value)} required placeholder="Client name" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               <input value={clientEmail} onChange={(e) => setClientEmail(e.target.value)} type="email" placeholder="Client email (optional — PDF will be emailed if filled)" className="w-full rounded-lg border border-slate-300 px-3 py-2 dark:border-white/15 dark:bg-white/5 dark:text-white" />
               <label className="block text-xs font-semibold uppercase tracking-widest text-slate-500">Payment method</label>

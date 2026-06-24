@@ -124,7 +124,8 @@
       "Bash(sed -i 's/Senior Advocate Law Firm/Lawyer/g; s/Senior Advocate/Lawyer/g' /home/harsh/Downloads/Law-firm/src/app/admin/login/page.tsx /home/harsh/Downloads/Law-firm/src/app/api/admin/cases/[id]/send-email/route.ts /home/harsh/Downloads/Law-firm/src/app/api/cases/[id]/send-reminder/route.ts /home/harsh/Downloads/Law-firm/src/components/pages/about/hero-section.tsx /home/harsh/Downloads/Law-firm/src/components/pages/about/team-section.tsx /home/harsh/Downloads/Law-firm/src/components/sections/about-section.tsx /home/harsh/Downloads/Law-firm/src/lib/site-content-data.ts)",
       "Bash(sed -i 's/Title \\(e.g. Senior Advocate\\)/Title \\(e.g. Lawyer\\)/g' /home/harsh/Downloads/Law-firm/src/app/team/[slug]/admin/tenant-admin-client.tsx /home/harsh/Downloads/Law-firm/src/app/team/[slug]/admin/lawyers/lawyers-client.tsx)",
       "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=admin-portal-guide.pdf --no-pdf-header-footer \"file://$\\(pwd\\)/admin-portal-guide.html\")",
-      "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=lawyer-portal-guide.pdf --no-pdf-header-footer \"file://$\\(pwd\\)/lawyer-portal-guide.html\")"
+      "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=lawyer-portal-guide.pdf --no-pdf-header-footer \"file://$\\(pwd\\)/lawyer-portal-guide.html\")",
+      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --accept-data-loss=false --skip-generate)"
     ]
   }
 }

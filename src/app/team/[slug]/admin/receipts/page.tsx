@@ -56,11 +56,36 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
   let payments: any[] = []
   try { payments = await listPaymentsForTenant(tenant.id, { take: 100 }) } catch (e) { console.warn('[receipts/page] payments skipped:', (e as any)?.message) }
 
+  // FIRM-WIDE case dropdown — admin can attach any case in the workspace.
+  let cases: any[] = []
+  try {
+    cases = await prisma.courtCase.findMany({
+      where: { tenantId: tenant.id, status: { in: ['ACTIVE', 'PENDING', 'ADJOURNED'] } },
+      orderBy: { updatedAt: 'desc' },
+      select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, advocateId: true },
+      take: 500,
+    })
+  } catch (e) { console.warn('[receipts/page] cases skipped:', (e as any)?.message) }
+  // Attach the lawyer name to each case so the dropdown can show it.
+  const caseAdvIds = Array.from(new Set(cases.map((c: any) => c.advocateId).filter(Boolean))) as string[]
+  const caseAdvocates = caseAdvIds.length
+    ? await prisma.advocate.findMany({ where: { id: { in: caseAdvIds }, tenantId: tenant.id }, select: { id: true, name: true } }).catch(() => [])
+    : []
+  const caseAdvocateName: Record<string, string> = Object.fromEntries(caseAdvocates.map((a: any) => [a.id, a.name]))
+
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
       <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Receipts</h2>
       <TenantReceiptsClient
         slug={slug}
+        cases={cases.map((c: any) => ({
+          id: c.id,
+          caseNumber: c.caseNumber,
+          title: c.title,
+          clientName: c.clientName,
+          clientEmail: c.clientEmail,
+          advocateName: c.advocateId ? caseAdvocateName[c.advocateId] || null : null,
+        }))}
         receipts={receipts.map((r) => ({
           id: r.id, number: r.number, clientName: r.clientName, clientEmail: r.clientEmail,
           total: r.total, currency: r.currency, status: r.status,

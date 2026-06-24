@@ -27,6 +27,19 @@ export async function createReceipt(
   const clientEmailRaw = (formData.get('clientEmail') as string)?.trim() || ''
   const paymentMethodRaw = ((formData.get('paymentMethod') as string) || 'OTHER').toUpperCase()
   const paymentMethod = ['UPI', 'NEFT', 'CASH', 'OTHER'].includes(paymentMethodRaw) ? paymentMethodRaw : 'OTHER'
+  const caseId = ((formData.get('caseId') as string) || '').trim() || null
+
+  // Admin can link ANY case in the firm (not lawyer-scoped). Still tenantId-
+  // scoped so one workspace can't link another's case.
+  let caseSnap: { caseNumber: string; title: string; advocateId: string | null } | null = null
+  if (caseId) {
+    const c = await prisma.courtCase.findFirst({
+      where: { id: caseId, tenantId },
+      select: { caseNumber: true, title: true, advocateId: true },
+    })
+    if (!c) return { ok: false, error: 'That case is not in this workspace.' }
+    caseSnap = c
+  }
 
   // Prefer the new multi-line JSON payload; fall back to single description+amount.
   let lines: { description: string; qty: number; rate: number }[] = []
@@ -60,7 +73,7 @@ export async function createReceipt(
   const subtotal = +enriched.reduce((s, l) => s + l.amount, 0).toFixed(2)
   const total = subtotal
 
-  const baseData = {
+  const baseData: any = {
     number: nextReceiptNumber(tenantId),
     clientName,
     clientEmail: clientEmailRaw,
@@ -72,11 +85,24 @@ export async function createReceipt(
     sentAt: clientEmailRaw ? new Date() : undefined,
     tenantId,
   }
+  // If a case is selected, copy the lawyer assignment + snapshot the case
+  // info onto the receipt row + PDF.
+  if (caseSnap) {
+    if (caseSnap.advocateId) baseData.advocateId = caseSnap.advocateId
+  }
+
   let receipt
   try {
-    receipt = await prisma.receipt.create({ data: { ...baseData, paymentMethod } as any })
+    const full: any = { ...baseData, paymentMethod }
+    if (caseId && caseSnap) {
+      full.caseId = caseId
+      full.caseNumber = caseSnap.caseNumber
+      full.caseTitle = caseSnap.title
+    }
+    receipt = await prisma.receipt.create({ data: full })
   } catch (e: any) {
-    if (/paymentMethod/i.test(String(e?.message))) {
+    if (/paymentMethod|caseId|caseNumber|caseTitle/i.test(String(e?.message))) {
+      // Retry without the new columns for tenants whose schema is behind.
       receipt = await prisma.receipt.create({ data: baseData })
     } else throw e
   }

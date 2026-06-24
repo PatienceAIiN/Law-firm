@@ -17,6 +17,9 @@ export type ReceiptData = {
   notes?: string | null
   paymentMethod?: string | null
   tenantId?: string | null
+  caseId?: string | null
+  caseNumber?: string | null
+  caseTitle?: string | null
   createdAt: Date | string
 }
 
@@ -62,7 +65,24 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
   text(data.clientName, 40, y, 11, bold)
   y -= 14
   text(data.clientEmail, 40, y, 10, font, gray)
-  y -= 30
+  y -= 16
+
+  // Case reference (when the receipt is linked to a CourtCase).
+  if (data.caseNumber || data.caseTitle) {
+    text('Case', 40, y, 9, bold, gray)
+    if (data.caseNumber) {
+      text(data.caseNumber, 80, y, 9, bold, navy)
+    }
+    y -= 13
+    if (data.caseTitle) {
+      // Truncate to one line so wide titles don't overflow into the items
+      // table below.
+      text(data.caseTitle.slice(0, 80), 40, y, 9, font, gray)
+      y -= 14
+    }
+  }
+
+  y -= 14
 
   // Table header
   page.drawRectangle({ x: 40, y: y - 4, width: 515, height: 22, color: rgb(0.96, 0.95, 0.92) })

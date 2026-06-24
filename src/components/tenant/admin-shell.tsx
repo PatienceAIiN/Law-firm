@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
@@ -43,7 +43,11 @@ export function TenantAdminShell({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const tabs = TABS(tenant.slug)
+  // Memo so the array identity is stable across renders — the previous
+  // version made the prefetch effect fire on EVERY render and locked up
+  // the Account tab (PaymentSettingsCard re-renders frequently).
+  const tabs = useMemo(() => TABS(tenant.slug), [tenant.slug])
+
   // Optimistic target — the tab the user just clicked. The highlight moves
   // instantly while Next routes; without this the click feels "stuck".
   const [pendingHref, setPendingHref] = useState<string | null>(null)
@@ -55,11 +59,11 @@ export function TenantAdminShell({
     if (pendingHref && pathname === pendingHref) setPendingHref(null)
   }, [pathname, pendingHref])
 
+  // Warm every tab route on mount. Now keyed only on slug so this runs once
+  // per workspace switch, not on every component re-render.
   useEffect(() => {
-    // Warm every tab route on mount so the next click is instant. Cheap and
-    // safe — Next dedupes prefetches and skips already-prefetched routes.
     tabs.forEach((t) => router.prefetch(t.href))
-  }, [router, tabs])
+  }, [tabs, router])
 
   useEffect(() => {
     const currentTabs = TABS(tenant.slug)
