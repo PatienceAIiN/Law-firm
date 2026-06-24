@@ -4,6 +4,7 @@ import { buildUpiUrl, buildUpiQrPng, getPaymentConfig } from './payments'
 export type ReceiptItem = { description: string; qty: number; rate: number; amount: number }
 
 export type ReceiptData = {
+  id?: string
   number: string
   clientName: string
   clientEmail: string
@@ -164,6 +165,18 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
     } catch (e) {
       // Non-fatal — receipt still renders without payment block.
       console.warn('[receipt-pdf] payment block skipped:', (e as any)?.message)
+    }
+  }
+
+  if (data.id && data.tenantId) {
+    const base = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || '').replace(/\/$/, '')
+    const tenant = await (await import('./prisma')).prisma.tenant.findUnique({ where: { id: data.tenantId }, select: { slug: true } }).catch(() => null)
+    if (base && tenant?.slug) {
+      const proofUrl = `${base}/team/${tenant.slug}/payment-done/${data.id}`
+      text('Submit UTR / transaction number and payment screenshot:', 40, y, 9, bold, gray)
+      y -= 14
+      text(proofUrl.slice(0, 95), 40, y, 8, font, navy)
+      y -= 22
     }
   }
 

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
@@ -43,6 +43,8 @@ export function TenantAdminShell({
 }) {
   const pathname = usePathname()
   const router = useRouter()
+  const [optimisticPath, setOptimisticPath] = useState<string | null>(null)
+  const [, startTransition] = useTransition()
   // Memo so the array identity is stable across renders.
   const tabs = useMemo(() => TABS(tenant.slug), [tenant.slug])
 
@@ -55,6 +57,10 @@ export function TenantAdminShell({
     prefetchedRef.current = tenant.slug
     tabs.forEach((t) => router.prefetch(t.href))
   }, [tabs, router, tenant.slug])
+
+  useEffect(() => {
+    setOptimisticPath(null)
+  }, [pathname])
 
   useEffect(() => {
     const currentTabs = TABS(tenant.slug)
@@ -98,14 +104,18 @@ export function TenantAdminShell({
         <nav className="relative border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
           <TabsScroller>
             {tabs.map((t) => {
-              const active = t.exact ? pathname === t.href : pathname.startsWith(t.href)
+              const currentPath = optimisticPath || pathname
+              const active = t.exact ? currentPath === t.href : currentPath.startsWith(t.href)
               const Icon = t.icon
               return (
                 <Link
                   key={t.href}
                   href={t.href}
                   prefetch={true}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
+                  onMouseEnter={() => router.prefetch(t.href)}
+                  onFocus={() => router.prefetch(t.href)}
+                  onClick={() => startTransition(() => setOptimisticPath(t.href))}
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all duration-150 active:scale-[0.98] ${
                     active
                       ? 'bg-primary text-white shadow'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
@@ -164,7 +174,7 @@ function TabsScroller({ children }: { children: React.ReactNode }) {
         type="button"
         aria-label="Scroll tabs left"
         onClick={() => nudge(-1)}
-        className={`absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasLeft ? 'opacity-100 animate-pulse' : 'pointer-events-none opacity-0'}`}
+        className={`absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasLeft ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
       >
         <ChevronLeft className="h-4 w-4" />
       </button>
@@ -178,7 +188,7 @@ function TabsScroller({ children }: { children: React.ReactNode }) {
         type="button"
         aria-label="Scroll tabs right"
         onClick={() => nudge(1)}
-        className={`absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasRight ? 'opacity-100 animate-pulse' : 'pointer-events-none opacity-0'}`}
+        className={`absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasRight ? 'opacity-100' : 'pointer-events-none opacity-0'}`}
       >
         <ChevronRight className="h-4 w-4" />
       </button>
