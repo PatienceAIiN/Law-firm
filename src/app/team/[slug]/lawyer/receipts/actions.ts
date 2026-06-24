@@ -12,20 +12,30 @@ async function authed(slug: string) {
   const session = await getServerSession(tenantLawyerAuthOptions)
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) throw new Error('Unauthorized')
+  const tenant = await prisma.tenant.findUnique({ where: { id: u.tenantId as string }, select: { name: true } })
   return {
     tenantId: u.tenantId as string,
+    workspaceName: tenant?.name || slug,
     advocateId: u.id as string,
     createdByName: (session!.user!.name || u.email) as string,
   }
 }
 
-function nextReceiptNumber(tenantId: string) {
-  return `R-${tenantId.slice(-4).toUpperCase()}-${Date.now().toString(36).toUpperCase()}`
+function receiptPrefix(workspaceName: string) {
+  return workspaceName.replace(/[^a-z0-9]/gi, '').slice(0, 12).toUpperCase() || 'WORKSPACE'
+}
+
+function randomCode() {
+  return Math.random().toString(36).replace(/[^a-z0-9]/gi, '').slice(2, 6).toUpperCase().padEnd(4, '0')
+}
+
+function nextReceiptNumber(workspaceName: string) {
+  return `${receiptPrefix(workspaceName)}-${randomCode()}`
 }
 
 export async function createLawyerReceipt(slug: string, formData: FormData): Promise<Result> {
   try {
-    const { tenantId, advocateId, createdByName } = await authed(slug)
+    const { tenantId, workspaceName, advocateId, createdByName } = await authed(slug)
     const clientName = ((formData.get('clientName') as string) || '').trim()
     const clientEmail = ((formData.get('clientEmail') as string) || '').trim()
     const caseId = ((formData.get('caseId') as string) || '').trim() || null
@@ -56,11 +66,11 @@ export async function createLawyerReceipt(slug: string, formData: FormData): Pro
               rate: Math.max(0, Number(it?.rate) || 0),
               amount: 0,
             }))
-            .filter((it) => it.qty > 0 && it.rate > 0)
+            .filter((it) => it.description || it.qty > 0 || it.rate > 0)
         }
       } catch {}
     }
-    if (lines.length === 0) return { ok: false, error: 'Add at least one line item with a positive amount.' }
+    if (lines.length === 0) return { ok: false, error: 'Add at least one line item.' }
     if (!clientName) return { ok: false, error: 'Client name is required' }
     if (clientEmail && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(clientEmail)) {
       return { ok: false, error: 'Enter a valid client email or leave it blank' }
@@ -71,7 +81,7 @@ export async function createLawyerReceipt(slug: string, formData: FormData): Pro
     const total = subtotal
 
     const baseData: any = {
-      number: nextReceiptNumber(tenantId),
+      number: nextReceiptNumber(workspaceName),
       clientName,
       clientEmail,
       createdByName,

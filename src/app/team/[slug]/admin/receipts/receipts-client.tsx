@@ -6,7 +6,7 @@ import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon, Bri
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 import { DeleteButton } from '@/components/ui/delete-button'
 
-type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string; advocateId?: string | null; advocateName?: string | null }
+type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string; advocateId?: string | null; advocateName?: string | null; caseNumber?: string | null }
 type Case = { id: string; caseNumber: string; title: string; clientName: string; clientEmail: string | null; advocateName?: string | null }
 
 type Item = { description: string; qty: number; rate: number }
@@ -21,6 +21,8 @@ export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: str
   const [clientEmail, setClientEmail] = useState('')
   const [paymentMethod, setPaymentMethod] = useState('UPI')
   const [caseId, setCaseId] = useState<string>('')
+  const [query, setQuery] = useState('')
+  const [date, setDate] = useState('')
 
   const onPickCase = (id: string) => {
     setCaseId(id)
@@ -36,6 +38,12 @@ export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: str
   const updateItem = (i: number, patch: Partial<Item>) =>
     setItems((arr) => arr.map((it, idx) => (idx === i ? { ...it, ...patch } : it)))
   const total = items.reduce((s, it) => s + (Number(it.qty) || 0) * (Number(it.rate) || 0), 0)
+  const filteredReceipts = receipts.filter((r) => {
+    const q = query.trim().toLowerCase()
+    const matchesQuery = !q || r.number.toLowerCase().includes(q) || (r.caseNumber || '').toLowerCase().includes(q)
+    const matchesDate = !date || r.createdAt.slice(0, 10) === date
+    return matchesQuery && matchesDate
+  })
 
   const onCreate = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -72,10 +80,18 @@ export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: str
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-slate-500">{receipts.length} receipt{receipts.length === 1 ? '' : 's'}</p>
+        <div>
+          <p className="text-sm text-slate-500">{filteredReceipts.length} of {receipts.length} receipt{receipts.length === 1 ? '' : 's'}</p>
+          <p className="text-xs text-slate-400">Search by receipt number or case number.</p>
+        </div>
         <button onClick={() => setOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent">
           <Plus className="h-3.5 w-3.5" /> New receipt
         </button>
+      </div>
+
+      <div className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-3 shadow-sm dark:border-white/10 dark:bg-[#11151f] sm:grid-cols-[1fr_180px]">
+        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search receipt # or case #" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
+        <input value={date} onChange={(e) => setDate(e.target.value)} type="date" className="rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-white/5 dark:text-white" />
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#11151f]">
@@ -94,9 +110,9 @@ export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: str
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 dark:divide-white/10">
-              {receipts.map((r) => (
+              {filteredReceipts.map((r) => (
                 <tr key={r.id}>
-                  <td className="px-3 py-2 font-mono text-xs">{r.number}</td>
+                  <td className="px-3 py-2 font-mono text-xs">{r.number}{r.caseNumber ? <div className="mt-1 font-sans text-[11px] text-slate-500">Case {r.caseNumber}</div> : null}</td>
                   <td className="px-3 py-2 text-slate-700 dark:text-slate-200">
                     <div className="flex flex-wrap items-center gap-1.5">
                       {r.clientName}

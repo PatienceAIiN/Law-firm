@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Mail, Inbox, Send, Trash2, RefreshCw, Loader2, Search, X, Plus,
-  Star, AlertTriangle, Plug, ArrowLeft, Paperclip, ExternalLink,
+  Star, AlertTriangle, Plug, Paperclip, ExternalLink,
 } from 'lucide-react'
 
 type Status = { configured: boolean; connected: boolean; email: string | null; redirectUri?: string }
@@ -28,8 +28,8 @@ type ReceiptOption = { id: string; number: string; clientName: string }
 export function MailClient({ 
   basePath = '/api/admin/mail', 
   fullScreen = false,
-  cases = [],
-  receipts = [],
+  cases: rawCases = [],
+  receipts: rawReceipts = [],
 }: { 
   basePath?: string; 
   fullScreen?: boolean;
@@ -37,6 +37,8 @@ export function MailClient({
   receipts?: ReceiptOption[];
 } = {}) {
   const fullPagePath = basePath.includes('/lawyer') ? '/lawyer/mail' : '/admin/mail'
+  const cases = Array.isArray(rawCases) ? rawCases : []
+  const receipts = Array.isArray(rawReceipts) ? rawReceipts : []
   const [status, setStatus] = useState<Status | null>(null)
   const [folder, setFolder] = useState('INBOX')
   const [query, setQuery] = useState('')
@@ -161,7 +163,7 @@ export function MailClient({
         if (data.error === 'GMAIL_NOT_CONNECTED') { setStatus((s) => s ? { ...s, connected: false } : s); return }
         throw new Error(data.error || 'Failed to load')
       }
-      setItems(data.items || [])
+      setItems(Array.isArray(data.items) ? data.items : [])
     } catch (e: any) {
       setError(e?.message || 'Could not load mail')
     } finally {
@@ -232,8 +234,7 @@ export function MailClient({
         <Plug className="w-10 h-10 text-amber-500 mx-auto mb-3" />
         <h2 className="text-lg font-bold text-primary">Gmail not configured</h2>
         <p className="text-sm text-gray-600 mt-2 max-w-md mx-auto">
-          Add <code className="bg-white px-1 rounded">GOOGLE_CLIENT_ID</code> and <code className="bg-white px-1 rounded">GOOGLE_CLIENT_SECRET</code> to your
-          environment, enable the Gmail API, and add this exact OAuth redirect URI in Google Cloud: <code className="bg-white px-1 rounded">{status.redirectUri || '/api/mail/callback'}</code>. If the OAuth consent screen is in Testing, add this Gmail account as a test user; for Production with Gmail scopes, publish/verify the app with Google.
+          Gmail is not available for this workspace yet. Please contact support to enable mail access.
         </p>
       </div>
     )
@@ -245,15 +246,7 @@ export function MailClient({
         <Mail className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
         <h2 className="text-lg font-bold text-primary">Connect your Gmail</h2>
         <p className="text-sm text-gray-500 mt-2 mb-4">Sign in with Google to manage email inside the portal.</p>
-        <div className="mx-auto mb-5 max-w-xl rounded-xl border border-amber-200 bg-amber-50 p-3 text-left text-xs leading-5 text-amber-900">
-          <p className="font-semibold">If Google shows “Access blocked”, fix Google Cloud OAuth setup:</p>
-          <ul className="mt-1 list-disc space-y-1 pl-4">
-            <li>Add this exact Authorized redirect URI: <code className="rounded bg-white px-1">{status.redirectUri || '/api/mail/callback'}</code></li>
-            <li>Use an HTTPS public URL in <code className="rounded bg-white px-1">NEXTAUTH_URL</code>; localhost is only for local testing.</li>
-            <li>If consent status is Testing, add the signing Gmail as a test user; otherwise publish/verify the app for Gmail scopes.</li>
-          </ul>
-        </div>
-        <a href={`${basePath}/connect`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-accent">
+        <a href={`${basePath}/connect`} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-accent">
           <Plug className="w-4 h-4" /> Connect Gmail
         </a>
       </div>
@@ -314,7 +307,7 @@ export function MailClient({
         </div>
       )}
 
-      <div className="grid grid-cols-[160px_1fr] lg:grid-cols-[180px_360px_1fr] min-h-[60vh]">
+      <div className="grid grid-cols-[132px_1fr] min-h-[60vh] sm:grid-cols-[180px_1fr]">
         {/* Folders */}
         <div className="border-r border-[#F4E8D8] p-2 space-y-1 bg-[#FFFCF8]">
           {FOLDERS.map((f) => {
@@ -331,8 +324,8 @@ export function MailClient({
           })}
         </div>
 
-        {/* Message list */}
-        <div className={`border-r border-[#F4E8D8] overflow-y-auto max-h-[70vh] ${selected ? 'hidden lg:block' : ''}`}>
+        {/* Message list — messages always open in the modal below. */}
+        <div className="overflow-y-auto max-h-[70vh]">
           {loading && items.length === 0 && (
             <div className="flex items-center gap-2 text-gray-400 text-sm p-4"><Loader2 className="w-4 h-4 animate-spin" /> Loading…</div>
           )}
@@ -356,35 +349,37 @@ export function MailClient({
             </button>
           ))}
         </div>
+      </div>
 
-        {/* Reading pane */}
-        <div className={`overflow-y-auto max-h-[70vh] ${selected ? '' : 'hidden lg:flex'} ${!selected ? 'items-center justify-center' : ''}`}>
-          {!selected ? (
-            <div className="text-sm text-gray-400 p-10 text-center w-full">Select a message to read.</div>
-          ) : (
-            <div className="p-5">
-              <div className="flex items-start justify-between gap-3 mb-3">
-                <button onClick={() => setSelected(null)} className="lg:hidden p-1.5 rounded-lg hover:bg-[#FFFCF8]"><ArrowLeft className="w-4 h-4" /></button>
-                <h2 className="text-lg font-bold text-primary flex-1">{selected.subject || '(no subject)'}</h2>
-                <div className="flex items-center gap-1.5">
-                  <button onClick={() => setCompose({ to: parseName(selected.from).includes('@') ? selected.from : (selected.from.match(/<(.+)>/)?.[1] || ''), subject: `Re: ${selected.subject}`, body: '' })} title="Reply" className="p-2 rounded-lg hover:bg-[#FFFCF8]"><Send className="w-4 h-4 text-[#64748b]" /></button>
-                  <button onClick={() => deleteMessage(selected.id)} title="Delete" className="p-2 rounded-lg hover:bg-red-50"><Trash2 className="w-4 h-4 text-red-500" /></button>
-                </div>
+      {/* Reading modal */}
+      {selected && (
+        <div className="fixed inset-0 z-[130] flex items-end justify-center bg-black/50 p-0 sm:items-center sm:p-4" onClick={() => setSelected(null)}>
+          <div className="max-h-[92vh] w-full overflow-hidden bg-white shadow-2xl sm:max-w-3xl sm:rounded-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-3 border-b border-[#F4E8D8] bg-[#FFFCF8] px-4 py-3">
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-bold text-primary">{selected.subject || '(no subject)'}</h2>
+                <p className="mt-1 text-xs text-gray-500">{selected.date ? new Date(selected.date).toLocaleString('en-IN') : ''}</p>
               </div>
-              <div className="text-xs text-gray-500 border-b border-[#F6F0E8] pb-3 mb-3">
+              <div className="flex items-center gap-1.5">
+                <button onClick={() => setCompose({ to: parseName(selected.from).includes('@') ? selected.from : (selected.from.match(/<(.+)>/)?.[1] || ''), subject: `Re: ${selected.subject}`, body: '' })} title="Reply" className="p-2 rounded-lg hover:bg-white"><Send className="w-4 h-4 text-[#64748b]" /></button>
+                <button onClick={() => deleteMessage(selected.id)} title="Delete" className="p-2 rounded-lg hover:bg-red-50"><Trash2 className="w-4 h-4 text-red-500" /></button>
+                <button onClick={() => setSelected(null)} title="Close" className="p-2 rounded-lg hover:bg-white"><X className="w-4 h-4 text-[#64748b]" /></button>
+              </div>
+            </div>
+            <div className="max-h-[78vh] overflow-y-auto p-4">
+              <div className="mb-3 space-y-1 border-b border-[#F6F0E8] pb-3 text-xs text-gray-500">
                 <div><strong>From:</strong> {selected.from}</div>
                 <div><strong>To:</strong> {selected.to}</div>
-                <div>{selected.date ? new Date(selected.date).toLocaleString('en-IN') : ''}</div>
               </div>
               {selected.html ? (
-                <iframe title="email-body" className="w-full min-h-[40vh] border-0" srcDoc={selected.html} sandbox="allow-same-origin" />
+                <iframe title="email-body" className="w-full min-h-[55vh] border-0" srcDoc={selected.html} sandbox="allow-same-origin" />
               ) : (
                 <pre className="whitespace-pre-wrap text-sm text-primary font-sans">{selected.text || selected.snippet}</pre>
               )}
             </div>
-          )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Compose modal */}
       {compose && (
