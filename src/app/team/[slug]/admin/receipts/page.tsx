@@ -105,6 +105,10 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
           createdAt: p.createdAt.toISOString(),
           notes: p.notes,
           receiptId: p.receiptId,
+          transactionNumber: (p as any).transactionNumber || null,
+          screenshotUrl: (p as any).screenshotUrl || null,
+          verificationRequired: !!(p as any).verificationRequired,
+          statusUpdatedByName: (p as any).statusUpdatedByName || null,
         }))}
       />
     </TenantAdminShell>
