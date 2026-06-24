@@ -12,7 +12,7 @@ export type TenantRecord = {
 export async function getTenantBySlug(slug: string): Promise<TenantRecord | null> {
   if (!slug) return null
   const normalizedSlug = slug.toLowerCase()
-  return fetchWithCache(
+  const row = await fetchWithCache(
     `tenant:${normalizedSlug}`,
     async () => {
       const t = await prisma.tenant.findUnique({ where: { slug: normalizedSlug } })
@@ -23,6 +23,13 @@ export async function getTenantBySlug(slug: string): Promise<TenantRecord | null
     // pay a DB hit on every cold-shell render.
     300
   )
+  // A deleted / suspended workspace must look "gone" to every caller —
+  // public pages 404, lawyer/admin guards bounce, the LawAI bubble loses
+  // its data source. This is the only place we need to enforce it; every
+  // consumer of getTenantBySlug already handles null.
+  if (!row) return null
+  if (row.status === 'deleted' || row.status === 'suspended') return null
+  return row
 }
 
 /** Bust the Redis cache for a tenant so status changes take effect immediately. */

@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
@@ -43,27 +43,18 @@ export function TenantAdminShell({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  // Memo so the array identity is stable across renders — the previous
-  // version made the prefetch effect fire on EVERY render and locked up
-  // the Account tab (PaymentSettingsCard re-renders frequently).
+  // Memo so the array identity is stable across renders.
   const tabs = useMemo(() => TABS(tenant.slug), [tenant.slug])
 
-  // Optimistic target — the tab the user just clicked. The highlight moves
-  // instantly while Next routes; without this the click feels "stuck".
-  const [pendingHref, setPendingHref] = useState<string | null>(null)
-  const [, startNav] = useTransition()
-  const effectivePath = pendingHref || pathname
-
+  // Prefetch every tab ONCE per workspace via a ref guard — multiple
+  // workspaces never re-prefetch each other and Account-page re-renders
+  // can't trigger a prefetch loop.
+  const prefetchedRef = useRef<string | null>(null)
   useEffect(() => {
-    // Clear the optimistic flag once the real URL catches up.
-    if (pendingHref && pathname === pendingHref) setPendingHref(null)
-  }, [pathname, pendingHref])
-
-  // Warm every tab route on mount. Now keyed only on slug so this runs once
-  // per workspace switch, not on every component re-render.
-  useEffect(() => {
+    if (prefetchedRef.current === tenant.slug) return
+    prefetchedRef.current = tenant.slug
     tabs.forEach((t) => router.prefetch(t.href))
-  }, [tabs, router])
+  }, [tabs, router, tenant.slug])
 
   useEffect(() => {
     const currentTabs = TABS(tenant.slug)
@@ -107,22 +98,14 @@ export function TenantAdminShell({
         <nav className="relative border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
           <TabsScroller>
             {tabs.map((t) => {
-              const active = t.exact ? effectivePath === t.href : effectivePath.startsWith(t.href)
+              const active = t.exact ? pathname === t.href : pathname.startsWith(t.href)
               const Icon = t.icon
               return (
                 <Link
                   key={t.href}
                   href={t.href}
                   prefetch={true}
-                  onClick={(e) => {
-                    // Optimistic active state — highlight moves the instant
-                    // the user clicks, without waiting for the route swap.
-                    if (active) return
-                    e.preventDefault()
-                    setPendingHref(t.href)
-                    startNav(() => router.push(t.href))
-                  }}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
+                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors active:scale-[0.98] ${
                     active
                       ? 'bg-primary text-white shadow'
                       : 'text-slate-600 hover:bg-slate-100 hover:text-primary dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
