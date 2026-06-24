@@ -56,21 +56,26 @@ export async function createReceipt(slug: string, formData: FormData) {
   const subtotal = +enriched.reduce((s, l) => s + l.amount, 0).toFixed(2)
   const total = subtotal
 
-  const receipt = await prisma.receipt.create({
-    data: {
-      number: nextReceiptNumber(tenantId),
-      clientName,
-      clientEmail: clientEmailRaw,
-      createdByName,
-      items: JSON.stringify(enriched),
-      paymentMethod,
-      subtotal,
-      total,
-      status: clientEmailRaw ? 'SENT' : 'DRAFT',
-      sentAt: clientEmailRaw ? new Date() : undefined,
-      tenantId,
-    },
-  })
+  const baseData = {
+    number: nextReceiptNumber(tenantId),
+    clientName,
+    clientEmail: clientEmailRaw,
+    createdByName,
+    items: JSON.stringify(enriched),
+    subtotal,
+    total,
+    status: clientEmailRaw ? 'SENT' : 'DRAFT',
+    sentAt: clientEmailRaw ? new Date() : undefined,
+    tenantId,
+  }
+  let receipt
+  try {
+    receipt = await prisma.receipt.create({ data: { ...baseData, paymentMethod } as any })
+  } catch (e: any) {
+    if (/paymentMethod/i.test(String(e?.message))) {
+      receipt = await prisma.receipt.create({ data: baseData })
+    } else throw e
+  }
 
   // If an email was supplied, generate the PDF and send it to the client.
   if (clientEmailRaw) {

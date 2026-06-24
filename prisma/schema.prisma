@@ -499,7 +499,9 @@ model Receipt {
   taxAmount     Float     @default(0)
   total         Float     @default(0)
   notes         String?
-  paymentMethod String    @default("OTHER") // UPI | NEFT | CASH | OTHER
+  // Optional + default keeps reads safe even before the prod migration
+  // has added the column on existing tenants.
+  paymentMethod String?   @default("OTHER")
   status        String    @default("DRAFT")
   sentAt        DateTime?
   tenantId      String?

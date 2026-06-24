@@ -1,12 +1,13 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Briefcase, FileText, Users, Inbox, Gavel, ReceiptText,
   CalendarClock, UserPlus, Quote, Mail, Settings, ExternalLink, LogOut, KeyRound, Shield, Package,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react'
 import { ThemeToggle } from '@/components/theme-toggle'
 
@@ -82,8 +83,8 @@ export function TenantAdminShell({
           </div>
         </div>
 
-        <nav className="border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
-          <div className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <nav className="relative border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
+          <TabsScroller>
             {tabs.map((t) => {
               const active = t.exact ? pathname === t.href : pathname.startsWith(t.href)
               const Icon = t.icon
@@ -103,11 +104,72 @@ export function TenantAdminShell({
                 </Link>
               )
             })}
-          </div>
+          </TabsScroller>
         </nav>
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+    </div>
+  )
+}
+
+function TabsScroller({ children }: { children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [hasLeft, setHasLeft] = useState(false)
+  const [hasRight, setHasRight] = useState(false)
+
+  const update = () => {
+    const el = ref.current
+    if (!el) return
+    setHasLeft(el.scrollLeft > 4)
+    setHasRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 4)
+  }
+
+  useEffect(() => {
+    update()
+    const el = ref.current
+    if (!el) return
+    el.addEventListener('scroll', update, { passive: true })
+    const ro = new ResizeObserver(update)
+    ro.observe(el)
+    window.addEventListener('resize', update)
+    return () => {
+      el.removeEventListener('scroll', update)
+      ro.disconnect()
+      window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  const nudge = (dir: 1 | -1) => {
+    const el = ref.current
+    if (!el) return
+    el.scrollBy({ left: dir * Math.max(160, el.clientWidth * 0.6), behavior: 'smooth' })
+  }
+
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        aria-label="Scroll tabs left"
+        onClick={() => nudge(-1)}
+        className={`absolute left-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasLeft ? 'opacity-100 animate-pulse' : 'pointer-events-none opacity-0'}`}
+      >
+        <ChevronLeft className="h-4 w-4" />
+      </button>
+      <div
+        ref={ref}
+        className="mx-auto flex max-w-6xl gap-1 overflow-x-auto scroll-smooth px-8 py-2 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+      >
+        {children}
+      </div>
+      <button
+        type="button"
+        aria-label="Scroll tabs right"
+        onClick={() => nudge(1)}
+        className={`absolute right-1 top-1/2 z-10 -translate-y-1/2 rounded-full bg-white p-1 text-primary shadow ring-1 ring-slate-200 transition-opacity duration-200 hover:bg-slate-50 dark:bg-[#11151f] dark:text-white dark:ring-white/15 ${hasRight ? 'opacity-100 animate-pulse' : 'pointer-events-none opacity-0'}`}
+      >
+        <ChevronRight className="h-4 w-4" />
+      </button>
     </div>
   )
 }

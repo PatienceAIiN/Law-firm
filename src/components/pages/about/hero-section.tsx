@@ -7,7 +7,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ data, content }: HeroSectionProps) {
   const name = data?.name || 'Adv. Rajesh Kumar'
-  const title = data?.title || 'Senior Advocate'
+  const title = data?.title || 'Lawyer'
   const section = content?.about?.hero || {}
   
   return (

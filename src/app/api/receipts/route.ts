@@ -8,10 +8,18 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   const user = await getPortalUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  // Safe SELECT — skips the new `paymentMethod` column on schemas where
+  // its migration hasn't been applied yet.
   const receipts = await prisma.receipt.findMany({
     where: user.isAdmin ? {} : { advocateId: user.advocateId },
     orderBy: { createdAt: 'desc' },
     take: 100,
+    select: {
+      id: true, number: true, clientName: true, clientEmail: true,
+      advocateId: true, createdByName: true, items: true, currency: true,
+      subtotal: true, taxRate: true, taxAmount: true, total: true,
+      notes: true, status: true, sentAt: true, createdAt: true,
+    },
   })
   return NextResponse.json({ receipts })
 }
@@ -37,19 +45,25 @@ export async function POST(req: NextRequest) {
   const totals = computeTotals(items, taxRate)
   const number = await nextReceiptNumber()
 
-  let receipt = await prisma.receipt.create({
-    data: {
-      number, clientName, clientEmail,
-      advocateId: user.advocateId,
-      createdByName: user.name,
-      items: JSON.stringify(totals.items),
-      currency, taxRate: Number(taxRate) || 0,
-      subtotal: totals.subtotal, taxAmount: totals.taxAmount, total: totals.total,
-      notes: notes || null,
-      paymentMethod: pm,
-      status: 'DRAFT',
-    },
-  })
+  const baseData = {
+    number, clientName, clientEmail,
+    advocateId: user.advocateId,
+    createdByName: user.name,
+    items: JSON.stringify(totals.items),
+    currency, taxRate: Number(taxRate) || 0,
+    subtotal: totals.subtotal, taxAmount: totals.taxAmount, total: totals.total,
+    notes: notes || null,
+    status: 'DRAFT',
+  }
+  let receipt
+  try {
+    receipt = await prisma.receipt.create({ data: { ...baseData, paymentMethod: pm } as any })
+  } catch (e: any) {
+    // Pre-migration fallback: retry without the new column.
+    if (/paymentMethod/i.test(String(e?.message))) {
+      receipt = await prisma.receipt.create({ data: baseData })
+    } else throw e
+  }
 
   let delivery: string | undefined
   if (send) {

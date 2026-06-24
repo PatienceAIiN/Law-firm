@@ -118,7 +118,7 @@ export const DEFAULT_SITE_CONTENT = {
       heading: 'Meet Our Legal Team',
       subtitle: 'Led by experienced legal professionals, our team combines deep expertise with a commitment to delivering exceptional results for our clients.',
       member: {
-        name: 'Senior Advocate',
+        name: 'Lawyer',
         title: 'Founding Partner',
         expertise: 'Corporate Law, Litigation, Legal Strategy',
         description: 'With over 20 years of experience, our founding partner has established a reputation for excellence in corporate law and complex litigation.',

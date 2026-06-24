@@ -41,7 +41,7 @@ export async function POST(
     const recipientEmail = courtCase.advocate?.email || courtCase.clientEmail
     const recipientName = courtCase.advocate?.name || courtCase.clientName
     const firmName = process.env.FIRM_NAME || 'Legal Excellence Law Firm'
-    const advocateName = courtCase.advocate?.name || 'Senior Advocate'
+    const advocateName = courtCase.advocate?.name || 'Lawyer'
     const totalPaid = courtCase.payments.reduce((sum, payment) => sum + payment.amount, 0)
     const hearingDate = courtCase.courtAppearanceDate || courtCase.nextHearingDate
     const hearingLabel = hearingDate

@@ -5,6 +5,7 @@ import { VideoCover, COVER_VIDEOS } from '@/components/video-cover'
 import { MarketingShell } from '@/components/layout/marketing-shell'
 import { loadTenantPublicShell } from '@/lib/tenant-shell-data'
 import { prisma } from '@/lib/prisma'
+import { TenantHero } from '@/components/tenant/tenant-hero'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,11 +31,11 @@ export default async function TenantHomePage({ params }: { params: Promise<{ slu
       <section className="relative overflow-hidden rounded-2xl">
         <VideoCover src={brand?.home_cover_url || COVER_VIDEOS.home} overlay="medium" />
         <div className="relative z-10 mx-auto max-w-5xl px-6 py-24 text-center">
-          <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-primary/15 bg-white/80 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary backdrop-blur">
-            {brand.firm_name || tenant.name}
-          </div>
-          <h1 className="mt-6 text-5xl font-bold tracking-tight text-primary dark:text-white">{brand.firm_full_name || tenant.name}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-700 dark:text-slate-200">Trusted legal counsel — your dedicated workspace.</p>
+          <TenantHero
+            firmFullName={brand.firm_full_name || brand.firm_name || tenant.name}
+            firmName={brand.firm_name || tenant.name}
+            taglines={Array.isArray((brand as any)?.hero_taglines) ? (brand as any).hero_taglines : undefined}
+          />
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Link href={`/team/${tenant.slug}/book`} className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-white hover:bg-accent">
               Consult <ArrowRight className="h-4 w-4" />

@@ -1,0 +1,95 @@
+<!doctype html><html><head><meta charset="utf-8"><title>PatienceAI — Admin Portal Guide</title><style>
+@page { size: A4; margin: 22mm 18mm; }
+body { font-family: Georgia, serif; color:#14203E; line-height:1.55; font-size:11.5pt; }
+h1 { color:#14203E; font-size:24pt; margin:0 0 6pt; }
+h2 { color:#14203E; font-size:15pt; margin-top:18pt; border-bottom:1pt solid #B7913D; padding-bottom:4pt; }
+h3 { color:#1c2c52; font-size:12pt; margin-top:12pt; }
+.lede { color:#475569; font-style:italic; font-size:12pt; }
+ul,ol{padding-left:18pt; margin:6pt 0 10pt;} li{margin-bottom:3pt;}
+code{background:#f3f4f6;padding:1pt 4pt;border-radius:3pt;font-size:10pt;}
+blockquote{border-left:3pt solid #B7913D;margin:10pt 0;padding:4pt 14pt;background:#FFFCF8;color:#1c2c52;}
+.cover{text-align:center;padding-top:60pt;}.glyph{font-size:110pt;color:#B7913D;line-height:1;}
+.brand{font-size:30pt;margin-top:18pt;}.sub{color:#6b7280;font-style:italic;margin-top:10pt;font-size:13pt;}
+.pill{display:inline-block;background:#FFFCF8;border:1pt solid #F4E8D8;color:#B7913D;padding:3pt 9pt;border-radius:999pt;font-size:9.5pt;font-weight:bold;letter-spacing:0.08em;text-transform:uppercase;margin:6pt 4pt 0;}
+.page-break{page-break-before:always;}
+</style></head><body>
+<section class="cover">
+  <div class="glyph">§</div>
+  <div class="brand"><strong>Admin Portal Guide</strong></div>
+  <div class="sub">Everything you need to run your PatienceAI workspace</div>
+  <div><span class="pill">For Owners &amp; Admins</span> <span class="pill">v1.0</span></div>
+</section>
+<div class="page-break"></div>
+
+<h1>Admin Portal Guide</h1>
+<p class="lede">This guide walks you through the eleven tabs of your admin panel, from first-day setup to day-to-day operations.</p>
+
+<h2>1. First-day setup (10 minutes)</h2>
+<ol>
+  <li><strong>Log in</strong> at <code>/team/&lt;your-slug&gt;/admin/login</code> using the email and password from your welcome message.</li>
+  <li><strong>Branding</strong> tab — upload your logo (auto-becomes the browser favicon), pick your colors, set the hero image and "About" headline.</li>
+  <li><strong>Practice Areas</strong> — keep, edit, or remove the four defaults (Corporate / Civil / Criminal / Family). Add your own.</li>
+  <li><strong>Team</strong> — add the firm's team members so they appear on your public site.</li>
+  <li><strong>Lawyers</strong> — invite each lawyer by email. They get an activation link and set their own password.</li>
+  <li><strong>Account</strong> — change your password to something only you know.</li>
+</ol>
+<blockquote>Everything you change in the admin panel is live on your public site within seconds — no publish step needed.</blockquote>
+
+<h2>2. The eleven tabs</h2>
+
+<h3>Dashboard</h3>
+<p>Headline metrics: active cases, new inquiries, revenue MTD, consultations this week. Below them, recent cases and today's calendar.</p>
+
+<h3>Practice Areas</h3>
+<p>Create, reorder, and toggle each practice area on/off. Each area gets its own public page and shows up on the home page card row.</p>
+
+<h3>Articles</h3>
+<p>Long-form posts you publish to your public site (SEO + thought leadership). Use the rich text editor with the same colors as your brand.</p>
+
+<h3>Lawyers</h3>
+<p>Add a lawyer by email — the system emails them an activation link. <strong>Never set their password yourself</strong>: lawyers set their own password during activation. You can mark a lawyer inactive at any time without deleting their history.</p>
+
+<h3>Cases</h3>
+<p>Track active and closed matters. Each case has a client, an assigned advocate, status, stage, and next-hearing date. Add documents, notes, and activities. Receipts can be linked to a case.</p>
+
+<h3>Availability</h3>
+<p>Open or close consultation slots, per lawyer, per day. Set the in-person chamber address on each slot — your client never has to enter it.</p>
+
+<h3>Inquiries</h3>
+<p>Every contact-form submission lands here, tabbed by status (New / Assigned / Replied / Archived). Assign each inquiry to a lawyer; the lawyer sees it in their own inquiries tab. Reply from inside the app and the response is emailed to the client. Delete with the trash icon.</p>
+
+<h3>Receipts</h3>
+<p>Issue itemized receipts, optionally email the PDF directly to the client. Pick the payment method (UPI / NEFT / Cash / Other) and it shows up on the PDF.</p>
+
+<h3>Team</h3>
+<p>Manage the team-members section of your public site. Different from "Lawyers" — this tab is for the front-facing bios.</p>
+
+<h3>Testimonials</h3>
+<p>Send an "Ask for testimonial" email to a past client. They submit it via a one-time link; you approve before it goes live on the public carousel.</p>
+
+<h3>Mail</h3>
+<p>Connect your Gmail (per workspace) and send threaded conversations from inside the app.</p>
+
+<h3>Packages, Branding, Legal, Account</h3>
+<p>Service packages catalog (shareable via email), branding tokens, Terms / Privacy rich-text editor, and your own password / profile.</p>
+
+<h2>3. Day-to-day routine</h2>
+<ol>
+  <li>Open the <strong>Dashboard</strong> in the morning — see today's hearings and unread inquiries.</li>
+  <li>Triage <strong>Inquiries</strong> — assign each one within 24 hours.</li>
+  <li>Update <strong>Cases</strong> after every hearing.</li>
+  <li>Issue <strong>Receipts</strong> on payment days; the PDF emails itself if you fill the client email.</li>
+</ol>
+
+<h2>4. LawAI assistant</h2>
+<p>The floating chat bubble at the bottom right. Ask: "how many active cases this quarter," "summarize the Acme matter," or "draft a follow-up email to Mr. Bansal." Answers are scoped to <em>your</em> workspace's data only.</p>
+
+<h2>5. Troubleshooting</h2>
+<ul>
+  <li><strong>Can't log in?</strong> Use "Forgot password" on the login page.</li>
+  <li><strong>Image upload fails?</strong> Production needs Cloudinary or R2 configured — see the Branding tab for status.</li>
+  <li><strong>Welcome email didn't arrive?</strong> Check spam, then ask support to re-send.</li>
+</ul>
+
+<p style="margin-top:30pt;color:#94a3b8;font-size:9.5pt;border-top:1pt solid #e5e7eb;padding-top:8pt;">PatienceAI · One platform. Every part of your practice. · patienceai.in</p>
+</body></html>

@@ -4,7 +4,7 @@ import { Scale } from 'lucide-react'
 import { VideoCover, COVER_VIDEOS } from '@/components/video-cover'
 
 export const metadata: Metadata = {
-  title: 'Admin Login | Senior Advocate Law Firm',
+  title: 'Admin Login | Lawyer',
   description: 'Secure admin login for law firm management system',
 }
 

@@ -9,14 +9,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const tenant = await getTenantBySlug(slug)
   if (!tenant) return {}
   const tenantTheme = await getTenantSettingJson(tenant.id, 'site_theme') || {}
+  const brand: any = (await getTenantSettingJson(tenant.id, 'brand_config')) || {}
   const theme = { ...DEFAULT_THEME, ...tenantTheme }
-  
+
+  // Prefer the firm name set during workspace creation so the browser tab
+  // and PWA install name reflect THAT firm, never the placeholder fallback.
+  const firmTitle =
+    brand.firm_full_name ||
+    brand.firm_name ||
+    tenant.name ||
+    theme.siteTitle
+
   const icon = theme.logoUrl || '/favicon.png'
-  
+
   return {
     title: {
-      default: theme.siteTitle,
-      template: `%s | ${theme.siteTitle}`
+      default: firmTitle,
+      template: `%s | ${firmTitle}`,
     },
     icons: {
       icon: icon,

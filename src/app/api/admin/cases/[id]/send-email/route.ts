@@ -25,7 +25,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ id:
 
     const totalPaid = courtCase.payments.reduce((sum: number, payment: any) => sum + payment.amount, 0)
     const firmName = process.env.FIRM_NAME || 'Legal Excellence Law Firm'
-    const advocateName = courtCase.advocate?.name || 'Senior Advocate'
+    const advocateName = courtCase.advocate?.name || 'Lawyer'
 
     const includeDetails = type === 'DETAILS_ONLY' || type === 'BOTH'
     const includeBill = type === 'BILL_ONLY' || type === 'BOTH'

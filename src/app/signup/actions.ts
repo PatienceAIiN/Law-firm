@@ -2,10 +2,23 @@
 
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import fs from 'fs/promises'
+import path from 'path'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { normalizeSlug, isReservedSlug } from '@/lib/tenant'
 import { setTenantSettingJson } from '@/lib/tenant-settings'
+
+async function loadGuideAttachment(filename: string, displayName: string) {
+  try {
+    const filePath = path.join(process.cwd(), 'public', 'guides', filename)
+    const buf = await fs.readFile(filePath)
+    return { name: displayName, content: buf.toString('base64') }
+  } catch (e) {
+    console.warn(`[guide attachment] missing ${filename}:`, (e as any)?.message)
+    return null
+  }
+}
 
 export type RequestOtpResult =
   | { ok: true; email: string; devOtp?: string }
@@ -200,11 +213,13 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
       <a href="${base}${loginPath}" style="display:inline-block;background:#14203E;color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:600;">Open admin panel</a>
     </div>
   `
+  const guide = await loadGuideAttachment('admin-portal-guide.pdf', 'PatienceAI-Admin-Portal-Guide.pdf')
   const credsSent = await sendEmail({
     to: payload.email,
-    subject: `Your ${payload.firmName} admin login`,
+    subject: `Your ${payload.firmName} admin login + portal guide`,
     htmlContent: html,
-    textContent: `Admin URL: ${base}${loginPath}\nEmail: ${payload.email}\nPassword: ${password}`,
+    textContent: `Admin URL: ${base}${loginPath}\nEmail: ${payload.email}\nPassword: ${password}\nThe attached PDF is your full admin portal guide.`,
+    attachments: guide ? [guide] : undefined,
   })
 
   if (!credsSent.success) console.warn(`[signup] Brevo unavailable. Admin creds for ${payload.email} / password: ${password}`)

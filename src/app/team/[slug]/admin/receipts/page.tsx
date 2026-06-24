@@ -16,10 +16,17 @@ export default async function TenantReceiptsPage({ params }: { params: Promise<{
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) redirect(`/team/${slug}/admin/login`)
 
+  // Use a typed SELECT so we never query the new `paymentMethod` column
+  // before its migration has run on production — otherwise the whole page
+  // crashes for tenants on the old schema.
   const receipts = await prisma.receipt.findMany({
     where: { tenantId: tenant.id },
     orderBy: { createdAt: 'desc' },
     take: 200,
+    select: {
+      id: true, number: true, clientName: true, clientEmail: true,
+      total: true, currency: true, status: true, createdAt: true,
+    },
   })
   const currentUser = { id: u.id, name: session!.user!.name || u.email, email: u.email || '' }
 

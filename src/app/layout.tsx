@@ -74,7 +74,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     // No `template` so a child page's `generateMetadata` title appears
     // verbatim. Otherwise every tenant page would render as
-    // "<Tenant page> | Senior Advocate Law Firm".
+    // "<Tenant page> | Lawyer".
     title: {
       default: theme.siteTitle,
       template: '%s',

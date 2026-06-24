@@ -25,7 +25,9 @@ export const DEFAULT_THEME: SiteTheme = {
   fontFamily: 'sans',
   logoUrl: '',
   faviconUrl: '',
-  siteTitle: 'Senior Advocate Law Firm'
+  // Used only when no tenant context is available — tenant layouts override
+  // this with the firm name the user set during signup.
+  siteTitle: 'Barrister By Patience AI'
 }
 
 async function loadSiteTheme(): Promise<SiteTheme> {

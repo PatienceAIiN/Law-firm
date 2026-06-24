@@ -19,7 +19,7 @@ const ICON_MAP: Record<string, any> = {
 
 export function AboutSection({ data, metrics, content }: AboutSectionProps) {
   const name = data?.name || 'Adv. Rajesh Kumar'
-  const title = data?.title || 'Senior Advocate'
+  const title = data?.title || 'Lawyer'
   const bodyContent = data?.aboutContent || 'With over two decades of dedicated legal practice, our firm has established itself as a beacon of trust and excellence.'
   const section = content?.home?.about || {}
   const highlights = section.highlights || ['Expert Legal Counsel', 'Client-Focused Approach', 'Proven Track Record']

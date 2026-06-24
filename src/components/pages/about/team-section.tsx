@@ -26,7 +26,7 @@ export function TeamSection({ content, members = [] }: TeamSectionProps) {
 
   // Fallback single member from site content
   const fallbackMember = section.member || {
-    name: 'Senior Advocate',
+    name: 'Lawyer',
     title: 'Founding Partner',
     expertise: 'Corporate Law, Litigation, Legal Strategy',
     bio: 'With over 20 years of experience, our founding partner has established a reputation for excellence in corporate law and complex litigation.',

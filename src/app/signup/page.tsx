@@ -160,9 +160,11 @@ export default function SignupPage() {
           <>
             <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
             <h1 className="mt-4 text-center text-2xl font-bold text-primary dark:text-white">Workspace activated</h1>
-            <p className="mt-2 text-center text-sm text-slate-600 dark:text-slate-300">
-              We emailed your admin credentials to <strong>{success.email}</strong>.
-            </p>
+            <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-center text-sm text-amber-900 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-100">
+              <Mail className="mx-auto mb-1.5 h-4 w-4" />
+              <p className="font-semibold">Check your inbox at <strong>{success.email}</strong></p>
+              <p className="mt-1 text-xs">We've emailed your admin login + the PatienceAI portal guide (PDF). Use those credentials to sign in.</p>
+            </div>
             {success.devPassword && (
               <Banner kind="info">
                 Dev mode — admin password: <code className="ml-1 rounded bg-white px-2 py-0.5 font-mono text-[13px] dark:bg-white/10">{success.devPassword}</code>

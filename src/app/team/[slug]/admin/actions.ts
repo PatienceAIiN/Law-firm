@@ -2,6 +2,8 @@
 
 import bcrypt from 'bcryptjs'
 import crypto from 'crypto'
+import fs from 'fs/promises'
+import path from 'path'
 import { revalidatePath } from 'next/cache'
 import { invalidateCache } from '@/lib/redis'
 import { getServerSession } from 'next-auth/next'
@@ -79,6 +81,14 @@ export async function createAdvocate(slug: string, formData: FormData) {
   const base = (process.env.NEXTAUTH_URL || 'http://localhost:3001').replace(/\/$/, '')
   const activateUrl = `${base}/team/${slug}/lawyer/activate?token=${token}`
 
+  let guide = null as { name: string; content: string } | null
+  try {
+    const filePath = path.join(process.cwd(), 'public', 'guides', 'lawyer-portal-guide.pdf')
+    const buf = await fs.readFile(filePath)
+    guide = { name: 'PatienceAI-Lawyer-Portal-Guide.pdf', content: buf.toString('base64') }
+  } catch (e) {
+    console.warn('[lawyer guide] missing:', (e as any)?.message)
+  }
   await sendEmail({
     to: email,
     subject: `Activate your account at ${tenant?.name || slug}`,
@@ -94,10 +104,12 @@ export async function createAdvocate(slug: string, formData: FormData) {
             Activate &amp; set password
           </a>
         </p>
+        <p style="font-size:13px;line-height:1.6;color:#475569;">The attached PDF walks you through every tab of the lawyer portal — keep it handy for your first week.</p>
         <p style="font-size:12px;color:#94a3b8;">This link expires in 48 hours. If you didn't expect it, ignore this email.</p>
       </div>
     `,
-    textContent: `Activate your lawyer account: ${activateUrl}\nLink expires in 48 hours.`,
+    textContent: `Activate your lawyer account: ${activateUrl}\nLink expires in 48 hours.\nThe attached PDF is your full lawyer portal guide.`,
+    attachments: guide ? [guide] : undefined,
   }).catch(() => {})
 
   if (process.env.NODE_ENV !== 'production') console.warn(`[lawyer] Activation link for ${email}: ${activateUrl}`)
