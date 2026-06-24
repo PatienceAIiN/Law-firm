@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, Check, Copy, Loader2, Scale, Send, Trash2, X, ChevronDown, ArrowUpRight } from 'lucide-react'
+import { Bot, Loader2, Scale, Send, Trash2, X, ArrowUpRight } from 'lucide-react'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -94,9 +94,7 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [conversationId, setConversationId] = useState<string | null>(null)
-  const [copiedId, setCopiedId] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [idCollapsed, setIdCollapsed] = useState(true)
   const [clearing, setClearing] = useState(false)
   const [suggestionIndex, setSuggestionIndex] = useState(0)
   const shellRef = useRef<HTMLDivElement>(null)
@@ -139,7 +137,6 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
   // Close on route change
   useEffect(() => {
     setOpen(false)
-    setIdCollapsed(true)
   }, [pathname])
 
   // Note: intentionally NO click-outside auto-close — it was closing the chat
@@ -151,13 +148,6 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
     const t = setInterval(() => setSuggestionIndex(i => (i + 1) % SUGGESTIONS.length), 4000)
     return () => clearInterval(t)
   }, [messages.length])
-
-  const copyConversationId = async () => {
-    if (!conversationId) return
-    await navigator.clipboard.writeText(conversationId)
-    setCopiedId(true)
-    setTimeout(() => setCopiedId(false), 2000)
-  }
 
   const clearConversation = async () => {
     if (clearing || (!conversationId && messages.length === 0)) return
@@ -264,7 +254,6 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
               </div>
               <div>
                 <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">LAW AI</div>
-                <div className="text-[9px] font-medium text-white/60">Workspace-scoped · Indian law</div>
               </div>
             </div>
             <div className="flex items-center gap-1">
@@ -275,26 +264,6 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                 <X className="h-4 w-4" />
               </button>
             </div>
-          </div>
-
-          {/* Conversation ID (collapsible) */}
-          <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-white/10 dark:bg-[#11151f]">
-            <button onClick={() => setIdCollapsed(v => !v)} className="flex w-full items-center gap-2 text-left">
-              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Memory Session</span>
-              <ChevronDown className={`ml-auto h-3 w-3 text-slate-400 transition-transform ${idCollapsed ? '' : 'rotate-180'}`} />
-            </button>
-            {!idCollapsed && (
-              <div className="mt-1.5 flex items-center gap-2">
-                <code className="flex-1 truncate rounded-lg bg-slate-100 px-2 py-1 font-mono text-[10px] text-slate-500 dark:bg-white/5 dark:text-slate-400">
-                  {conversationId || 'New session'}
-                </code>
-                {conversationId && (
-                  <button onClick={copyConversationId} className="flex-shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-primary dark:hover:bg-white/10 dark:hover:text-white">
-                    {copiedId ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
-                  </button>
-                )}
-              </div>
-            )}
           </div>
 
           {/* Messages */}
@@ -373,14 +342,17 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </button>
             </div>
-            <p className="mt-1.5 text-center text-[9px] font-medium text-slate-400 dark:text-slate-500">General guidance only · Not legal advice</p>
+            <p className="mt-1.5 text-center text-[9px] font-medium leading-[1.4] text-slate-400 dark:text-slate-500">
+              General guidance only · Not legal advice ·{' '}
+              <span className="text-amber-600/80 dark:text-amber-400/80">AI may produce incorrect answers — verify with the firm.</span>
+            </p>
           </div>
         </div>
       )}
 
       {/* Trigger button */}
       <button
-        onClick={() => { setOpen(v => !v); setIdCollapsed(true) }}
+        onClick={() => setOpen(v => !v)}
         className="group fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-br from-primary via-[#1c2c52] to-accent px-4 py-3 text-white shadow-2xl shadow-[#14203E]/30 transition-all duration-300 hover:scale-105 hover:shadow-amber-300/40 sm:right-6"
       >
         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/20 transition group-hover:bg-white/25">
