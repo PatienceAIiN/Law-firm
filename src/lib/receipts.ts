@@ -51,12 +51,19 @@ export async function emailReceipt(receipt: any) {
   const pdf = await generateReceiptPdf({ ...receipt, items })
   const base64 = Buffer.from(pdf).toString('base64')
   const subject = `Payment Receipt ${receipt.number}`
+  const base = (process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || '').replace(/\/$/, '')
+  let proofLink = ''
+  if (base && receipt.tenantId && receipt.id) {
+    const tenant = await prisma.tenant.findUnique({ where: { id: receipt.tenantId }, select: { slug: true } }).catch(() => null)
+    if (tenant?.slug) proofLink = `${base}/team/${tenant.slug}/payment-done/${receipt.id}`
+  }
   const html = `
     <div style="font-family:sans-serif;max-width:520px;margin:0 auto;padding:24px;">
       <h2 style="color:#14203E;">Payment Receipt</h2>
       <p>Dear ${receipt.clientName},</p>
       <p>Please find attached your receipt <strong>${receipt.number}</strong> for a total of
         <strong>${receipt.currency} ${receipt.total.toFixed(2)}</strong>.</p>
+      ${proofLink ? `<p><a href="${proofLink}">Submit UTR / transaction number and payment screenshot</a></p>` : ''}
       <p style="color:#666;font-size:12px;">Issued by ${receipt.createdByName}.</p>
     </div>`
 

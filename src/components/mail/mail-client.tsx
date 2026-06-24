@@ -6,7 +6,7 @@ import {
   Star, AlertTriangle, Plug, ArrowLeft, Paperclip, ExternalLink,
 } from 'lucide-react'
 
-type Status = { configured: boolean; connected: boolean; email: string | null }
+type Status = { configured: boolean; connected: boolean; email: string | null; redirectUri?: string }
 type ListItem = { id: string; from: string; to: string; subject: string; snippet: string; date: string; unread: boolean }
 type FullMsg = ListItem & { html: string; text: string }
 
@@ -233,7 +233,7 @@ export function MailClient({
         <h2 className="text-lg font-bold text-primary">Gmail not configured</h2>
         <p className="text-sm text-gray-600 mt-2 max-w-md mx-auto">
           Add <code className="bg-white px-1 rounded">GOOGLE_CLIENT_ID</code> and <code className="bg-white px-1 rounded">GOOGLE_CLIENT_SECRET</code> to your
-          environment (Gmail API enabled, redirect URI <code className="bg-white px-1 rounded">/api/admin/mail/callback</code>), then reload.
+          environment, enable the Gmail API, and add this exact OAuth redirect URI in Google Cloud: <code className="bg-white px-1 rounded">{status.redirectUri || '/api/mail/callback'}</code>. If the OAuth consent screen is in Testing, add this Gmail account as a test user; for Production with Gmail scopes, publish/verify the app with Google.
         </p>
       </div>
     )
@@ -244,8 +244,16 @@ export function MailClient({
       <div className="rounded-2xl border border-[#F4E8D8] bg-[#FFFCF8] p-10 text-center">
         <Mail className="w-12 h-12 text-[#64748b] mx-auto mb-4" />
         <h2 className="text-lg font-bold text-primary">Connect your Gmail</h2>
-        <p className="text-sm text-gray-500 mt-2 mb-5">Sign in with Google to manage email inside the portal.</p>
-        <a href={`${basePath}/connect`} className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-accent">
+        <p className="text-sm text-gray-500 mt-2 mb-4">Sign in with Google to manage email inside the portal.</p>
+        <div className="mx-auto mb-5 max-w-xl rounded-xl border border-amber-200 bg-amber-50 p-3 text-left text-xs leading-5 text-amber-900">
+          <p className="font-semibold">If Google shows “Access blocked”, fix Google Cloud OAuth setup:</p>
+          <ul className="mt-1 list-disc space-y-1 pl-4">
+            <li>Add this exact Authorized redirect URI: <code className="rounded bg-white px-1">{status.redirectUri || '/api/mail/callback'}</code></li>
+            <li>Use an HTTPS public URL in <code className="rounded bg-white px-1">NEXTAUTH_URL</code>; localhost is only for local testing.</li>
+            <li>If consent status is Testing, add the signing Gmail as a test user; otherwise publish/verify the app for Gmail scopes.</li>
+          </ul>
+        </div>
+        <a href={`${basePath}/connect`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-white text-sm font-semibold hover:bg-accent">
           <Plug className="w-4 h-4" /> Connect Gmail
         </a>
       </div>
