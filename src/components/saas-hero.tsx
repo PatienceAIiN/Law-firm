@@ -35,7 +35,7 @@ export function AnimatedHeading({ text }: { text?: string }) {
           <h1
             key={idx}
             aria-hidden={!active}
-            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-balance text-center text-[28px] font-bold leading-[1.1] tracking-tight text-transparent transition-all duration-[1200ms] ease-out sm:text-4xl md:text-6xl ${
+            className={`absolute inset-0 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-balance text-center text-[28px] font-bold leading-[1.1] tracking-tight text-transparent transition-all duration-[1200ms] ease-out dark:from-white dark:via-amber-300 dark:to-white sm:text-4xl md:text-6xl ${
               active
                 ? 'translate-y-0 scale-100 opacity-100 blur-0 animate-gradient-x'
                 : prev

@@ -34,7 +34,7 @@ export function TenantHero({
 
       {/* Animated firm name — italic Helvetica, gradient sweep */}
       <h1
-        className="mt-6 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-balance text-center text-[34px] font-bold italic leading-[1.05] tracking-tight text-transparent animate-gradient-x sm:text-5xl md:text-6xl"
+        className="mt-6 bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] bg-clip-text text-balance text-center text-[34px] font-bold italic leading-[1.05] tracking-tight text-transparent animate-gradient-x dark:from-white dark:via-amber-300 dark:to-white sm:text-5xl md:text-6xl"
         style={{ fontFamily: 'Helvetica, Arial, sans-serif' }}
       >
         {firmFullName.split(' ').map((word, wi) => (

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react'
 import { signOut } from 'next-auth/react'
-import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox, Edit } from 'lucide-react'
+import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox, Edit, ReceiptText } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { ThemeToggle } from '@/components/theme-toggle'
@@ -73,6 +73,13 @@ export function TenantLawyerClient({
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
             >
               <Inbox className="h-3.5 w-3.5" /> Inquiries
+            </Link>
+            <Link
+              href={`/team/${tenant.slug}/lawyer/receipts`}
+              prefetch
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
+            >
+              <ReceiptText className="h-3.5 w-3.5" /> Receipts
             </Link>
             <Link
               href={`/team/${tenant.slug}/lawyer/mail`}

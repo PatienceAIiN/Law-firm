@@ -55,6 +55,37 @@ model WorkspaceOpenOtp {
   @@map("workspace_open_otps")
 }
 
+model Payment {
+  id                String   @id @default(cuid())
+  tenantId          String
+  receiptId         String?
+  advocateId        String?  // lawyer who issued the parent receipt (null = firm/admin)
+  amount            Float
+  currency          String   @default("INR")
+  method            String   @default("UPI") // UPI | NEFT | CASH | OTHER | RAZORPAY
+  status            String   @default("PENDING") // PENDING | IN_PROGRESS | COMPLETED | FAILED | REFUNDED | PARTIALLY_REFUNDED
+  razorpayOrderId   String?
+  razorpayPaymentId String?
+  razorpaySignature String?
+  refundId          String?
+  refundedAmount    Float    @default(0)
+  payerName         String?
+  payerEmail        String?
+  payerPhone        String?
+  notes             String?
+  failureReason     String?
+  paidAt            DateTime?
+  refundedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([tenantId, status])
+  @@index([tenantId, advocateId])
+  @@index([receiptId])
+  @@index([razorpayOrderId])
+  @@map("payments")
+}
+
 model AppSumoCode {
   id          String    @id @default(cuid())
   code        String    @unique
@@ -502,6 +533,9 @@ model Receipt {
   // Optional + default keeps reads safe even before the prod migration
   // has added the column on existing tenants.
   paymentMethod String?   @default("OTHER")
+  caseId        String?   // optional — link to a CourtCase (filtered per lawyer)
+  caseTitle     String?   // denormalized snapshot for the PDF
+  caseNumber    String?   // denormalized snapshot for the PDF
   status        String    @default("DRAFT")
   sentAt        DateTime?
   tenantId      String?

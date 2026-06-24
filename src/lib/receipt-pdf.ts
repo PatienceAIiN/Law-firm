@@ -1,4 +1,5 @@
 import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
+import { buildUpiUrl, buildUpiQrPng, getPaymentConfig } from './payments'
 
 export type ReceiptItem = { description: string; qty: number; rate: number; amount: number }
 
@@ -15,6 +16,7 @@ export type ReceiptData = {
   total: number
   notes?: string | null
   paymentMethod?: string | null
+  tenantId?: string | null
   createdAt: Date | string
 }
 
@@ -96,6 +98,46 @@ export async function generateReceiptPdf(data: ReceiptData): Promise<Uint8Array>
   text('Payment method', 40, y, 9, bold, gray)
   text(pmLabel, 140, y, 10, bold, navy)
   y -= 30
+
+  // ─── Per-tenant payment details ────────────────────────────────────────
+  // UPI → QR + VPA. NEFT → bank line. Each receipt only shows the tenant's
+  // own credentials; we never leak another firm's bank info.
+  if (data.tenantId) {
+    try {
+      const cfg = await getPaymentConfig(data.tenantId)
+      if (pmKey === 'UPI' && cfg.upiVpa) {
+        const url = buildUpiUrl({
+          vpa: cfg.upiVpa,
+          payeeName: cfg.upiName,
+          amount: data.total,
+          referenceId: data.number,
+          note: `Receipt ${data.number}`,
+          currency: data.currency,
+        })
+        const qrPng = await buildUpiQrPng(url)
+        const qrImage = await pdf.embedPng(qrPng)
+        const qrSize = 110
+        page.drawImage(qrImage, { x: 40, y: y - qrSize, width: qrSize, height: qrSize })
+        text('Scan to pay with any UPI app', 160, y - 12, 9, bold, navy)
+        text(`UPI ID: ${cfg.upiVpa}`, 160, y - 28, 10, font, navy)
+        if (cfg.upiName) text(`Payee: ${cfg.upiName}`, 160, y - 42, 9, font, gray)
+        text(`Amount: ${money(data.total, data.currency)}`, 160, y - 58, 9, font, gray)
+        text(`Reference: ${data.number}`, 160, y - 72, 9, font, gray)
+        y -= qrSize + 12
+      } else if (pmKey === 'NEFT' && cfg.bankAccountNumber) {
+        text('Bank transfer details', 40, y, 9, bold, gray)
+        y -= 14
+        if (cfg.bankAccountHolder) { text(`Account name: ${cfg.bankAccountHolder}`, 40, y, 10); y -= 13 }
+        if (cfg.bankName)          { text(`Bank: ${cfg.bankName}`, 40, y, 10);                   y -= 13 }
+                                     text(`A/C: ${cfg.bankAccountNumber}`, 40, y, 10);          y -= 13
+        if (cfg.bankIfsc)          { text(`IFSC: ${cfg.bankIfsc}`, 40, y, 10);                   y -= 13 }
+        y -= 6
+      }
+    } catch (e) {
+      // Non-fatal — receipt still renders without payment block.
+      console.warn('[receipt-pdf] payment block skipped:', (e as any)?.message)
+    }
+  }
 
   if (data.notes) {
     text('Notes', 40, y, 9, bold, gray)

@@ -6,7 +6,7 @@ import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon } fr
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
 import { DeleteButton } from '@/components/ui/delete-button'
 
-type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string }
+type R = { id: string; number: string; clientName: string; clientEmail: string; total: number; currency: string; status: string; createdAt: string; advocateId?: string | null; advocateName?: string | null }
 
 type Item = { description: string; qty: number; rate: number }
 
@@ -85,7 +85,18 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
                 <tr key={r.id}>
                   <td className="px-3 py-2 font-mono text-xs">{r.number}</td>
                   <td className="px-3 py-2 text-slate-700 dark:text-slate-200">
-                    {r.clientName}
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {r.clientName}
+                      {r.advocateName ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary dark:bg-amber-500/15 dark:text-amber-200" title="Issued by">
+                          {r.advocateName}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-white/10 dark:text-slate-300" title="Issued by the firm/admin">
+                          Firm
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-slate-500">{r.clientEmail}</div>
                   </td>
                   <td className="px-3 py-2 text-right font-semibold text-slate-900 dark:text-white">{r.currency} {r.total.toLocaleString('en-IN')}</td>

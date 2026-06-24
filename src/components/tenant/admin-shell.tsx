@@ -1,8 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useEffect, useRef, useState, useTransition } from 'react'
+import { usePathname, useRouter } from 'next/navigation'
 import { signOut } from 'next-auth/react'
 import {
   LayoutDashboard, Briefcase, FileText, Users, Inbox, Gavel, ReceiptText,
@@ -42,7 +42,24 @@ export function TenantAdminShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const router = useRouter()
   const tabs = TABS(tenant.slug)
+  // Optimistic target — the tab the user just clicked. The highlight moves
+  // instantly while Next routes; without this the click feels "stuck".
+  const [pendingHref, setPendingHref] = useState<string | null>(null)
+  const [, startNav] = useTransition()
+  const effectivePath = pendingHref || pathname
+
+  useEffect(() => {
+    // Clear the optimistic flag once the real URL catches up.
+    if (pendingHref && pathname === pendingHref) setPendingHref(null)
+  }, [pathname, pendingHref])
+
+  useEffect(() => {
+    // Warm every tab route on mount so the next click is instant. Cheap and
+    // safe — Next dedupes prefetches and skips already-prefetched routes.
+    tabs.forEach((t) => router.prefetch(t.href))
+  }, [router, tabs])
 
   useEffect(() => {
     const currentTabs = TABS(tenant.slug)
@@ -86,13 +103,21 @@ export function TenantAdminShell({
         <nav className="relative border-t border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
           <TabsScroller>
             {tabs.map((t) => {
-              const active = t.exact ? pathname === t.href : pathname.startsWith(t.href)
+              const active = t.exact ? effectivePath === t.href : effectivePath.startsWith(t.href)
               const Icon = t.icon
               return (
                 <Link
                   key={t.href}
                   href={t.href}
                   prefetch={true}
+                  onClick={(e) => {
+                    // Optimistic active state — highlight moves the instant
+                    // the user clicks, without waiting for the route swap.
+                    if (active) return
+                    e.preventDefault()
+                    setPendingHref(t.href)
+                    startNav(() => router.push(t.href))
+                  }}
                   className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition ${
                     active
                       ? 'bg-primary text-white shadow'

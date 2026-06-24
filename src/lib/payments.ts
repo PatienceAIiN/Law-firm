@@ -1,0 +1,148 @@
+import Razorpay from 'razorpay'
+import crypto from 'crypto'
+import QRCode from 'qrcode'
+import { prisma } from './prisma'
+import { getTenantSettingJson, setTenantSettingJson } from './tenant-settings'
+
+export type PaymentConfig = {
+  razorpayKeyId?: string
+  razorpayKeySecret?: string
+  upiVpa?: string          // e.g. "harshlaw@oksbi"
+  upiName?: string         // payee name shown in UPI apps
+  bankAccountHolder?: string
+  bankAccountNumber?: string
+  bankIfsc?: string
+  bankName?: string
+  enabled?: boolean
+}
+
+const SETTINGS_KEY = 'payments_config'
+
+export async function getPaymentConfig(tenantId: string): Promise<PaymentConfig> {
+  const cfg = (await getTenantSettingJson<PaymentConfig>(tenantId, SETTINGS_KEY)) || {}
+  return cfg
+}
+
+export async function setPaymentConfig(tenantId: string, patch: Partial<PaymentConfig>) {
+  const existing = await getPaymentConfig(tenantId)
+  const merged = { ...existing, ...patch }
+  await setTenantSettingJson(tenantId, SETTINGS_KEY, merged)
+  return merged
+}
+
+/**
+ * Build a Razorpay client using the TENANT'S OWN keys. We never read
+ * platform-wide keys for collecting money — every workspace pays into its
+ * own connected account.
+ */
+export function razorpayClientFor(cfg: PaymentConfig): Razorpay | null {
+  if (!cfg?.razorpayKeyId || !cfg?.razorpayKeySecret) return null
+  return new Razorpay({
+    key_id: cfg.razorpayKeyId,
+    key_secret: cfg.razorpayKeySecret,
+  })
+}
+
+export function verifyRazorpaySignature(
+  orderId: string,
+  paymentId: string,
+  signature: string,
+  keySecret: string,
+): boolean {
+  const expected = crypto
+    .createHmac('sha256', keySecret)
+    .update(`${orderId}|${paymentId}`)
+    .digest('hex')
+  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+}
+
+export function verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {
+  const expected = crypto.createHmac('sha256', secret).update(rawBody).digest('hex')
+  try {
+    return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+  } catch {
+    return false
+  }
+}
+
+/**
+ * Build a UPI deep-link URL (`upi://pay?...`). When rendered as a QR code
+ * any Indian UPI app (GPay, PhonePe, Paytm, BHIM) recognizes it.
+ */
+export function buildUpiUrl(opts: {
+  vpa: string
+  payeeName?: string
+  amount: number
+  note?: string
+  referenceId?: string
+  currency?: string
+}) {
+  const params = new URLSearchParams()
+  params.set('pa', opts.vpa)
+  if (opts.payeeName) params.set('pn', opts.payeeName)
+  params.set('am', opts.amount.toFixed(2))
+  params.set('cu', (opts.currency || 'INR').toUpperCase())
+  if (opts.referenceId) params.set('tr', opts.referenceId.slice(0, 35))
+  if (opts.note) params.set('tn', opts.note.slice(0, 80))
+  return `upi://pay?${params.toString()}`
+}
+
+export async function buildUpiQrPng(url: string): Promise<Buffer> {
+  return QRCode.toBuffer(url, {
+    type: 'png',
+    errorCorrectionLevel: 'M',
+    margin: 2,
+    width: 360,
+    color: { dark: '#14203E', light: '#FFFFFF' },
+  })
+}
+
+export async function buildUpiQrDataUrl(url: string): Promise<string> {
+  return QRCode.toDataURL(url, {
+    errorCorrectionLevel: 'M',
+    margin: 2,
+    width: 360,
+    color: { dark: '#14203E', light: '#FFFFFF' },
+  })
+}
+
+export async function listPaymentsForTenant(tenantId: string, opts?: { receiptId?: string; status?: string; take?: number }) {
+  return prisma.payment.findMany({
+    where: {
+      tenantId,
+      ...(opts?.receiptId ? { receiptId: opts.receiptId } : {}),
+      ...(opts?.status ? { status: opts.status } : {}),
+    },
+    orderBy: { createdAt: 'desc' },
+    take: opts?.take || 100,
+  })
+}
+
+export async function recordPayment(args: {
+  tenantId: string
+  receiptId?: string
+  advocateId?: string | null
+  amount: number
+  method: string
+  razorpayOrderId?: string
+  payerName?: string
+  payerEmail?: string
+  payerPhone?: string
+  notes?: string
+}) {
+  return prisma.payment.create({
+    data: {
+      tenantId: args.tenantId,
+      receiptId: args.receiptId,
+      advocateId: args.advocateId || undefined,
+      amount: args.amount,
+      method: args.method,
+      razorpayOrderId: args.razorpayOrderId,
+      payerName: args.payerName,
+      payerEmail: args.payerEmail,
+      payerPhone: args.payerPhone,
+      notes: args.notes,
+      status: 'PENDING',
+    },
+  })
+}
