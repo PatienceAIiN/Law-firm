@@ -59,6 +59,16 @@
     overflow-x: hidden;
     -webkit-text-size-adjust: 100%;
   }
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; transform: scale(0.95) translateY(8px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .animate-fade-in { animation: fade-in 220ms ease-out both; }
+  .animate-pop-in  { animation: pop-in 260ms cubic-bezier(.16,1,.3,1) both; }
   body {
     @apply bg-background text-foreground;
     background:

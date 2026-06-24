@@ -151,12 +151,20 @@ async function generateAssistantReply(
       const completion = await groq.chat.completions.create({
         model: model as any,
         messages,
-        max_tokens: 800,
-        temperature: 0.4,
+        max_tokens: 360,
+        temperature: 0.25,
       })
 
-      const reply = completion.choices[0]?.message?.content?.trim()
+      let reply = completion.choices[0]?.message?.content?.trim()
       if (reply) {
+        // Strip stray code blocks / fences if the model ever produces them —
+        // the system prompt forbids code but this is a safety net.
+        reply = reply
+          .replace(/```[\s\S]*?```/g, '')
+          .replace(/^\s*[-*]?\s*Great question[!.,:]?\s*/i, '')
+          .replace(/^\s*Sure[,.!]?\s*/i, '')
+          .replace(/^\s*As an AI[^.]*\.\s*/i, '')
+          .trim()
         return reply
       }
     } catch (error: any) {

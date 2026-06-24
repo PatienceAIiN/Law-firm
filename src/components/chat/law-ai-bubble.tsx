@@ -52,31 +52,30 @@ function buildNavMap(tenantSlug?: string | null) {
 function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: string }; tenantSlug?: string | null }) {
   const isUser = msg.role === 'user'
   const navAction: string | undefined = (msg as any).triggerAction
-
   const navMap = buildNavMap(tenantSlug)
   const navLabel = navAction ? navMap[navAction] : null
 
   return (
-    <div className={`flex gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
+    <div className={`flex animate-fade-in gap-2.5 ${isUser ? 'flex-row-reverse' : ''}`}>
       {!isUser && (
-        <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-primary">
-          <Bot className="h-4 w-4 text-primary" />
+        <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
+          <Bot className="h-4 w-4 text-white" />
         </div>
       )}
       <div className="max-w-[82%] space-y-1.5">
-        <div className={`rounded-2xl px-4 py-3 text-sm leading-relaxed ${
+        <div className={`rounded-2xl px-4 py-2.5 text-[13.5px] leading-relaxed ${
           isUser
-            ? 'rounded-tr-sm bg-primary font-medium text-white'
-            : 'rounded-tl-sm border border-gray-100 bg-[#f8fafc] font-medium text-gray-700'
+            ? 'rounded-tr-sm bg-primary text-white shadow-sm'
+            : 'rounded-tl-sm border border-slate-200 bg-white text-slate-800 shadow-sm dark:border-white/10 dark:bg-[#1a2030] dark:text-slate-100'
         }`}>
           <p className="whitespace-pre-wrap">{msg.content}</p>
         </div>
         {navLabel && (
           <a
             href={navLabel.href}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#F4E8D8]/40 bg-[#F6F0E8]/10 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-[#F6F0E8]/20 transition-colors"
+            className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-800 transition hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-200 dark:hover:bg-amber-900/30"
           >
-            <ExternalLink className="w-3 h-3" />{navLabel.label}
+            <ExternalLink className="h-3 w-3" />{navLabel.label}
           </a>
         )}
       </div>
@@ -249,44 +248,44 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
     <div ref={shellRef}>
       {open && (
         <div
-          className="fixed bottom-24 right-4 z-50 flex flex-col rounded-[1.75rem] border border-gray-100 bg-white shadow-2xl transition-all duration-200 sm:right-6"
-          style={{ width: 'min(92vw, 420px)', height: 'min(640px, calc(100vh - 120px))' }}
+          className="fixed bottom-24 right-4 z-50 flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl shadow-black/10 animate-pop-in sm:right-6 dark:border-white/10 dark:bg-[#0e1219] dark:shadow-black/40"
+          style={{ width: 'min(92vw, 400px)', height: 'min(620px, calc(100vh - 120px))' }}
         >
           {/* Header */}
-          <div className="flex items-center justify-between rounded-t-[1.75rem] bg-primary px-4 py-3 flex-shrink-0">
+          <div className="flex flex-shrink-0 items-center justify-between bg-gradient-to-r from-primary via-[#1c2c52] to-primary px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F6F0E8]/20">
-                <Scale className="h-4 w-4 text-primary" />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-300/20 ring-1 ring-amber-300/30">
+                <Scale className="h-4 w-4 text-amber-200" />
               </div>
               <div>
-                <div className="text-xs font-black uppercase tracking-widest text-white">LAW AI</div>
-                <div className="text-[9px] font-semibold text-white/50">Indian Legal Assistant · Memory Enabled</div>
+                <div className="text-[11px] font-bold uppercase tracking-[0.2em] text-white">LAW AI</div>
+                <div className="text-[9px] font-medium text-white/60">Workspace-scoped · Indian law</div>
               </div>
             </div>
             <div className="flex items-center gap-1">
-              <button onClick={clearConversation} disabled={clearing} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white disabled:opacity-50 transition-colors" title="Clear conversation">
+              <button onClick={clearConversation} disabled={clearing} className="rounded-lg p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white disabled:opacity-50" title="Clear conversation">
                 {clearing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
               </button>
-              <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-white/60 hover:bg-white/10 hover:text-white transition-colors">
+              <button onClick={() => setOpen(false)} className="rounded-lg p-1.5 text-white/70 transition-colors hover:bg-white/10 hover:text-white" aria-label="Close">
                 <X className="h-4 w-4" />
               </button>
             </div>
           </div>
 
           {/* Conversation ID (collapsible) */}
-          <div className="flex-shrink-0 border-b border-gray-100 bg-[#f8fafc] px-4 py-2">
+          <div className="flex-shrink-0 border-b border-slate-200 bg-slate-50 px-4 py-2 dark:border-white/10 dark:bg-[#11151f]">
             <button onClick={() => setIdCollapsed(v => !v)} className="flex w-full items-center gap-2 text-left">
-              <span className="text-[9px] font-black uppercase tracking-widest text-gray-400">Memory Session</span>
-              <ChevronDown className={`ml-auto h-3 w-3 text-gray-400 transition-transform ${idCollapsed ? '' : 'rotate-180'}`} />
+              <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Memory Session</span>
+              <ChevronDown className={`ml-auto h-3 w-3 text-slate-400 transition-transform ${idCollapsed ? '' : 'rotate-180'}`} />
             </button>
             {!idCollapsed && (
               <div className="mt-1.5 flex items-center gap-2">
-                <code className="flex-1 truncate rounded-lg bg-gray-100 px-2 py-1 font-mono text-[10px] text-gray-500">
+                <code className="flex-1 truncate rounded-lg bg-slate-100 px-2 py-1 font-mono text-[10px] text-slate-500 dark:bg-white/5 dark:text-slate-400">
                   {conversationId || 'New session'}
                 </code>
                 {conversationId && (
-                  <button onClick={copyConversationId} className="flex-shrink-0 rounded-lg p-1.5 text-gray-400 hover:bg-gray-200 hover:text-primary transition-colors">
-                    {copiedId ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
+                  <button onClick={copyConversationId} className="flex-shrink-0 rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-primary dark:hover:bg-white/10 dark:hover:text-white">
+                    {copiedId ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <Copy className="h-3.5 w-3.5" />}
                   </button>
                 )}
               </div>
@@ -294,24 +293,24 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto space-y-3 p-4 min-h-0">
+          <div className="flex-1 min-h-0 space-y-3 overflow-y-auto px-3 py-4 dark:bg-[#0e1219]">
             {messages.length === 0 && (
               <div className="space-y-4">
-                <div className="flex gap-2.5">
-                  <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-primary">
-                    <Bot className="h-4 w-4 text-primary" />
+                <div className="flex animate-fade-in gap-2.5">
+                  <div className="mt-1 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
+                    <Bot className="h-4 w-4 text-white" />
                   </div>
-                  <div className="max-w-[82%] rounded-2xl rounded-tl-sm border border-gray-100 bg-[#f8fafc] px-4 py-3">
-                    <p className="text-sm font-medium leading-relaxed text-gray-700">
-                      Namaste! I&apos;m <span className="font-black text-primary">LAW AI</span> — your expert Indian legal assistant. I can help with any law question, navigate to pages, or book a consultation. I remember our conversation!
+                  <div className="max-w-[82%] rounded-2xl rounded-tl-sm border border-slate-200 bg-white px-4 py-2.5 shadow-sm dark:border-white/10 dark:bg-[#1a2030]">
+                    <p className="text-[13.5px] leading-relaxed text-slate-800 dark:text-slate-100">
+                      Hi — I&apos;m <span className="font-bold text-primary dark:text-amber-300">LAW AI</span>. Ask a quick legal question, find a page on this site, or book a consultation. I keep answers short and to the point.
                     </p>
                   </div>
                 </div>
                 <div className="space-y-2 pl-9">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Try asking</p>
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500">Try asking</p>
                   {visibleSuggestions.map((q) => (
                     <button key={q} onClick={() => sendMessage(q)}
-                      className="block w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-primary transition-all hover:border-[#F4E8D8] hover:bg-[#F6F0E8]/5">
+                      className="block w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-xs text-slate-700 transition-all hover:border-amber-300 hover:bg-amber-50 hover:shadow-sm dark:border-white/10 dark:bg-[#1a2030] dark:text-slate-200 dark:hover:border-amber-500/40 dark:hover:bg-amber-900/20">
                       {q}
                     </button>
                   ))}
@@ -324,27 +323,27 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
             ))}
 
             {loading && (
-              <div className="flex gap-2.5">
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-primary">
-                  <Bot className="h-4 w-4 text-primary" />
+              <div className="flex animate-fade-in gap-2.5">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-accent shadow-sm">
+                  <Bot className="h-4 w-4 text-white" />
                 </div>
-                <div className="rounded-2xl rounded-tl-sm border border-gray-100 bg-[#f8fafc] px-4 py-3">
+                <div className="rounded-2xl rounded-tl-sm border border-slate-200 bg-white px-4 py-2.5 shadow-sm dark:border-white/10 dark:bg-[#1a2030]">
                   <div className="flex items-center gap-1">
                     {[0, 150, 300].map(d => (
-                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-[#F6F0E8]" style={{ animationDelay: `${d}ms` }} />
+                      <span key={d} className="h-2 w-2 animate-bounce rounded-full bg-amber-400" style={{ animationDelay: `${d}ms` }} />
                     ))}
                   </div>
                 </div>
               </div>
             )}
 
-            {error && <div className="rounded-xl bg-red-50 px-3 py-2 text-xs font-medium text-red-500">{error}</div>}
+            {error && <div className="rounded-xl bg-rose-50 px-3 py-2 text-xs font-medium text-rose-600 dark:bg-rose-900/30 dark:text-rose-200">{error}</div>}
             <div ref={bottomRef} />
           </div>
 
           {/* Input */}
-          <div className="flex-shrink-0 border-t border-gray-100 p-3">
-            <div className="flex items-end gap-2 rounded-2xl border border-gray-200 bg-[#f8fafc] px-4 py-2 transition-colors focus-within:border-[#F4E8D8]">
+          <div className="flex-shrink-0 border-t border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-[#11151f]">
+            <div className="flex items-end gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 transition-colors focus-within:border-amber-400 focus-within:bg-white dark:border-white/10 dark:bg-white/5 dark:focus-within:bg-[#1a2030]">
               <textarea
                 ref={inputRef}
                 value={input}
@@ -352,18 +351,19 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
                 onKeyDown={handleKeyDown}
                 placeholder="Ask anything about Indian law…"
                 rows={1}
-                className="max-h-24 flex-1 resize-none bg-transparent text-sm font-medium leading-relaxed text-primary outline-none placeholder:text-gray-400"
+                className="max-h-24 flex-1 resize-none bg-transparent text-[13.5px] leading-relaxed text-slate-800 outline-none placeholder:text-slate-400 dark:text-slate-100 dark:placeholder:text-slate-500"
                 style={{ minHeight: '24px' }}
               />
               <button
                 onClick={() => sendMessage()}
                 disabled={!input.trim() || loading}
-                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-white transition-all hover:bg-[#F6F0E8] disabled:bg-gray-200"
+                aria-label="Send"
+                className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-primary text-white shadow-sm transition-all hover:bg-accent disabled:bg-slate-200 dark:disabled:bg-white/10"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </button>
             </div>
-            <p className="mt-1.5 text-center text-[9px] font-medium text-gray-400">General guidance only · Not legal advice</p>
+            <p className="mt-1.5 text-center text-[9px] font-medium text-slate-400 dark:text-slate-500">General guidance only · Not legal advice</p>
           </div>
         </div>
       )}
@@ -371,12 +371,12 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
       {/* Trigger button */}
       <button
         onClick={() => { setOpen(v => !v); setIdCollapsed(true) }}
-        className="group fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-primary px-4 py-3 text-white shadow-2xl shadow-[#14203E]/30 transition-all duration-300 hover:scale-105 hover:bg-[#F6F0E8] sm:right-6"
+        className="group fixed bottom-4 right-4 z-50 flex items-center gap-2.5 rounded-full bg-gradient-to-br from-primary via-[#1c2c52] to-accent px-4 py-3 text-white shadow-2xl shadow-[#14203E]/30 transition-all duration-300 hover:scale-105 hover:shadow-amber-300/40 sm:right-6"
       >
-        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/10 group-hover:bg-white/20">
+        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/20 transition group-hover:bg-white/25">
           <Scale className="h-4 w-4" />
         </div>
-        <span className="pr-1 text-[10px] font-black uppercase tracking-widest">{open ? 'Close' : 'LAW AI'}</span>
+        <span className="pr-1 text-[10px] font-bold uppercase tracking-[0.2em]">{open ? 'Close' : 'LAW AI'}</span>
       </button>
     </div>
   )
