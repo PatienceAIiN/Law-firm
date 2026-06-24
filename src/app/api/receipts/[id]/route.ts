@@ -32,23 +32,30 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const taxRate = body.taxRate ?? a.receipt.taxRate
   const totals = computeTotals(items, taxRate)
 
-  const receipt = await prisma.receipt.update({
-    where: { id },
-    data: {
-      clientName: body.clientName ?? a.receipt.clientName,
-      clientEmail: body.clientEmail ?? a.receipt.clientEmail,
-      currency: body.currency ?? a.receipt.currency,
-      notes: body.notes ?? a.receipt.notes,
-      paymentMethod: body.paymentMethod
-        ? (['UPI', 'NEFT', 'CASH', 'OTHER'].includes(String(body.paymentMethod).toUpperCase())
-            ? String(body.paymentMethod).toUpperCase()
-            : (a.receipt as any).paymentMethod || 'OTHER')
-        : (a.receipt as any).paymentMethod || 'OTHER',
-      taxRate: Number(taxRate) || 0,
-      items: JSON.stringify(totals.items),
-      subtotal: totals.subtotal, taxAmount: totals.taxAmount, total: totals.total,
-    },
-  })
+  const pmRaw = body.paymentMethod ? String(body.paymentMethod).toUpperCase() : ''
+  const pmValid = ['UPI', 'NEFT', 'CASH', 'OTHER'].includes(pmRaw)
+  const data: any = {
+    clientName: body.clientName ?? a.receipt.clientName,
+    clientEmail: body.clientEmail ?? a.receipt.clientEmail,
+    currency: body.currency ?? a.receipt.currency,
+    notes: body.notes ?? a.receipt.notes,
+    paymentMethod: pmValid ? pmRaw : ((a.receipt as any).paymentMethod || 'OTHER'),
+    taxRate: Number(taxRate) || 0,
+    items: JSON.stringify(totals.items),
+    subtotal: totals.subtotal,
+    taxAmount: totals.taxAmount,
+    total: totals.total,
+  }
+  let receipt
+  try {
+    receipt = await prisma.receipt.update({ where: { id }, data })
+  } catch (e: any) {
+    // Pre-migration fallback: retry without the new paymentMethod column.
+    if (/paymentMethod/i.test(String(e?.message))) {
+      delete data.paymentMethod
+      receipt = await prisma.receipt.update({ where: { id }, data })
+    } else throw e
+  }
   return NextResponse.json({ receipt })
 }
 

@@ -435,7 +435,7 @@ export function buildSystemPrompt(retrievedDocs: Document[], siteData?: {
     if (parts.length > 0) siteContext = '\n\nCURRENT WORKSPACE INFORMATION:\n' + parts.join('\n')
   }
 
-  const base = siteData?.tenantSlug ? `/t/${siteData.tenantSlug}` : ''
+  const base = siteData?.tenantSlug ? `/team/${siteData.tenantSlug}` : ''
   const navHome = siteData?.tenantSlug ? base : '/'
   const navAbout = siteData?.tenantSlug ? `${base}/team` : '/'
   const navPractice = siteData?.tenantSlug ? `${base}/practice-areas` : '/'
