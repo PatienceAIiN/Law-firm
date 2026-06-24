@@ -139,12 +139,13 @@ export function TenantReceiptsClient({ slug, receipts }: { slug: string; receipt
               <select
                 value={paymentMethod}
                 onChange={(e) => setPaymentMethod(e.target.value)}
-                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-white/5 dark:text-white"
+                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
               >
-                <option value="UPI">UPI</option>
-                <option value="NEFT">NEFT / Bank transfer</option>
-                <option value="CASH">Cash</option>
-                <option value="OTHER">Other</option>
+                {/* Option-level colors so the native popup is readable in both themes (Chrome/Firefox use system colors for the popup; explicit bg/fg avoids the white-on-white case). */}
+                <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="UPI">UPI</option>
+                <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="NEFT">NEFT / Bank transfer</option>
+                <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="CASH">Cash</option>
+                <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="OTHER">Other</option>
               </select>
 
               <div className="rounded-xl border border-slate-200 p-3 dark:border-white/10">

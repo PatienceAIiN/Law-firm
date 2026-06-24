@@ -36,63 +36,50 @@ function getGroqModelCandidates() {
   return Array.from(new Set(models.filter((model): model is string => Boolean(model))))
 }
 
-function getTriggerAction(message: string, reply: string): string | null {
+function getTriggerAction(message: string, _reply: string): string | null {
   const m = message.toLowerCase()
-  const r = reply.toLowerCase()
 
-  // Consultation booking
-  if (
-    (m.includes('book') || m.includes('consultation') || m.includes('appointment') || m.includes('schedule') || m.includes('slot')) &&
-    (r.includes('consultation') || r.includes('booking') || r.includes('appointment') || r.includes('slot'))
-  ) return 'open_consultation'
+  // Imperative intents — "open X", "show me Y", "take me to Z", "go to W".
+  const wantsAction = /\b(open|show( me)?|take me to|go to|navigate|visit|see)\b/.test(m)
 
-  // Contact
-  if ((m.includes('contact') || m.includes('inquir') || m.includes('reach') || m.includes('email') || m.includes('address')) && !m.includes('consultation'))
-    return 'open_contact'
+  if (/\b(book|consultation|appointment|schedule( a)? slot|consult|meet(ing)?)\b/.test(m)) return 'open_consultation'
+  if (/\b(contact|inquir|reach (out|us)|message|email( us)?|address|phone|directions?)\b/.test(m)) return 'open_contact'
+  if (/\b(practice areas?|services|legal services|specializ|expertise|criminal|corporate|family law|property law|labour|civil|matrimonial)\b/.test(m)) return 'navigate_practice_areas'
+  if (/\b(team|lawyers?|advocates?|partners?|members?|who (are|is) (you|we)|our firm|firm history|about( us)?|philosophy)\b/.test(m)) return 'navigate_about'
+  if (/\b(articles?|blog|legal news|updates?|posts?|insights?)\b/.test(m)) return 'navigate_blog'
+  if (/\b(testimonials?|reviews?|client feedback|client stories)\b/.test(m)) return 'navigate_testimonials'
+  if (/\b(home(page)?|main page|landing|start|back to home)\b/.test(m)) return 'navigate_home'
 
-  // Navigate home
-  if (m.match(/\b(home|homepage|main page|start|go home|back to home)\b/))
-    return 'navigate_home'
-
-  // Navigate about
-  if (m.match(/\b(about|about us|our firm|firm history|team|who are you|advocacy|philosophy)\b/))
-    return 'navigate_about'
-
-  // Navigate practice areas
-  if (m.match(/\b(practice areas?|services|legal services|what do you do|specializ|expertise|criminal|corporate|family law|property law|labour)\b/))
-    return 'navigate_practice_areas'
-
-  // Navigate blog
-  if (m.match(/\b(blog|articles?|legal news|updates?|read|posts?)\b/))
-    return 'navigate_blog'
+  // Generic "open/show/take me to" with no specific page mentioned — default
+  // to the home page so users always get a button.
+  if (wantsAction) return 'navigate_home'
 
   return null
 }
 
-// Resolve site data scoped to a tenant when a tenantSlug is provided. If the
-// caller is on the SaaS landing (no slug) or the slug doesn't match, we fall
-// back to the global/default-tenant rows so the assistant still has context.
+// STRICT tenant isolation. If the caller has no slug (SaaS landing) we
+// return a minimal, EMPTY site context — never another firm's data. If
+// the slug is unknown we also bail. This makes cross-tenant data leakage
+// in LawAI replies impossible by construction.
 async function fetchSiteData(tenantSlug?: string | null) {
+  if (!tenantSlug) return undefined
   try {
-    let tenantId: string | null = null
-    let firmName: string | undefined
-    if (tenantSlug) {
-      const t = await (prisma as any).tenant?.findUnique({ where: { slug: tenantSlug.toLowerCase() } })
-      if (t) { tenantId = t.id; firmName = t.name }
-    }
+    const tenant = await (prisma as any).tenant?.findUnique({
+      where: { slug: tenantSlug.toLowerCase() },
+    })
+    if (!tenant) return undefined
+    const tenantId = tenant.id as string
+    let firmName: string | undefined = tenant.name
 
-    // Build prisma `where` clauses that prefer the tenant scope when known,
-    // else fall back to the global (null-tenantId) rows.
-    const scope = (extra: Record<string, any> = {}) =>
-      tenantId ? { ...extra, tenantId } : { ...extra }
-
+    // EVERY query below filters on tenantId. No global / null-tenant
+    // fallback — a tenant's assistant can ONLY see its own rows.
     const [profile, practiceAreas, teamMembers, faqs, articles, brandSetting] = await Promise.all([
-      (prisma as any).aboutProfile?.findFirst({ where: tenantId ? { tenantId } : {} }),
-      (prisma as any).practiceArea?.findMany({ where: scope({ isActive: true }), orderBy: { order: 'asc' }, take: 20 }),
-      (prisma as any).teamMember?.findMany({ where: scope({ isActive: true }), orderBy: { order: 'asc' }, take: 20 }),
-      (prisma as any).faq?.findMany({ where: { isActive: true }, orderBy: { order: 'asc' }, take: 30 }),
-      (prisma as any).blogPost?.findMany({ where: scope({ status: 'PUBLISHED' }), orderBy: { publishedAt: 'desc' }, take: 10 }),
-      (prisma as any).siteSetting?.findFirst({ where: tenantId ? { tenantId, key: 'brand_config' } : { key: 'brand_config' } }),
+      (prisma as any).aboutProfile?.findFirst({ where: { tenantId } }),
+      (prisma as any).practiceArea?.findMany({ where: { tenantId, isActive: true }, orderBy: { order: 'asc' }, take: 20 }),
+      (prisma as any).teamMember?.findMany({ where: { tenantId, isActive: true }, orderBy: { order: 'asc' }, take: 20 }),
+      (prisma as any).faq?.findMany({ where: { tenantId, isActive: true }, orderBy: { order: 'asc' }, take: 30 }).catch(() => []),
+      (prisma as any).blogPost?.findMany({ where: { tenantId, status: 'PUBLISHED' }, orderBy: { publishedAt: 'desc' }, take: 10 }),
+      (prisma as any).siteSetting?.findFirst({ where: { tenantId, key: 'brand_config' } }),
     ])
 
     const officeDetails = (() => {
@@ -102,15 +89,15 @@ async function fetchSiteData(tenantSlug?: string | null) {
 
     let brand: any = {}
     if (brandSetting?.value) { try { brand = JSON.parse(brandSetting.value) } catch {} }
-    if (!firmName) firmName = brand?.firm_full_name || brand?.firm_name || profile?.name
+    firmName = brand?.firm_full_name || brand?.firm_name || firmName
 
     return {
       firmName,
-      tenantSlug: tenantSlug || undefined,
+      tenantSlug,
       officeAddress: officeDetails?.address || undefined,
       officePhone: officeDetails?.phone || undefined,
       officeEmail: officeDetails?.email || undefined,
-      practiceAreas: (practiceAreas || []).map((p: any) => ({ title: p.title, description: p.description })),
+      practiceAreas: (practiceAreas || []).map((p: any) => ({ title: p.title, description: p.description, slug: p.slug })),
       teamMembers: (teamMembers || []).map((m: any) => ({ name: m.name, title: m.title, expertise: m.expertise })),
       articles: (articles || []).map((b: any) => ({ title: b.title, excerpt: b.excerpt, slug: b.slug })),
       faqs: (faqs || []).map((f: any) => ({ question: f.question, answer: f.answer })),

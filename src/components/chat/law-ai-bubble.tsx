@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
-import { Bot, Check, Copy, Loader2, Scale, Send, Trash2, X, ChevronDown, ExternalLink } from 'lucide-react'
+import { Bot, Check, Copy, Loader2, Scale, Send, Trash2, X, ChevronDown, ArrowUpRight } from 'lucide-react'
 
 interface Message {
   role: 'user' | 'assistant'
@@ -28,24 +28,27 @@ function NavChip({ label, href, onClick }: { label: string; href: string; onClic
   return (
     <button
       onClick={onClick}
-      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[#F4E8D8]/40 bg-[#F6F0E8]/10 text-[10px] font-black uppercase tracking-widest text-primary hover:bg-[#F6F0E8]/20 transition-colors"
+      className="group inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-primary to-accent px-3 py-1.5 text-[11px] font-semibold text-white shadow-sm shadow-[#14203E]/20 transition-transform hover:scale-[1.03] hover:shadow-amber-300/40"
     >
-      <ExternalLink className="w-3 h-3" />{label}
+      <span>{label}</span>
+      <ArrowUpRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
     </button>
   )
 }
 
-// Rewrites legacy hard-coded paths to live inside the current tenant when the
-// chat is opened on a /t/<slug>/... page.
+// Build the per-tenant nav targets. When on /team/<slug>/* the chat
+// suggests pages INSIDE that workspace; on the SaaS landing it falls back
+// to the marketing flow.
 function buildNavMap(tenantSlug?: string | null) {
-  const base = tenantSlug ? `/t/${tenantSlug}` : ''
+  const base = tenantSlug ? `/team/${tenantSlug}` : ''
   return {
-    navigate_home: { label: 'Go to Home', href: base || '/' },
-    navigate_about: { label: 'About', href: tenantSlug ? `${base}/team` : '/' },
-    navigate_practice_areas: { label: 'Practice Areas', href: tenantSlug ? `${base}/practice-areas` : '/' },
-    navigate_blog: { label: 'Articles', href: tenantSlug ? `${base}/articles` : '/' },
-    open_consultation: { label: 'Consult', href: tenantSlug ? `${base}/book` : '/signup' },
-    open_contact: { label: 'Contact', href: tenantSlug ? `${base}/contact` : '/' },
+    navigate_home:            { label: 'Open home',            href: base || '/' },
+    navigate_about:           { label: 'Open team',            href: tenantSlug ? `${base}/team` : '/' },
+    navigate_practice_areas:  { label: 'Open practice areas',  href: tenantSlug ? `${base}/practice-areas` : '/' },
+    navigate_blog:            { label: 'Open articles',        href: tenantSlug ? `${base}/articles` : '/' },
+    navigate_testimonials:    { label: 'Open testimonials',    href: tenantSlug ? `${base}/team` : '/' },
+    open_consultation:        { label: 'Book consultation',    href: tenantSlug ? `${base}/book` : '/signup' },
+    open_contact:             { label: 'Open contact',         href: tenantSlug ? `${base}/contact` : '/' },
   } as Record<string, { label: string; href: string }>
 }
 
@@ -70,13 +73,16 @@ function MessageBubble({ msg, tenantSlug }: { msg: Message & { triggerAction?: s
         }`}>
           <p className="whitespace-pre-wrap">{msg.content}</p>
         </div>
-        {navLabel && (
-          <a
+        {navLabel && navAction && (
+          <NavChip
+            label={navLabel.label}
             href={navLabel.href}
-            className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-800 transition hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-200 dark:hover:bg-amber-900/30"
-          >
-            <ExternalLink className="h-3 w-3" />{navLabel.label}
-          </a>
+            onClick={() => {
+              // Let the parent shell handle in-app vs. router navigation; the
+              // link itself is just a hint, the click triggers the real route.
+              window.location.assign(navLabel.href)
+            }}
+          />
         )}
       </div>
     </div>

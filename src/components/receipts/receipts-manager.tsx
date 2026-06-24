@@ -118,12 +118,12 @@ export function ReceiptsManager() {
             <select
               value={form.paymentMethod}
               onChange={(e) => setForm({ ...form, paymentMethod: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none"
+              className="w-full px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
             >
-              <option value="UPI">UPI</option>
-              <option value="NEFT">NEFT / Bank transfer</option>
-              <option value="CASH">Cash</option>
-              <option value="OTHER">Other</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="UPI">UPI</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="NEFT">NEFT / Bank transfer</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="CASH">Cash</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="OTHER">Other</option>
             </select>
           </div>
 
@@ -141,8 +141,10 @@ export function ReceiptsManager() {
           </div>
 
           <div className="grid sm:grid-cols-3 gap-3">
-            <select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none">
-              <option value="INR">INR (₹)</option><option value="USD">USD ($)</option><option value="EUR">EUR</option>
+            <select value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm text-slate-900 outline-none dark:border-white/15 dark:bg-[#1a2030] dark:text-white">
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="INR">INR (₹)</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="USD">USD ($)</option>
+              <option className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white" value="EUR">EUR</option>
             </select>
             <input type="number" value={form.taxRate} onChange={(e) => setForm({ ...form, taxRate: Number(e.target.value) })} placeholder="Tax %" className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none" />
             <input value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} placeholder="Notes (optional)" className="px-3 py-2.5 rounded-xl border border-[#F4E8D8] bg-white text-sm outline-none" />
