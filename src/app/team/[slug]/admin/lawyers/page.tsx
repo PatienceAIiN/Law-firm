@@ -5,6 +5,7 @@ import { getTenantBySlug } from '@/lib/tenant'
 import { prisma } from '@/lib/prisma'
 import { TenantAdminShell } from '@/components/tenant/admin-shell'
 import { LawyersClient } from './lawyers-client'
+import { WORKSPACE_LAWYER_SEAT_LIMIT } from '@/lib/workspace-limits'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +23,11 @@ export default async function TenantLawyersPage({ params }: { params: Promise<{ 
   return (
     <TenantAdminShell tenant={tenant} currentUser={currentUser}>
       <h2 className="mb-4 text-xl font-bold text-primary dark:text-white">Lawyers</h2>
-      <LawyersClient slug={slug} items={items.map((a) => ({ id: a.id, name: a.name, email: a.email, isActive: a.isActive }))} />
+      <LawyersClient
+        slug={slug}
+        items={items.map((a) => ({ id: a.id, name: a.name, email: a.email, isActive: a.isActive }))}
+        seatLimit={WORKSPACE_LAWYER_SEAT_LIMIT}
+      />
     </TenantAdminShell>
   )
 }
