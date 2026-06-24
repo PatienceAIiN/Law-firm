@@ -19,7 +19,7 @@ export function LawyersClient({ slug, items, seatLimit }: { slug: string; items:
     start(async () => {
       const result = await createAdvocate(slug, fd)
       if (result?.ok === false) {
-        setError(result.error)
+        setError(result.error || 'Failed to invite lawyer')
         return
       }
       ;(e.target as HTMLFormElement).reset()
