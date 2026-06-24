@@ -59,6 +59,7 @@ export function Header({ brand, navigation, tenantSlug, mobileOpen, onToggleMobi
               <Link
                 key={`${item.name}-${item.href}`}
                 href={item.href}
+                prefetch
                 className={cn(
                   'text-[18px] transition-colors',
                   active ? 'font-semibold text-primary dark:text-white' : 'text-primary/80 hover:text-primary dark:text-white/70 dark:hover:text-white',

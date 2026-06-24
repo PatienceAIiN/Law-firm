@@ -59,7 +59,12 @@ export async function fetchWithCache<T>(
   }
 
   try {
-    const cached = await redis.get(key)
+    // Hard timeout — a stalled Redis must never hold up a server-rendered
+    // page. If the cache read takes >800ms, fall through to the DB.
+    const cached = await Promise.race<string | null>([
+      redis.get(key) as Promise<string | null>,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), 800)),
+    ])
     if (cached) {
       return JSON.parse(cached) as T
     }
