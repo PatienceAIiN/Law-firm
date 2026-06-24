@@ -2,6 +2,7 @@ import { NextAuthOptions } from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
 import bcrypt from 'bcryptjs'
 import { prisma } from './prisma'
+import { WORKSPACE_LAWYER_SEAT_LIMIT } from './workspace-limits'
 
 export const tenantLawyerAuthOptions: NextAuthOptions = {
   providers: [
@@ -29,6 +30,19 @@ export const tenantLawyerAuthOptions: NextAuthOptions = {
 
           const ok = await bcrypt.compare(password, advocate.password)
           if (!ok) return null
+
+          const allowedSeat = await prisma.advocate.findFirst({
+            where: { tenantId: tenant.id, isActive: true },
+            orderBy: [{ createdAt: 'asc' }, { id: 'asc' }],
+            skip: WORKSPACE_LAWYER_SEAT_LIMIT - 1,
+            select: { createdAt: true, id: true },
+          })
+          if (allowedSeat) {
+            const isBeyondSeatLimit =
+              advocate.createdAt > allowedSeat.createdAt ||
+              (advocate.createdAt.getTime() === allowedSeat.createdAt.getTime() && advocate.id > allowedSeat.id)
+            if (isBeyondSeatLimit) return null
+          }
 
           let ip = 'unknown'
           if (req && req.headers) {

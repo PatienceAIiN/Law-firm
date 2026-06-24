@@ -10,6 +10,7 @@ import { getServerSession } from 'next-auth/next'
 import { prisma } from '@/lib/prisma'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { sendEmail } from '@/lib/email'
+import { WORKSPACE_LAWYER_SEAT_LIMIT, lawyerSeatLimitMessage } from '@/lib/workspace-limits'
 
 async function requireTenant(slug: string) {
   const session = await getServerSession(tenantAdminAuthOptions)
@@ -63,6 +64,11 @@ export async function createAdvocate(slug: string, formData: FormData) {
   const title = (formData.get('title') as string)?.trim() || 'Advocate'
   if (!name || !email) throw new Error('Name and email are required')
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Valid email required')
+
+  const lawyerCount = await prisma.advocate.count({ where: { tenantId } })
+  if (lawyerCount >= WORKSPACE_LAWYER_SEAT_LIMIT) {
+    return { ok: false, error: lawyerSeatLimitMessage() }
+  }
 
   // Lawyer is created INACTIVE with a random placeholder password; they set
   // their own password via an activation link sent to their email.
