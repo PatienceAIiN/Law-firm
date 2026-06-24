@@ -16,13 +16,14 @@ export const tenantAdminAuthOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const tenantSlug = credentials?.tenantSlug?.toString().toLowerCase().trim()
-        const email = credentials?.email?.toString().toLowerCase().trim()
-        const password = credentials?.password?.toString()
-        if (!tenantSlug || !email || !password) return null
+        try {
+          const tenantSlug = credentials?.tenantSlug?.toString().toLowerCase().trim()
+          const email = credentials?.email?.toString().toLowerCase().trim()
+          const password = credentials?.password?.toString()
+          if (!tenantSlug || !email || !password) return null
 
-        const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
-        if (!tenant || tenant.status !== 'active') return null
+          const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
+          if (!tenant || tenant.status !== 'active') return null
 
         const user = await prisma.adminUser.findFirst({
           where: { tenantId: tenant.id, email },
@@ -40,6 +41,13 @@ export const tenantAdminAuthOptions: NextAuthOptions = {
           tenantId: tenant.id,
           tenantSlug: tenant.slug,
         } as any
+        } catch (e) {
+          // Never let an exception bubble up — NextAuth would turn that
+          // into a 500/502 with an HTML body, which the client tries to
+          // JSON.parse and explodes with "Unexpected token <".
+          console.error('[admin-auth] authorize crashed:', e)
+          return null
+        }
       },
     }),
   ],

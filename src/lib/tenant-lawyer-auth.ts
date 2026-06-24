@@ -13,42 +13,50 @@ export const tenantLawyerAuthOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const tenantSlug = credentials?.tenantSlug?.toString().toLowerCase().trim()
-        const email = credentials?.email?.toString().toLowerCase().trim()
-        const password = credentials?.password?.toString()
-        if (!tenantSlug || !email || !password) return null
+        try {
+          const tenantSlug = credentials?.tenantSlug?.toString().toLowerCase().trim()
+          const email = credentials?.email?.toString().toLowerCase().trim()
+          const password = credentials?.password?.toString()
+          if (!tenantSlug || !email || !password) return null
 
-        const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
-        if (!tenant || tenant.status !== 'active') return null
+          const tenant = await prisma.tenant.findUnique({ where: { slug: tenantSlug } })
+          if (!tenant || tenant.status !== 'active') return null
 
-        const advocate = await prisma.advocate.findFirst({
-          where: { tenantId: tenant.id, email, isActive: true },
-        })
-        if (!advocate) return null
+          const advocate = await prisma.advocate.findFirst({
+            where: { tenantId: tenant.id, email, isActive: true },
+          })
+          if (!advocate) return null
 
-        const ok = await bcrypt.compare(password, advocate.password)
-        if (!ok) return null
+          const ok = await bcrypt.compare(password, advocate.password)
+          if (!ok) return null
 
-        let ip = 'unknown'
-        if (req && req.headers) {
-          const xff = req.headers['x-forwarded-for']
-          const xreal = req.headers['x-real-ip']
-          if (xff) ip = Array.isArray(xff) ? xff[0] : xff.split(',')[0]
-          else if (xreal) ip = Array.isArray(xreal) ? xreal[0] : xreal
+          let ip = 'unknown'
+          if (req && req.headers) {
+            const xff = req.headers['x-forwarded-for']
+            const xreal = req.headers['x-real-ip']
+            if (xff) ip = Array.isArray(xff) ? xff[0] : xff.split(',')[0]
+            else if (xreal) ip = Array.isArray(xreal) ? xreal[0] : xreal
+          }
+
+          // Fire-and-forget — DON'T block the login response on an access
+          // log insert. A saturated pool was making this take seconds and
+          // pushing the whole request past the platform gateway timeout.
+          prisma.accessLog
+            .create({ data: { advocateId: advocate.id, loginTime: new Date(), ipAddress: ip } })
+            .catch((err) => console.warn('[lawyer-auth] accessLog skipped:', err?.message))
+
+          return {
+            id: advocate.id,
+            email: advocate.email,
+            name: advocate.name,
+            role: 'lawyer',
+            tenantId: tenant.id,
+            tenantSlug: tenant.slug,
+          } as any
+        } catch (e) {
+          console.error('[lawyer-auth] authorize crashed:', e)
+          return null
         }
-
-        await prisma.accessLog.create({
-          data: { advocateId: advocate.id, loginTime: new Date(), ipAddress: ip },
-        })
-
-        return {
-          id: advocate.id,
-          email: advocate.email,
-          name: advocate.name,
-          role: 'lawyer',
-          tenantId: tenant.id,
-          tenantSlug: tenant.slug,
-        } as any
       },
     }),
   ],
