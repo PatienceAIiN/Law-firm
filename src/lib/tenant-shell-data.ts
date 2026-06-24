@@ -49,6 +49,8 @@ export async function loadTenantPublicShell(slug: string): Promise<TenantPublicD
       ]
       return { tenant, brand: brandData, officeDetails, navigation, practiceAreas }
     },
-    60 // short TTL — branding updates need to surface quickly
+    // 10-minute TTL. The cache key is busted on every admin write
+    // (see admin/actions.ts → invalidateCache) so this is safe to be long.
+    600
   )
 }

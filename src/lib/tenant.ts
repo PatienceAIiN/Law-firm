@@ -19,7 +19,9 @@ export async function getTenantBySlug(slug: string): Promise<TenantRecord | null
       if (!t) return null
       return { id: t.id, slug: t.slug, name: t.name, ownerEmail: t.ownerEmail, status: t.status }
     },
-    60 // short TTL — status changes must surface fast
+    // 5-minute TTL — status changes still surface fast, and we no longer
+    // pay a DB hit on every cold-shell render.
+    300
   )
 }
 
