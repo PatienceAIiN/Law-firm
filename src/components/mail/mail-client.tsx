@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import {
   Mail, Inbox, Send, Trash2, RefreshCw, Loader2, Search, X, Plus,
-  Star, AlertTriangle, Plug, Paperclip, ExternalLink,
+  Star, AlertTriangle, Plug, Paperclip, ExternalLink, LogOut,
 } from 'lucide-react'
 
 type Status = { configured: boolean; connected: boolean; email: string | null; redirectUri?: string }
@@ -205,6 +205,23 @@ export function MailClient({
     setTimeout(() => setToast(''), 2500)
   }
 
+  const disconnectGmail = async () => {
+    if (!window.confirm('Disconnect this Gmail account?')) return
+    setError('')
+    try {
+      const res = await fetch(`${basePath}/disconnect`, { method: 'POST' })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) throw new Error(data.error || 'Could not disconnect Gmail')
+      setItems([])
+      setSelected(null)
+      setStatus((s) => s ? { ...s, connected: false, email: null } : s)
+      setToast('Gmail disconnected')
+      setTimeout(() => setToast(''), 2500)
+    } catch (e: any) {
+      setError(e?.message || 'Could not disconnect Gmail')
+    }
+  }
+
   const sendMail = async () => {
     if (!compose) return
     setSending(true)
@@ -295,6 +312,9 @@ export function MailClient({
               <ExternalLink className="w-4 h-4 text-[#64748b]" />
             </a>
           )}
+          <button onClick={disconnectGmail} className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-white px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-50">
+            <LogOut className="h-3.5 w-3.5" /> Logout
+          </button>
           <button onClick={() => setCompose({ to: '', subject: '', body: '' })} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold hover:bg-accent">
             <Plus className="w-3.5 h-3.5" /> Compose
           </button>

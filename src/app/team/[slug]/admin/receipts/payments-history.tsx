@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState, useTransition } from 'react'
-import { Loader2, X, RotateCcw, CheckCircle2, Clock, AlertCircle, IndianRupee } from 'lucide-react'
+import { Loader2, X, RotateCcw, CheckCircle2, Clock, AlertCircle, IndianRupee, Trash2 } from 'lucide-react'
 
 type Payment = {
   id: string
@@ -53,6 +53,15 @@ export function PaymentsHistory({ slug, payments }: { slug: string; payments: Pa
   useEffect(() => {
     setRows(payments)
   }, [payments])
+
+  const deletePayment = async (payment: Payment) => {
+    if (!window.confirm('Delete this completed payment record?')) return
+    const res = await fetch(`/api/payments/${payment.id}`, { method: 'DELETE' })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) { window.alert(data.error || 'Delete failed'); return }
+    setRows((current) => current.filter((p) => p.id !== payment.id))
+    setOpen((current) => current?.id === payment.id ? null : current)
+  }
 
   const replacePayment = (payment: Payment) => {
     setRows((current) => current.map((p) => (p.id === payment.id ? { ...p, ...payment } : p)))
@@ -140,12 +149,12 @@ export function PaymentsHistory({ slug, payments }: { slug: string; payments: Pa
         )}
       </div>
 
-      {open && <PaymentModal slug={slug} payment={open} onClose={() => setOpen(null)} onPaymentChange={replacePayment} />}
+      {open && <PaymentModal slug={slug} payment={open} onClose={() => setOpen(null)} onPaymentChange={replacePayment} onDelete={deletePayment} />}
     </section>
   )
 }
 
-function PaymentModal({ slug: _slug, payment, onClose, onPaymentChange }: { slug: string; payment: Payment; onClose: () => void; onPaymentChange: (payment: Payment) => void }) {
+function PaymentModal({ slug: _slug, payment, onClose, onPaymentChange, onDelete }: { slug: string; payment: Payment; onClose: () => void; onPaymentChange: (payment: Payment) => void; onDelete: (payment: Payment) => void }) {
   const [pending, start] = useTransition()
   const [error, setError] = useState('')
   const [refundAmount, setRefundAmount] = useState<string>('')
@@ -234,6 +243,12 @@ function PaymentModal({ slug: _slug, payment, onClose, onPaymentChange }: { slug
             </select>
           </div>
         </div>
+
+        {payment.status === 'COMPLETED' && (
+          <button type="button" disabled={pending} onClick={() => onDelete(payment)} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-60">
+            <Trash2 className="h-3.5 w-3.5" /> Delete after verification
+          </button>
+        )}
 
         {canRefund && (
           <div className="mt-5 border-t border-slate-200 pt-4 dark:border-white/10">

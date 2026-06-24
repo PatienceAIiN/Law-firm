@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { getServerSession } from 'next-auth/next'
 import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { prisma } from '@/lib/prisma'
+import { parseCaseCsv } from '@/lib/case-import-export'
 
 async function authed(slug: string) {
   const session = await getServerSession(tenantAdminAuthOptions)
@@ -59,4 +60,38 @@ export async function deleteCase(slug: string, id: string) {
   const { tenantId } = await authed(slug)
   await prisma.courtCase.deleteMany({ where: { id, tenantId } })
   revalidatePath(`/team/${slug}/admin/cases`)
+}
+
+
+export async function importCases(slug: string, formData: FormData) {
+  const { tenantId } = await authed(slug)
+  const file = formData.get('file') as File | null
+  if (!file || file.size === 0) throw new Error('Choose a CSV or XLSX file')
+  const name = file.name.toLowerCase()
+  if (!name.endsWith('.csv') && !name.endsWith('.xlsx')) throw new Error('Only CSV and XLSX files are accepted')
+  const text = await file.text()
+  const rows = parseCaseCsv(text)
+  if (rows.length === 0) throw new Error('No valid cases found. Use columns: Case Number, Title, Type, Status, Court, Client Name, Client Email, Client Phone, Next Hearing.')
+  let created = 0
+  for (const row of rows) {
+    const existing = await prisma.courtCase.findFirst({ where: { tenantId, caseNumber: row.caseNumber } })
+    if (existing) continue
+    await prisma.courtCase.create({
+      data: {
+        tenantId,
+        caseNumber: row.caseNumber,
+        title: row.title,
+        caseType: row.caseType || 'Civil',
+        status: row.status || 'ACTIVE',
+        court: row.court,
+        clientName: row.clientName,
+        clientEmail: row.clientEmail || '',
+        clientPhone: row.clientPhone || undefined,
+        nextHearingDate: row.nextHearingDate ? new Date(row.nextHearingDate) : undefined,
+      },
+    })
+    created++
+  }
+  revalidatePath(`/team/${slug}/admin/cases`)
+  return { created, skipped: rows.length - created }
 }

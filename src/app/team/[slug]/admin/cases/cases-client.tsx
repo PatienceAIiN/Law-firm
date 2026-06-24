@@ -2,8 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Plus, Trash2, FileText, Loader2 } from 'lucide-react'
-import { createCase, deleteCase } from './actions'
+import { Download, FileUp, Plus, Trash2, FileText, Loader2 } from 'lucide-react'
+import { createCase, deleteCase, importCases } from './actions'
 import { DeleteButton } from '@/components/ui/delete-button'
 
 type C = { id: string; caseNumber: string; title: string; status: string; court: string; clientName: string; advocateName: string | null; nextHearingDate: string | null }
@@ -14,6 +14,23 @@ export function TenantCasesClient({ slug, cases, advocates }: { slug: string; ca
   const router = useRouter()
   const [open, setOpen] = useState(false)
   const [error, setError] = useState('')
+  const [importing, setImporting] = useState(false)
+
+  const onImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setImporting(true)
+    setError('')
+    const fd = new FormData(); fd.set('file', file)
+    start(async () => {
+      try {
+        const result = await importCases(slug, fd)
+        window.alert(`Imported ${result.created} case(s). Skipped ${result.skipped} duplicate/invalid row(s).`)
+        router.refresh()
+      } catch (err: any) { setError(err.message || 'Import failed') }
+      finally { setImporting(false); e.target.value = '' }
+    })
+  }
 
   const onCreate = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -30,14 +47,22 @@ export function TenantCasesClient({ slug, cases, advocates }: { slug: string; ca
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-sm text-slate-500">{cases.length} case{cases.length === 1 ? '' : 's'}</p>
-        <button
-          onClick={() => setOpen(true)}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent"
-        >
-          <Plus className="h-3.5 w-3.5" /> New case
-        </button>
+        <div className="flex flex-wrap gap-2">
+          <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200">
+            {importing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <FileUp className="h-3.5 w-3.5" />} Import CSV/XLSX
+            <input type="file" accept=".csv,.xlsx,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={onImport} className="hidden" />
+          </label>
+          <a href={`/team/${slug}/admin/api/cases/export?format=pdf`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200"><Download className="h-3.5 w-3.5" /> PDF</a>
+          <a href={`/team/${slug}/admin/api/cases/export?format=xlsx`} className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200"><Download className="h-3.5 w-3.5" /> XLSX</a>
+          <button
+            onClick={() => setOpen(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-semibold text-white hover:bg-accent"
+          >
+            <Plus className="h-3.5 w-3.5" /> New case
+          </button>
+        </div>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm dark:border-white/10 dark:bg-[#11151f]">

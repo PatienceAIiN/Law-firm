@@ -90,6 +90,9 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
           createdAt: p.createdAt.toISOString(),
           notes: p.notes,
           receiptId: p.receiptId,
+          transactionNumber: (p as any).transactionNumber || null,
+          screenshotUrl: (p as any).screenshotUrl || null,
+          statusUpdatedByName: (p as any).statusUpdatedByName || null,
         }))}
       />
     </div>
