@@ -140,6 +140,7 @@ model DirectThread {
   clientEmail  String
   clientName   String?
   subject      String?
+  firmNote     String?  // private firm/lawyer note about this client; never sent to client
   lastMessageAt DateTime @default(now())
   createdAt    DateTime @default(now())
   messages     DirectMessage[]

@@ -147,6 +147,14 @@ export function TenantLawyerClient({
             )}
           </Link>
           <Link
+            href={`/team/${tenant.slug}/lawyer/chats`}
+            prefetch
+            onMouseDown={() => setNavPending(true)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-primary active:scale-[0.98] dark:text-slate-300 dark:hover:text-white"
+          >
+            <Mail className="h-4 w-4" /> Chats
+          </Link>
+          <Link
             href={`/team/${tenant.slug}/lawyer/receipts`}
             prefetch
             onMouseDown={() => setNavPending(true)}

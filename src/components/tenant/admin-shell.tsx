@@ -24,6 +24,7 @@ const TABS = (slug: string) => [
   { href: `/team/${slug}/admin/cases`,          label: 'Cases',         icon: Gavel },
   { href: `/team/${slug}/admin/availability`,   label: 'Availability',  icon: CalendarClock },
   { href: `/team/${slug}/admin/inquiries`,      label: 'Inquiries',     icon: Inbox },
+  { href: `/team/${slug}/admin/chats`,          label: 'Chats',         icon: Mail },
   { href: `/team/${slug}/admin/receipts`,       label: 'Receipts',      icon: ReceiptText },
   { href: `/team/${slug}/admin/team`,           label: 'Team',          icon: UserPlus },
   { href: `/team/${slug}/admin/testimonials`,   label: 'Testimonials',  icon: Quote },
