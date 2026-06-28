@@ -88,7 +88,28 @@ model Payment {
   @@index([tenantId, advocateId])
   @@index([receiptId])
   @@index([razorpayOrderId])
+  logs              PaymentLog[]
+
   @@map("payments")
+}
+
+model PaymentLog {
+  id          String   @id @default(cuid())
+  paymentId   String
+  tenantId    String
+  actorType   String
+  actorId     String?
+  actorName   String
+  action      String
+  fromStatus  String?
+  toStatus    String?
+  details     String?
+  createdAt   DateTime @default(now())
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, paymentId])
+  @@map("payment_logs")
 }
 
 model AppSumoCode {

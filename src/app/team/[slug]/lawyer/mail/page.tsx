@@ -19,17 +19,22 @@ export default async function TenantLawyerMailPage({ params }: { params: Promise
   const u: any = session?.user
   if (!u?.id || u.tenantSlug !== slug) redirect(`/team/${slug}/lawyer/login`)
 
-  const cases = await prisma.courtCase.findMany({
-    where: { tenantId: tenant.id, advocateId: u.id },
-    select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, nextHearingDate: true },
-    orderBy: { createdAt: 'desc' }
-  })
-  
-  const receipts = await prisma.receipt.findMany({
-    where: { tenantId: tenant.id, advocateId: u.id },
-    select: { id: true, number: true, clientName: true },
-    orderBy: { createdAt: 'desc' }
-  })
+  let cases: any[] = []
+  let receipts: any[] = []
+  try {
+    cases = await prisma.courtCase.findMany({
+      where: { tenantId: tenant.id, advocateId: u.id },
+      select: { id: true, caseNumber: true, title: true, clientName: true, clientEmail: true, nextHearingDate: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) { console.warn('[lawyer/mail] cases skipped:', (e as any)?.message) }
+  try {
+    receipts = await prisma.receipt.findMany({
+      where: { tenantId: tenant.id, advocateId: u.id },
+      select: { id: true, number: true, clientName: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) { console.warn('[lawyer/mail] receipts skipped:', (e as any)?.message) }
 
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0b0f17] dark:text-slate-100">

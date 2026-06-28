@@ -28,6 +28,19 @@ export function gmailConfigured() {
   return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET)
 }
 
+
+export function gmailOAuthBaseUrl(req?: Request | { url: string; headers: Headers }) {
+  const configured = (process.env.NEXTAUTH_URL || process.env.NEXT_PUBLIC_APP_URL || '').trim()
+  if (configured) return configured.replace(/\/$/, '')
+  if (!req) return 'http://localhost:3000'
+  const url = new URL(req.url)
+  const forwardedHost = req.headers.get('x-forwarded-host') || req.headers.get('host') || url.host
+  let protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '') || 'https'
+  const isLocal = /(^localhost(:|$)|^127\.0\.0\.1(:|$))/i.test(forwardedHost)
+  if (!isLocal && protocol !== 'https') protocol = 'https'
+  return `${protocol}://${forwardedHost}`.replace(/\/$/, '')
+}
+
 export function gmailRedirectUri(redirectPath = ADMIN_REDIRECT, baseUrl?: string) {
   const base = (baseUrl || process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
   return `${base}${redirectPath}`

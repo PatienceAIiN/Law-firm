@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { exchangeCodeAndStore } from '@/lib/gmail'
+import { exchangeCodeAndStore, gmailOAuthBaseUrl, advocateMailKey } from '@/lib/gmail'
 import { tenantGmailAdminKey } from '@/lib/tenant-settings'
-import { advocateMailKey } from '@/lib/gmail'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,8 +8,7 @@ export async function GET(req: NextRequest) {
   const url = new URL(req.url)
   const code = url.searchParams.get('code')
   const state = url.searchParams.get('state') // Expected format: "type:slug:id"
-  const protocol = req.headers.get('x-forwarded-proto') || url.protocol.replace(':', '')
-  const base = `${protocol}://${url.host}`
+  const base = gmailOAuthBaseUrl(req)
 
   if (!code || !state) {
     return NextResponse.redirect(`${base}/?error=missing_auth_params`)

@@ -27,6 +27,9 @@ type Payment = {
   createdAt: string
   notes?: string | null
   receiptId?: string | null
+  transactionNumber?: string | null
+  screenshotUrl?: string | null
+  statusUpdatedByName?: string | null
 }
 
 const TABS = [
@@ -49,8 +52,27 @@ export function LawyerPaymentsHistory({ slug, payments }: { slug: string; paymen
   const router = useRouter()
   const [, start] = useTransition()
   const [tab, setTab] = useState<string>('all')
+  const [rows, setRows] = useState<Payment[]>(payments)
   const [open, setOpen] = useState<Payment | null>(null)
-  const filtered = payments.filter((p) => (tab === 'all' ? true : p.status === tab || (tab === 'PENDING' && p.status === 'IN_PROGRESS')))
+  const updateStatus = async (payment: Payment, status: string) => {
+    const res = await fetch(`/api/payments/${payment.id}/status`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) { window.alert(data.error || 'Status update failed'); return }
+    if (data.payment) {
+      setRows((current) => current.map((p) => p.id === payment.id ? { ...p, ...data.payment } : p))
+      setOpen((current) => current?.id === payment.id ? { ...current, ...data.payment } : current)
+    }
+  }
+
+  const deletePayment = async (payment: Payment) => {
+    if (!window.confirm('Delete this completed payment record?')) return
+    const res = await fetch(`/api/payments/${payment.id}`, { method: 'DELETE' })
+    const data = await res.json().catch(() => ({}))
+    if (!res.ok) { window.alert(data.error || 'Delete failed'); return }
+    setRows((current) => current.filter((p) => p.id !== payment.id))
+    setOpen(null)
+  }
+  const filtered = rows.filter((p) => (tab === 'all' ? true : p.status === tab || (tab === 'PENDING' && p.status === 'IN_PROGRESS')))
 
   return (
     <section className="mt-10">
@@ -130,8 +152,26 @@ export function LawyerPaymentsHistory({ slug, payments }: { slug: string; paymen
               {open.payerPhone && <Row label="Phone" value={open.payerPhone} />}
               {open.razorpayPaymentId && <Row label="Razorpay payment" value={<code className="font-mono text-[11px]">{open.razorpayPaymentId}</code>} />}
               {open.paidAt && <Row label="Paid at" value={new Date(open.paidAt).toLocaleString()} />}
+              {open.transactionNumber && <Row label="UTR / transaction" value={<code className="font-mono text-[11px]">{open.transactionNumber}</code>} />}
+              {open.screenshotUrl && <Row label="Screenshot" value={<a className="text-primary underline" href={open.screenshotUrl} target="_blank" rel="noreferrer">Open proof</a>} />}
+              {open.statusUpdatedByName && <Row label="Last marked by" value={open.statusUpdatedByName} />}
               {open.notes && <Row label="Notes" value={open.notes} />}
             </div>
+
+            <div className="mt-5 border-t border-slate-200 pt-4 dark:border-white/10">
+              <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Manual status</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {['RECEIVED', 'PENDING', 'COMPLETED', 'FAILED'].map((status) => (
+                  <button key={status} type="button" onClick={() => updateStatus(open, status)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">{status}</button>
+                ))}
+              </div>
+            </div>
+
+            {open.status === 'COMPLETED' && (
+              <button type="button" onClick={() => deletePayment(open)} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50">
+                <Trash2 className="h-3.5 w-3.5" /> Delete after verification
+              </button>
+            )}
 
             <p className="mt-5 border-t border-slate-200 pt-3 text-[11px] text-slate-500 dark:border-white/10 dark:text-slate-400">
               Need a refund on this payment? Ask your firm's admin — refunds are admin-only by policy.
