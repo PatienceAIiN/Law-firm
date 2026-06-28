@@ -1,42 +1,28 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 
 const GLYPHS = ['⚖️', '✨', '📜', '🏛️', '⚡']
 
+// Single dynamic glyph + favicon-ring for tenant admin / lawyer / public
+// pages. Captures the page's title ONCE at mount (so the rotating glyph
+// can't accumulate). No visibilitychange "come back" overlay — that was
+// stacking "Come back — Come back — …" on every tab flip.
 export function AnimatedTabTitle() {
-  const baseTitle = useRef<string>('')
-  const idx = useRef(0)
-  const visibleAwayRef = useRef(false)
-
   useEffect(() => {
-    // Only animate the title inside tenant workspaces. The main marketing
-    // site stays static as "Barrister By Patience AI".
     const isTenantPage = /^\/(team|t)\//.test(window.location.pathname)
     if (!isTenantPage) return
 
-    baseTitle.current = document.title.replace(/^[^\w]+\s/, '')
-
+    // Snapshot at mount only. Future setTitle calls don't read it back.
+    const baseTitle = (document.title || 'Workspace').replace(/^[^\w]+\s+/, '').trim()
+    let idx = 0
     const titleTimer = window.setInterval(() => {
-      const glyph = GLYPHS[idx.current % GLYPHS.length]
-      idx.current += 1
-      const current = document.title.replace(/^[^\w]+\s/, '')
-      if (current) baseTitle.current = current
-      document.title = `${glyph} ${baseTitle.current}`
-    }, 1400)
+      const glyph = GLYPHS[idx % GLYPHS.length]
+      idx += 1
+      document.title = `${glyph} ${baseTitle}`
+    }, 1800)
 
-    const onVis = () => {
-      if (document.hidden) {
-        visibleAwayRef.current = true
-        document.title = `👋 Come back — ${baseTitle.current}`
-      } else if (visibleAwayRef.current) {
-        visibleAwayRef.current = false
-        document.title = baseTitle.current
-      }
-    }
-    document.addEventListener('visibilitychange', onVis)
-
-    // Animated favicon — rotating gradient ring drawn on a canvas.
+    // Animated favicon — rotating gradient ring with § glyph.
     let rafId = 0
     let angle = 0
     const canvas = document.createElement('canvas')
@@ -74,9 +60,8 @@ export function AnimatedTabTitle() {
 
     return () => {
       window.clearInterval(titleTimer)
-      document.removeEventListener('visibilitychange', onVis)
       window.cancelAnimationFrame(rafId)
-      document.title = baseTitle.current
+      document.title = baseTitle
     }
   }, [])
 
