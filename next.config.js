@@ -45,7 +45,7 @@ const nextConfig = {
           // Referrer policy — send origin only to external sites
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           // Permissions policy — restrict sensitive browser APIs
-          { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=(), payment=()' },
+          { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=(self), payment=(self)' },
           // HSTS — force HTTPS for 1 year, include subdomains
           { key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' },
           // Content Security Policy — allow self, inline styles/scripts (Next.js needs them), and trusted external sources
