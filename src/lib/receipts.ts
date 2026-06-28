@@ -6,6 +6,32 @@ import { prisma } from './prisma'
 import { sendEmail } from './email'
 import { generateReceiptPdf, type ReceiptItem } from './receipt-pdf'
 
+// Upload a QR PNG buffer to Cloudinary (preferred) or R2 and return a
+// public URL the email <img> can reference. Avoids data: URLs which Gmail
+// strips for security.
+async function uploadQrPng(buf: Buffer, refId: string): Promise<string | null> {
+  try {
+    if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && process.env.CLOUDINARY_API_SECRET) {
+      const { v2: cloudinary } = await import('cloudinary')
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+      })
+      const dataUri = `data:image/png;base64,${buf.toString('base64')}`
+      const r = await cloudinary.uploader.upload(dataUri, {
+        folder: 'law_firm_qr',
+        public_id: `qr-${refId}-${Date.now()}`,
+        resource_type: 'image',
+      })
+      return r.secure_url
+    }
+  } catch (e) {
+    console.warn('[uploadQrPng] cloudinary failed:', (e as any)?.message)
+  }
+  return null
+}
+
 export type PortalUser = { name: string; advocateId: string | null; isAdmin: boolean }
 
 // Allow either an admin or an advocate (lawyer portal) session.
@@ -53,9 +79,11 @@ export async function emailReceipt(receipt: any) {
   const subject = `Payment Receipt ${receipt.number}`
 
   // Look up the tenant so we can build the "Pay & confirm" link + render
-  // the per-tenant UPI QR inline in the email body.
+  // the per-tenant UPI QR inline in the email body. Gmail and most clients
+  // strip <img src="data:..."> for security — so we upload the PNG to
+  // Cloudinary / R2 and reference the resulting public URL.
   let payUrl: string | null = null
-  let qrDataUrl: string | null = null
+  let qrImgUrl: string | null = null
   let upiVpa: string | null = null
   let upiName: string | null = null
   try {
@@ -65,7 +93,7 @@ export async function emailReceipt(receipt: any) {
       if (tenant) {
         const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
         payUrl = `${base}/team/${tenant.slug}/pay/${receipt.id}`
-        const { getPaymentConfig, buildUpiUrl, buildUpiQrDataUrl } = await import('./payments')
+        const { getPaymentConfig, buildUpiUrl, buildUpiQrPng } = await import('./payments')
         const cfg = await getPaymentConfig(tenant.id)
         if ((receipt.paymentMethod || 'UPI').toString().toUpperCase() === 'UPI' && cfg.upiVpa) {
           upiVpa = cfg.upiVpa
@@ -75,7 +103,10 @@ export async function emailReceipt(receipt: any) {
             referenceId: receipt.number, note: `Receipt ${receipt.number}`,
             currency: receipt.currency,
           })
-          qrDataUrl = await buildUpiQrDataUrl(url).catch(() => null)
+          const pngBuf = await buildUpiQrPng(url).catch(() => null)
+          if (pngBuf) {
+            qrImgUrl = await uploadQrPng(pngBuf, receipt.number).catch(() => null)
+          }
         }
       }
     }
@@ -89,12 +120,15 @@ export async function emailReceipt(receipt: any) {
       <p style="margin:0 0 10px;">Dear ${receipt.clientName},</p>
       <p style="margin:0 0 16px;">Your receipt <strong>${receipt.number}</strong> totalling
         <strong>${receipt.currency} ${receipt.total.toFixed(2)}</strong> is attached as a PDF.</p>
-      ${qrDataUrl ? `
+      ${qrImgUrl ? `
         <div style="text-align:center;background:#FFFCF8;border:1px solid #F4E8D8;border-radius:12px;padding:16px;margin:18px 0;">
-          <img src="${qrDataUrl}" alt="UPI QR" width="220" height="220" style="display:inline-block;width:220px;height:220px;"/>
+          <img src="${qrImgUrl}" alt="UPI QR" width="220" height="220" style="display:inline-block;width:220px;height:220px;"/>
           <p style="margin:8px 0 0;font-size:13px;color:#1c2c52;"><strong>Scan to pay with any UPI app</strong></p>
           <p style="margin:4px 0 0;font-size:12px;color:#475569;">${upiVpa}${upiName ? ` · ${upiName}` : ''}</p>
-        </div>` : ''}
+        </div>` : (upiVpa ? `
+        <p style="text-align:center;margin:18px 0;padding:14px;background:#FFFCF8;border:1px solid #F4E8D8;border-radius:12px;">
+          <strong>UPI:</strong> ${upiVpa}${upiName ? ` · ${upiName}` : ''}
+        </p>` : '')}
       ${payUrl ? `
         <p style="text-align:center;margin:18px 0;">
           <a href="${payUrl}" style="display:inline-block;background:#14203E;color:#fff;padding:12px 22px;border-radius:10px;font-weight:600;text-decoration:none;">Pay &amp; confirm payment</a>

@@ -146,7 +146,12 @@
       "Bash(DATABASE_URL=postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql DIRECT_URL=postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql npx prisma db push --skip-generate)",
       "Bash(fuser -k 3002/tcp)",
       "Bash(fuser -k -9 3002/tcp)",
-      "Bash(DATABASE_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' DIRECT_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' npx prisma db push --skip-generate)"
+      "Bash(DATABASE_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' DIRECT_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' npx prisma db push --skip-generate)",
+      "Bash(git fetch *)",
+      "Bash(git pull *)",
+      "Bash(git stash *)",
+      "Bash(git rebase *)",
+      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --skip-generate --accept-data-loss=false)"
     ]
   }
 }

@@ -320,18 +320,6 @@ function PaymentModal({ slug, payment, onClose }: { slug: string; payment: Payme
         </div>
 
 
-        <div className="mt-5 border-t border-slate-200 pt-4 dark:border-white/10">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Manual status</p>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {['RECEIVED', 'PENDING', 'RECONCILIATION'].map((s) => (
-              <button key={s} disabled={pending} onClick={() => saveStatus(s)} className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">{s}</button>
-            ))}
-            <select disabled={pending} onChange={(e) => { if (e.target.value) saveStatus(e.target.value); e.currentTarget.value = '' }} defaultValue="" className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs dark:border-white/15 dark:bg-[#1a2030] dark:text-white">
-              <option value="">More…</option><option value="COMPLETED">Completed / verified</option><option value="FAILED">Failed</option>
-            </select>
-          </div>
-        </div>
-
         {payment.status === 'COMPLETED' && (
           <button type="button" disabled={pending} onClick={onDelete} className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-rose-200 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-60">
             <Trash2 className="h-3.5 w-3.5" /> Delete after verification
