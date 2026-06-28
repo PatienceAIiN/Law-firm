@@ -78,6 +78,15 @@ model Payment {
   approvedById      String?       // AdminUser.id OR Advocate.id who marked COMPLETED
   approvedByName    String?       // denormalized snapshot of the approver's name
   approvedByRole    String?       // 'admin' | 'lawyer'
+  // Codex-branch parallel approval fields — kept for the new
+  // /api/payments/[id]/status PATCH endpoint and PaymentLog audit trail.
+  verificationRequired Boolean    @default(false)
+  statusUpdatedByType  String?
+  statusUpdatedById    String?
+  statusUpdatedByName  String?
+  statusUpdatedAt      DateTime?
+  transactionNumber    String?
+  screenshotUrl        String?
   failureReason     String?
   paidAt            DateTime?
   refundedAt        DateTime?
