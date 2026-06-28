@@ -124,7 +124,8 @@ export function PageManager({ initialPages }: PageManagerProps) {
   const deletePage = async (id: string) => {
     const target = pages.find((page) => page.id === id)
     if (!target) return
-    if (!window.confirm(`Delete page "${target.title}"?`)) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Delete page?', message: `Delete page "${target.title}"? This cannot be undone.`, confirmLabel: 'Delete' }))) return
     await persistPages(pages.filter((page) => page.id !== id))
   }
 

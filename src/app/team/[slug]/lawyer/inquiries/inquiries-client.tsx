@@ -1,9 +1,10 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Reply, X, Send, Archive, Loader2, Inbox } from 'lucide-react'
 import { replyLawyerInquiry, archiveLawyerInquiry } from './actions'
+import { markSeen } from '@/hooks/use-unread-counts'
 
 type Inquiry = {
   id: string
@@ -24,6 +25,7 @@ const TABS = [
 ] as const
 
 export function LawyerInquiriesClient({ slug, items }: { slug: string; items: Inquiry[] }) {
+  useEffect(() => { markSeen('inquiries') }, [])
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>('all')
   const [open, setOpen] = useState<Inquiry | null>(null)
   const router = useRouter()

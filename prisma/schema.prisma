@@ -73,6 +73,11 @@ model Payment {
   payerEmail        String?
   payerPhone        String?
   notes             String?
+  proofUrl          String?       // image proof uploaded by the client (png/jpg/jpeg)
+  utr               String?       // bank / UPI transaction reference submitted by the client
+  approvedById      String?       // AdminUser.id OR Advocate.id who marked COMPLETED
+  approvedByName    String?       // denormalized snapshot of the approver's name
+  approvedByRole    String?       // 'admin' | 'lawyer'
   failureReason     String?
   paidAt            DateTime?
   refundedAt        DateTime?

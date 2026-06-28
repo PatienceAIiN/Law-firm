@@ -32,12 +32,6 @@ export default async function LawyerInquiriesPage({ params }: { params: Promise<
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f17]">
       <div className="mx-auto max-w-5xl px-4 py-6">
-        <Link
-          href={`/team/${slug}/lawyer`}
-          className="mb-4 inline-flex items-center gap-1.5 text-sm text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
-        >
-          <ArrowLeft className="h-4 w-4" /> Back to lawyer portal
-        </Link>
         <h1 className="mb-4 text-2xl font-black tracking-tight text-slate-900 dark:text-white">My inquiries</h1>
         <LawyerInquiriesClient
           slug={slug}

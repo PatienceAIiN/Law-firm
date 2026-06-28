@@ -90,6 +90,10 @@ export default async function LawyerReceiptsPage({ params }: { params: Promise<{
           createdAt: p.createdAt.toISOString(),
           notes: p.notes,
           receiptId: p.receiptId,
+          utr: (p as any).utr || null,
+          proofUrl: (p as any).proofUrl || null,
+          approvedByName: (p as any).approvedByName || null,
+          approvedByRole: (p as any).approvedByRole || null,
         }))}
       />
     </div>

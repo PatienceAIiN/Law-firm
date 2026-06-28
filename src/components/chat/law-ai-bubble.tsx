@@ -151,7 +151,8 @@ export function LawAiBubble({ onOpenConsultation, onOpenContact }: LawAiBubblePr
 
   const clearConversation = async () => {
     if (clearing || (!conversationId && messages.length === 0)) return
-    if (!window.confirm('Clear this conversation?')) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Clear conversation?', message: 'Your previous messages will be removed from memory.', confirmLabel: 'Clear' }))) return
     setClearing(true)
     try {
       if (conversationId) {

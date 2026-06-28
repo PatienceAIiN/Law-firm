@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { assignInquiry, replyInquiry, setInquiryStatus, deleteInquiry } from './actions'
 import { Loader2, Reply, X, Send, Archive, CheckCircle2 } from 'lucide-react'
 import { DeleteButton } from '@/components/ui/delete-button'
+import { markSeen } from '@/hooks/use-unread-counts'
 
 type Advocate = { id: string; name: string }
 type Inquiry = {
@@ -28,6 +29,7 @@ const TABS = [
 ] as const
 
 export function TenantInquiriesClient({ slug, items, advocates }: { slug: string; items: Inquiry[]; advocates: Advocate[] }) {
+  useEffect(() => { markSeen('inquiries') }, [])
   const [tab, setTab] = useState<(typeof TABS)[number]['id']>('all')
   const [pending, start] = useTransition()
   const [open, setOpen] = useState<Inquiry | null>(null)

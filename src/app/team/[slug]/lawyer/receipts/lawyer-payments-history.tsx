@@ -5,8 +5,10 @@
 // lawyer. Lawyers cannot refund — only admins can — so the modal hides the
 // refund block when invoked from this component.
 
-import { useState } from 'react'
-import { X, CheckCircle2, Clock, AlertCircle, IndianRupee } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
+import { X, CheckCircle2, Clock, AlertCircle, IndianRupee, Trash2, Loader2 } from 'lucide-react'
+import { confirmDialog } from '@/components/ui/confirm-dialog'
 
 type Payment = {
   id: string
@@ -43,7 +45,9 @@ function statusBadge(s: string) {
   return 'bg-slate-100 text-slate-700 dark:bg-white/10 dark:text-slate-200'
 }
 
-export function LawyerPaymentsHistory({ slug: _slug, payments }: { slug: string; payments: Payment[] }) {
+export function LawyerPaymentsHistory({ slug, payments }: { slug: string; payments: Payment[] }) {
+  const router = useRouter()
+  const [, start] = useTransition()
   const [tab, setTab] = useState<string>('all')
   const [open, setOpen] = useState<Payment | null>(null)
   const filtered = payments.filter((p) => (tab === 'all' ? true : p.status === tab || (tab === 'PENDING' && p.status === 'IN_PROGRESS')))
@@ -132,6 +136,25 @@ export function LawyerPaymentsHistory({ slug: _slug, payments }: { slug: string;
             <p className="mt-5 border-t border-slate-200 pt-3 text-[11px] text-slate-500 dark:border-white/10 dark:text-slate-400">
               Need a refund on this payment? Ask your firm's admin — refunds are admin-only by policy.
             </p>
+            <div className="mt-3 flex justify-end">
+              <button
+                onClick={async () => {
+                  const ok = await confirmDialog({ title: 'Delete payment?', message: 'This removes the payment record permanently.', confirmLabel: 'Delete', tone: 'danger' })
+                  if (!ok) return
+                  start(async () => {
+                    const { deletePayment } = await import('@/app/team/[slug]/admin/receipts/payment-status-actions')
+                    const r = await deletePayment(slug, open!.id, 'lawyer')
+                    if (!('ok' in r) || !r.ok) { alert((r as any).error || 'Delete failed'); return }
+                    router.refresh()
+                    setOpen(null)
+                  })
+                }}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-100 dark:border-rose-500/30 dark:bg-rose-900/20 dark:text-rose-200 dark:hover:bg-rose-900/30"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Delete payment
+              </button>
+            </div>
           </div>
         </div>
       )}

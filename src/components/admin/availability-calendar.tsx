@@ -206,7 +206,8 @@ export function AvailabilityCalendar({ initialMonth, initialDays }: Availability
   }
 
   const deleteSlot = async (slotId: string) => {
-    if (!window.confirm('Delete this slot?')) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Delete slot?', message: 'This slot will be removed from the booking calendar.', confirmLabel: 'Delete' }))) return
     setLoading(true)
     setError(null)
     try {

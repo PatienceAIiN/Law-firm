@@ -17,11 +17,6 @@ const SECTIONS = [
 export default function PlatformPrivacyPage() {
   return (
     <div className="min-h-screen bg-[#FFFCF8] dark:bg-[#0b0f17]">
-      <header className="border-b border-[#F4E8D8] bg-white px-6 py-4 dark:border-white/10 dark:bg-[#11151f]">
-        <Link href="/" className="inline-flex items-center gap-2 text-sm font-semibold text-primary hover:text-accent dark:text-slate-200">
-          <ArrowLeft className="h-4 w-4" /> Back to Home
-        </Link>
-      </header>
       <main className="mx-auto max-w-3xl px-6 py-16">
         <h1 className="text-4xl font-bold text-primary dark:text-white">Privacy Policy</h1>
         <p className="mt-2 text-slate-600 dark:text-slate-300">How Barrister By Patience AI handles and protects your data.</p>

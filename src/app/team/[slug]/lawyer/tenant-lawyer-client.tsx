@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useTransition } from 'react'
+import { useUnreadCounts } from '@/hooks/use-unread-counts'
 import { signOut } from 'next-auth/react'
 import { LogOut, FileText, ShieldCheck, User as UserIcon, Loader2, Mail, Video, Plus, X, CalendarClock, Trash2, Link as LinkIcon, Check, Inbox, Edit, ReceiptText } from 'lucide-react'
 import Link from 'next/link'
@@ -36,6 +37,16 @@ export function TenantLawyerClient({
 }) {
   const [tab, setTab] = useState<'cases' | 'availability' | 'bookings' | 'settings'>('cases')
   const [copiedLink, setCopiedLink] = useState(false)
+  const unread = useUnreadCounts()
+  // Lightweight nav progress bar — set true on Link mousedown, cleared
+  // either when the component unmounts (new route mounted) or by a 6s
+  // safety timeout in case the navigation hangs (dev compile).
+  const [navPending, setNavPending] = useState(false)
+  useEffect(() => {
+    if (!navPending) return
+    const t = setTimeout(() => setNavPending(false), 6000)
+    return () => clearTimeout(t)
+  }, [navPending])
 
   useEffect(() => {
     const tabLabels: Record<string, string> = {
@@ -68,28 +79,10 @@ export function TenantLawyerClient({
             >
               {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-500" /> : <LinkIcon className="h-3.5 w-3.5" />} Share Portal
             </button>
-            <Link
-              href={`/team/${tenant.slug}/lawyer/inquiries`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-            >
-              <Inbox className="h-3.5 w-3.5" /> Inquiries
-            </Link>
-            <Link
-              href={`/team/${tenant.slug}/lawyer/receipts`}
-              prefetch
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-            >
-              <ReceiptText className="h-3.5 w-3.5" /> Receipts
-            </Link>
-            <Link
-              href={`/team/${tenant.slug}/lawyer/mail`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10"
-            >
-              <Mail className="h-3.5 w-3.5" /> Mail
-            </Link>
             <button
-              onClick={() => {
-                if (window.confirm('Are you sure you want to log out?')) {
+              onClick={async () => {
+                const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+                if (await confirmDialog({ title: 'Log out?', message: 'You will be signed out of the lawyer portal.', confirmLabel: 'Log out' })) {
                   signOut({ callbackUrl: `/team/${tenant.slug}/lawyer/login` })
                 }
               }}
@@ -101,6 +94,14 @@ export function TenantLawyerClient({
         </div>
       </header>
 
+      {navPending && (
+        // Thin top progress bar — never blocks the page. Disappears the
+        // moment Next mounts the destination route.
+        <div className="fixed left-0 right-0 top-0 z-50 h-0.5 overflow-hidden bg-amber-200/40">
+          <div className="h-full w-1/3 animate-[slide_1s_ease-in-out_infinite] bg-amber-500" style={{ animationName: 'slide' }} />
+          <style jsx>{`@keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(400%); } }`}</style>
+        </div>
+      )}
       <main className="mx-auto max-w-5xl px-4 py-8">
         <InstantMeetingCard slug={tenant.slug} />
 
@@ -130,6 +131,43 @@ export function TenantLawyerClient({
               </button>
             )
           })}
+
+          {/* Cross-route links sit in the same strip so they look like tabs.
+              They navigate to separate routes (their own pages) but match the
+              tab styling for visual consistency. */}
+          <Link
+            href={`/team/${tenant.slug}/lawyer/inquiries`}
+            prefetch
+            onMouseDown={() => setNavPending(true)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-primary active:scale-[0.98] dark:text-slate-300 dark:hover:text-white"
+          >
+            <Inbox className="h-4 w-4" /> Inquiries
+            {unread.inquiries > 0 && (
+              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">{unread.inquiries > 99 ? '99+' : unread.inquiries}</span>
+            )}
+          </Link>
+          <Link
+            href={`/team/${tenant.slug}/lawyer/receipts`}
+            prefetch
+            onMouseDown={() => setNavPending(true)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-primary active:scale-[0.98] dark:text-slate-300 dark:hover:text-white"
+          >
+            <ReceiptText className="h-4 w-4" /> Receipts
+            {(unread.payments + unread.receipts) > 0 && (
+              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">{(unread.payments + unread.receipts) > 99 ? '99+' : unread.payments + unread.receipts}</span>
+            )}
+          </Link>
+          <Link
+            href={`/team/${tenant.slug}/lawyer/mail`}
+            prefetch
+            onMouseDown={() => setNavPending(true)}
+            className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-slate-600 transition hover:text-primary active:scale-[0.98] dark:text-slate-300 dark:hover:text-white"
+          >
+            <Mail className="h-4 w-4" /> Mail
+            {unread.mail > 0 && (
+              <span className="ml-1 inline-flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1.5 text-[10px] font-bold text-white">{unread.mail > 99 ? '99+' : unread.mail}</span>
+            )}
+          </Link>
         </nav>
 
         {tab === 'cases' && <CasesTab cases={cases} slug={tenant.slug} />}
@@ -335,8 +373,9 @@ function CaseRow({ slug, c }: { slug: string; c: CaseItem }) {
       setEdit(false); router.refresh()
     })
   }
-  const onDel = () => {
-    if (!window.confirm(`Delete case "${c.title}"? This is permanent.`)) return
+  const onDel = async () => {
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Delete case?', message: `Delete case "${c.title}"? This cannot be undone.`, confirmLabel: 'Delete' }))) return
     start(async () => {
       const res = await deleteAdvocateCase(slug, c.id)
       if (!res.ok) { alert(res.error); return }
@@ -551,7 +590,8 @@ function BookingsTab({ bookings, slug }: { bookings: BookingItem[], slug: string
   const [busy, setBusy] = useState<{ id: string, type: 'delete' | 'resend' } | null>(null)
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this booking?')) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Delete booking?', message: 'The client will not be notified.', confirmLabel: 'Delete' }))) return
     setBusy({ id, type: 'delete' })
     try {
       await deleteBooking(slug, id)

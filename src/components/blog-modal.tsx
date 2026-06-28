@@ -72,10 +72,11 @@ export function BlogModal({ post, onClose }: BlogModalProps) {
         <div className="flex items-center justify-between mb-4">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 text-white/80 hover:text-white text-xs font-bold uppercase tracking-widest transition-colors"
+            aria-label="Close"
+            title="Close"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20"
           >
-            <ArrowLeft className="w-4 h-4" />
-            Back to Insights
+            <ArrowLeft className="h-4 w-4" />
           </button>
           <button
             onClick={onClose}

@@ -226,7 +226,8 @@ export function CaseManager() {
   }
 
   const remove = async (item: CourtCase) => {
-    if (!window.confirm(`Delete case ${item.caseNumber}?`)) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    if (!(await confirmDialog({ title: 'Delete case?', message: `Delete case ${item.caseNumber}? This cannot be undone.`, confirmLabel: 'Delete' }))) return
     setSaving(true)
     try {
       const res = await fetch(`/api/cases/${item.id}`, { method: 'DELETE' })

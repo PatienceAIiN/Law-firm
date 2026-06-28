@@ -3,6 +3,7 @@
 import { useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2, Trash2 } from 'lucide-react'
+import { confirmDialog } from './confirm-dialog'
 
 type Props = {
   onDelete: () => Promise<void | { ok: boolean; error?: string }>
@@ -22,8 +23,8 @@ export function DeleteButton({
 }: Props) {
   const [pending, start] = useTransition()
   const router = useRouter()
-  const handle = () => {
-    if (confirmMessage && !window.confirm(confirmMessage)) return
+  const handle = async () => {
+    if (confirmMessage && !(await confirmDialog({ title: 'Delete?', message: confirmMessage, confirmLabel: 'Delete', tone: 'danger' }))) return
     start(async () => {
       try {
         const res = await onDelete()

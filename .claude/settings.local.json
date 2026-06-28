@@ -125,7 +125,28 @@
       "Bash(sed -i 's/Title \\(e.g. Senior Advocate\\)/Title \\(e.g. Lawyer\\)/g' /home/harsh/Downloads/Law-firm/src/app/team/[slug]/admin/tenant-admin-client.tsx /home/harsh/Downloads/Law-firm/src/app/team/[slug]/admin/lawyers/lawyers-client.tsx)",
       "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=admin-portal-guide.pdf --no-pdf-header-footer \"file://$\\(pwd\\)/admin-portal-guide.html\")",
       "Bash(google-chrome --headless --disable-gpu --no-sandbox --print-to-pdf=lawyer-portal-guide.pdf --no-pdf-header-footer \"file://$\\(pwd\\)/lawyer-portal-guide.html\")",
-      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --accept-data-loss=false --skip-generate)"
+      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --accept-data-loss=false --skip-generate)",
+      "Bash(systemctl is-active *)",
+      "Bash(sudo -u postgres psql -tAc \"SELECT 1 FROM pg_database WHERE datname='lawfirm_dev'\")",
+      "Bash(sudo -u postgres psql -c \"CREATE DATABASE lawfirm_dev;\")",
+      "Bash(sudo -u postgres psql -c 'ALTER DATABASE lawfirm_dev OWNER TO __TRACKED_VAR__;')",
+      "Bash(sudo -u postgres psql -c 'DO $$ BEGIN IF NOT EXISTS \\(SELECT FROM pg_roles WHERE rolname='\\\\''__TRACKED_VAR__'\\\\''\\) THEN CREATE ROLE __TRACKED_VAR__ LOGIN SUPERUSER; END IF; END $$;')",
+      "Bash(createdb -U postgres -h /var/run/postgresql lawfirm_dev)",
+      "Read(//home/harsh/pgdata/global/**)",
+      "Read(//home/harsh/pgdata/**)",
+      "Bash(chmod +x *)",
+      "Bash(sudo -n true)",
+      "Bash(lsof -ti:3000,3001,3002)",
+      "Bash(xargs -r kill -9)",
+      "Bash(kill -9 10412)",
+      "Bash(lsof -ti:3002)",
+      "Bash(xargs -r -n1 kill -9)",
+      "Bash(magick favicon.png \\\\\\( -clone 0 -resize 16x16 \\\\\\) \\\\\\( -clone 0 -resize 32x32 \\\\\\) \\\\\\( -clone 0 -resize 48x48 \\\\\\) -delete 0 favicon.ico)",
+      "Bash(PGPASSWORD=devpass psql -h 127.0.0.1 -U harsh -d lawfirm_dev -tAc \"SELECT current_user, current_database\\(\\)\")",
+      "Bash(DATABASE_URL=postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql DIRECT_URL=postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql npx prisma db push --skip-generate)",
+      "Bash(fuser -k 3002/tcp)",
+      "Bash(fuser -k -9 3002/tcp)",
+      "Bash(DATABASE_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' DIRECT_URL='postgresql://harsh@localhost/lawfirm_dev?host=/var/run/postgresql' npx prisma db push --skip-generate)"
     ]
   }
 }

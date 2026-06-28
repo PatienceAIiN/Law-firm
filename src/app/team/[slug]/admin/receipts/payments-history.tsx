@@ -2,7 +2,8 @@
 
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Loader2, X, RotateCcw, CheckCircle2, Clock, AlertCircle, IndianRupee } from 'lucide-react'
+import { Loader2, X, RotateCcw, CheckCircle2, Clock, AlertCircle, IndianRupee, Paperclip, Download, Maximize2, Trash2 } from 'lucide-react'
+import { confirmDialog } from '@/components/ui/confirm-dialog'
 
 type Payment = {
   id: string
@@ -21,10 +22,15 @@ type Payment = {
   createdAt: string
   notes?: string | null
   receiptId?: string | null
+  utr?: string | null
+  proofUrl?: string | null
+  approvedByName?: string | null
+  approvedByRole?: string | null
 }
 
 const TABS = [
   { id: 'all', label: 'All' },
+  { id: 'AWAITING_REVIEW', label: 'Awaiting review' },
   { id: 'PENDING', label: 'In progress' },
   { id: 'COMPLETED', label: 'Completed' },
   { id: 'REFUNDED', label: 'Refunded' },
@@ -101,20 +107,58 @@ export function PaymentsHistory({ slug, payments }: { slug: string; payments: Pa
   )
 }
 
-function PaymentModal({ slug: _slug, payment, onClose }: { slug: string; payment: Payment; onClose: () => void }) {
+function PaymentModal({ slug, payment, onClose }: { slug: string; payment: Payment; onClose: () => void }) {
   const [pending, start] = useTransition()
   const [error, setError] = useState('')
   const [refundAmount, setRefundAmount] = useState<string>('')
+  const [statusChoice, setStatusChoice] = useState(payment.status)
+  const [lightbox, setLightbox] = useState(false)
   const router = useRouter()
+
+  const onDelete = async () => {
+    const ok = await confirmDialog({
+      title: 'Delete payment?',
+      message: `This removes the payment record permanently. Refund / approval history is lost.`,
+      confirmLabel: 'Delete',
+      tone: 'danger',
+    })
+    if (!ok) return
+    start(async () => {
+      const { deletePayment } = await import('./payment-status-actions')
+      const r = await deletePayment(slug, payment.id, 'admin')
+      if (!('ok' in r) || !r.ok) { setError((r as any).error || 'Delete failed'); return }
+      router.refresh()
+      onClose()
+    })
+  }
+
+  const saveStatus = (override?: string) => {
+    const next = override || statusChoice
+    if (next === payment.status) return
+    setError('')
+    start(async () => {
+      const { setPaymentStatus } = await import('./payment-status-actions')
+      const r = await setPaymentStatus(slug, payment.id, next, 'admin')
+      if (!('ok' in r) || !r.ok) { setError((r as any).error || 'Failed'); return }
+      router.refresh()
+      onClose()
+    })
+  }
 
   const refundable = payment.amount - (payment.refundedAmount || 0)
   const canRefund = (payment.status === 'COMPLETED' || payment.status === 'PARTIALLY_REFUNDED') && refundable > 0
 
-  const refund = (full: boolean) => {
+  const refund = async (full: boolean) => {
     setError('')
     const amt = full ? undefined : Number(refundAmount)
     if (!full && (!amt || amt <= 0 || amt > refundable)) { setError(`Enter 0.01–${refundable.toFixed(2)}`); return }
-    if (!window.confirm(full ? `Refund ${payment.currency} ${refundable.toFixed(2)}? This cannot be undone.` : `Refund ${payment.currency} ${amt!.toFixed(2)}?`)) return
+    const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+    const ok = await confirmDialog({
+      title: full ? 'Refund full amount?' : 'Refund partial amount?',
+      message: full ? `Refund ${payment.currency} ${refundable.toFixed(2)}? This cannot be undone.` : `Refund ${payment.currency} ${amt!.toFixed(2)}?`,
+      confirmLabel: 'Refund',
+    })
+    if (!ok) return
     start(async () => {
       try {
         const res = await fetch(`/api/payments/${payment.id}/refund`, {
@@ -161,7 +205,69 @@ function PaymentModal({ slug: _slug, payment, onClose }: { slug: string; payment
           {payment.razorpayOrderId && <Row label="Razorpay order" value={<code className="font-mono text-[11px]">{payment.razorpayOrderId}</code>} />}
           {payment.refundId && <Row label="Refund id" value={<code className="font-mono text-[11px]">{payment.refundId}</code>} />}
           {payment.paidAt && <Row label="Paid at" value={new Date(payment.paidAt).toLocaleString()} />}
+          {payment.utr && <Row label="UTR" value={<code className="font-mono text-[11px]">{payment.utr}</code>} />}
+          {payment.approvedByName && <Row label="Approved by" value={`${payment.approvedByName}${payment.approvedByRole ? ` (${payment.approvedByRole})` : ''}`} />}
           {payment.notes && <Row label="Notes" value={payment.notes} />}
+          {payment.proofUrl ? (
+            <button
+              type="button"
+              onClick={() => setLightbox(true)}
+              className="mt-2 inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:border-primary hover:bg-white hover:text-primary dark:border-white/15 dark:bg-white/5 dark:text-slate-200 dark:hover:bg-white/10"
+            >
+              <Paperclip className="h-3.5 w-3.5" /> View attached proof
+            </button>
+          ) : null}
+          {/* Approve button — visible for client-submitted payments
+              (AWAITING_REVIEW) AND legacy fallback rows that landed as
+              PENDING with a UTR / proof note attached. */}
+          {(payment.status === 'AWAITING_REVIEW' ||
+            (payment.status === 'PENDING' && /UTR|Proof/i.test(payment.notes || ''))) && (
+            <button
+              onClick={() => saveStatus('COMPLETED')}
+              disabled={pending}
+              className="mt-3 inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+            >
+              {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCircle2 className="h-3.5 w-3.5" />}
+              Approve &amp; mark as paid
+            </button>
+          )}
+        </div>
+
+        {/* Manual status marker — admin can override (e.g. mark a UTR-
+            submitted payment COMPLETED after verifying the bank credit). */}
+        <div className="mt-5 border-t border-slate-200 pt-4 dark:border-white/10">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-500">Update status manually</p>
+          <div className="mt-2 flex items-center gap-2">
+            <select
+              value={statusChoice}
+              onChange={(e) => setStatusChoice(e.target.value)}
+              className="flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
+            >
+              {['PENDING','AWAITING_REVIEW','IN_PROGRESS','COMPLETED','FAILED','REFUNDED'].map((s) => (
+                <option key={s} value={s} className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white">{s}</option>
+              ))}
+            </select>
+            <button
+              onClick={() => saveStatus()}
+              disabled={pending || statusChoice === payment.status}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-2 text-xs font-semibold text-white hover:bg-accent disabled:opacity-60"
+            >
+              {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : null}
+              Save
+            </button>
+          </div>
+          <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Marking COMPLETED auto-emails the client a paid copy of the receipt.</p>
+        </div>
+
+        <div className="mt-3 flex justify-end">
+          <button
+            onClick={onDelete}
+            disabled={pending}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs font-semibold text-rose-600 hover:bg-rose-100 disabled:opacity-60 dark:border-rose-500/30 dark:bg-rose-900/20 dark:text-rose-200 dark:hover:bg-rose-900/30"
+          >
+            {pending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+            Delete payment
+          </button>
         </div>
 
         {canRefund && (
@@ -200,6 +306,48 @@ function PaymentModal({ slug: _slug, payment, onClose }: { slug: string; payment
           </div>
         )}
       </div>
+
+      {/* Proof lightbox — separate modal layer so it stacks above the
+          payment-details modal and the backdrop click only dismisses the
+          lightbox, not the whole modal. */}
+      {lightbox && payment.proofUrl && (
+        <div
+          className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 p-4 animate-fade-in"
+          onClick={() => setLightbox(false)}
+        >
+          <div className="relative max-h-[90vh] w-full max-w-3xl" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute right-0 top-0 flex translate-y-[-110%] items-center gap-2">
+              <a
+                href={payment.proofUrl}
+                download={`payment-proof-${payment.id}.png`}
+                className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow hover:bg-white"
+              >
+                <Download className="h-3.5 w-3.5" /> Download
+              </a>
+              <a
+                href={payment.proofUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-800 shadow hover:bg-white"
+              >
+                <Maximize2 className="h-3.5 w-3.5" /> Enlarge
+              </a>
+              <button
+                onClick={() => setLightbox(false)}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-slate-800 shadow hover:bg-white"
+                aria-label="Close"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <img
+              src={payment.proofUrl}
+              alt="Payment proof"
+              className="mx-auto max-h-[90vh] w-auto rounded-lg shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

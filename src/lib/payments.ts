@@ -79,7 +79,16 @@ export function verifyRazorpaySignature(
     .createHmac('sha256', keySecret)
     .update(`${orderId}|${paymentId}`)
     .digest('hex')
-  return crypto.timingSafeEqual(Buffer.from(expected), Buffer.from(signature))
+  // timingSafeEqual throws on length mismatch; guard so a malformed
+  // signature returns false instead of crashing the verify endpoint.
+  try {
+    const a = Buffer.from(expected, 'utf8')
+    const b = Buffer.from(signature, 'utf8')
+    if (a.length !== b.length) return false
+    return crypto.timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
 }
 
 export function verifyWebhookSignature(rawBody: string, signature: string, secret: string): boolean {

@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useTransition, useEffect } from 'react'
+import { markSeen } from '@/hooks/use-unread-counts'
 import { useRouter } from 'next/navigation'
 import { Plus, Trash2, ReceiptText, Loader2, Send, FileText as FileTextIcon, Briefcase } from 'lucide-react'
 import { createReceipt, deleteReceipt, emailReceiptToClient } from './actions'
@@ -12,6 +13,8 @@ type Case = { id: string; caseNumber: string; title: string; clientName: string;
 type Item = { description: string; qty: number; rate: number }
 
 export function TenantReceiptsClient({ slug, cases = [], receipts }: { slug: string; cases?: Case[]; receipts: R[] }) {
+  // Mark the receipts (payments) chip as seen the moment the page mounts.
+  useEffect(() => { markSeen('payments') }, [])
   const [pending, start] = useTransition()
   const router = useRouter()
   const [open, setOpen] = useState(false)
