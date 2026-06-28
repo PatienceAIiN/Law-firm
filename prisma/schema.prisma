@@ -156,8 +156,14 @@ model Tenant {
   name       String
   ownerEmail String
   status     String   @default("active")
+  // Location for the public Find-Barrister directory.
+  state      String?
+  city       String?
+  locality   String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
+
+  @@index([state, city])
 
   adminUsers       AdminUser[]
   advocates        Advocate[]
@@ -202,6 +208,10 @@ model Advocate {
   barCouncilId     String?
   registrationDate DateTime?
   isActive         Boolean   @default(true)
+  // Location surfaced on the Find-Barrister directory.
+  state            String?
+  city             String?
+  locality         String?
   tenantId         String?
   tenant           Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt        DateTime  @default(now())
@@ -216,6 +226,7 @@ model Advocate {
   pushSubscriptions PushSubscription[]
 
   @@unique([tenantId, email])
+  @@index([state, city, isActive])
   @@map("advocates")
 }
 
@@ -450,6 +461,9 @@ model TeamMember {
   email     String?
   phone     String?
   linkedin  String?
+  state     String?
+  city      String?
+  locality  String?
   order     Int      @default(0)
   isActive  Boolean  @default(true)
   tenantId  String?

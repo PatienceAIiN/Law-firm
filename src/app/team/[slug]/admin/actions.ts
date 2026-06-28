@@ -62,20 +62,29 @@ export async function createAdvocate(slug: string, formData: FormData) {
   const name = (formData.get('name') as string)?.trim()
   const email = (formData.get('email') as string)?.trim().toLowerCase()
   const title = (formData.get('title') as string)?.trim() || 'Advocate'
+  const state = (formData.get('state') as string)?.trim() || ''
+  const city = (formData.get('city') as string)?.trim() || ''
+  const locality = (formData.get('locality') as string)?.trim() || ''
+  const profileImage = (formData.get('profileImage') as string)?.trim() || ''
   if (!name || !email) throw new Error('Name and email are required')
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Valid email required')
+  if (!state || !city) throw new Error('State and city are required so this lawyer appears in Find-Barrister.')
 
   const lawyerCount = await prisma.advocate.count({ where: { tenantId } })
   if (lawyerCount >= WORKSPACE_LAWYER_SEAT_LIMIT) {
     return { ok: false, error: lawyerSeatLimitMessage() }
   }
 
-  // Lawyer is created INACTIVE with a random placeholder password; they set
-  // their own password via an activation link sent to their email.
   const placeholder = await bcrypt.hash(crypto.randomBytes(24).toString('hex'), 10)
-  const advocate = await prisma.advocate.create({
-    data: { name, email, password: placeholder, title, isActive: false, tenantId },
-  })
+  const advData: any = { name, email, password: placeholder, title, isActive: false, tenantId, state, city, locality: locality || null, profileImage: profileImage || null }
+  let advocate
+  try { advocate = await prisma.advocate.create({ data: advData }) }
+  catch (e: any) {
+    if (/state|city|locality/i.test(String(e?.message))) {
+      delete advData.state; delete advData.city; delete advData.locality
+      advocate = await prisma.advocate.create({ data: advData })
+    } else throw e
+  }
 
   const token = crypto.randomBytes(24).toString('hex')
   const expiresAt = new Date(Date.now() + 48 * 60 * 60 * 1000) // 48 hours

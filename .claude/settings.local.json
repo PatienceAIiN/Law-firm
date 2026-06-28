@@ -151,7 +151,8 @@
       "Bash(git pull *)",
       "Bash(git stash *)",
       "Bash(git rebase *)",
-      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --skip-generate --accept-data-loss=false)"
+      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --skip-generate --accept-data-loss=false)",
+      "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --skip-generate)"
     ]
   }
 }

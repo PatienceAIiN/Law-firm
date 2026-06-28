@@ -31,6 +31,12 @@ export default function SaasLandingPage() {
         </Link>
         <div className="flex items-center gap-2">
           <ThemeToggle />
+          <Link
+            href="/find-barrister"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-semibold text-amber-900 hover:bg-amber-100 dark:border-amber-500/40 dark:bg-amber-900/20 dark:text-amber-200 dark:hover:bg-amber-900/30"
+          >
+            Find Barrister
+          </Link>
           <OpenWorkspace />
         </div>
       </header>

@@ -79,6 +79,10 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   const slug = normalizeSlug((formData.get('slug') as string) || firmName || '')
   const appsumoCode = (formData.get('appsumoCode') as string)?.trim().toUpperCase() || ''
   const appsumoRequired = process.env.APPSUMO_REQUIRED === 'true'
+  const state = (formData.get('state') as string)?.trim() || ''
+  const city = (formData.get('city') as string)?.trim() || ''
+  const locality = (formData.get('locality') as string)?.trim() || ''
+  if (!state || !city) return { ok: false, error: 'State and city are required so clients can find you.' }
 
   if (appsumoRequired) {
     if (!appsumoCode) return { ok: false, error: 'An AppSumo redemption code is required. Get yours at /redeem.' }
@@ -96,7 +100,7 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   if (existing) return { ok: false, error: 'That workspace URL is already taken.' }
 
   const otp = sixDigitOtp()
-  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw, appsumoCode: appsumoRequired ? appsumoCode : '' })
+  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw, appsumoCode: appsumoRequired ? appsumoCode : '', state, city, locality })
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
   // Clear any previous pending OTPs for this email; only one valid at a time.
@@ -149,7 +153,7 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
     return { ok: false, error: 'Incorrect code. Try again.' }
   }
 
-  let payload: { name: string; firmName: string; slug: string; email: string; appsumoCode?: string }
+  let payload: { name: string; firmName: string; slug: string; email: string; appsumoCode?: string; state?: string; city?: string; locality?: string }
   try { payload = JSON.parse(row.payload) } catch { return { ok: false, error: 'Corrupt signup data. Start over.' } }
 
   // Re-validate the AppSumo code right before tenant creation — race-safe.
@@ -169,15 +173,24 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
   const password = generatePassword()
   const hashed = await bcrypt.hash(password, 10)
 
-  const tenant = await prisma.tenant.create({
-    data: {
-      slug: payload.slug,
-      name: payload.firmName,
-      ownerEmail: payload.email,
-      status: 'active',
-      adminUsers: { create: [{ email: payload.email, name: payload.name, password: hashed, role: 'owner' }] },
-    },
-  })
+  const tenantData: any = {
+    slug: payload.slug,
+    name: payload.firmName,
+    ownerEmail: payload.email,
+    status: 'active',
+    state: payload.state || null,
+    city: payload.city || null,
+    locality: payload.locality || null,
+    adminUsers: { create: [{ email: payload.email, name: payload.name, password: hashed, role: 'owner' }] },
+  }
+  let tenant
+  try { tenant = await prisma.tenant.create({ data: tenantData }) }
+  catch (e: any) {
+    if (/state|city|locality/i.test(String(e?.message))) {
+      delete tenantData.state; delete tenantData.city; delete tenantData.locality
+      tenant = await prisma.tenant.create({ data: tenantData })
+    } else throw e
+  }
   await seedTenantDefaults(tenant.id, payload.firmName)
 
   // Mark the AppSumo code as redeemed and bind it to this tenant.

@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import { Loader2, CheckCircle2, ArrowRight, Mail } from 'lucide-react'
 import { requestSignupOtp, verifySignupOtp, type RequestOtpResult, type VerifyOtpResult } from './actions'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { LocationPicker, type Location } from '@/components/ui/location-picker'
 
 type Step = 'form' | 'otp' | 'done'
 
@@ -16,6 +17,7 @@ export default function SignupPage() {
   const [devOtp, setDevOtp] = useState<string | undefined>()
   const params = useSearchParams()
   const [prefillCode, setPrefillCode] = useState('')
+  const [location, setLocation] = useState<Location>({ state: '', city: '' })
   useEffect(() => {
     const q = params?.get('code')?.toUpperCase() || ''
     if (q) { setPrefillCode(q); return }
@@ -35,6 +37,13 @@ export default function SignupPage() {
     setPending(true)
     try {
       const fd = new FormData(e.currentTarget)
+      if (!location.state || !location.city) {
+        setRequestError('Please select your state and city.')
+        setPending(false); return
+      }
+      fd.set('state', location.state)
+      fd.set('city', location.city)
+      if (location.locality) fd.set('locality', location.locality)
       const r: RequestOtpResult = await requestSignupOtp(fd)
       if (!r.ok) { setRequestError(r.error); return }
       setEmail(r.email)
@@ -112,6 +121,13 @@ export default function SignupPage() {
                 </div>
               </div>
               <Field name="email" type="email" label="Email" />
+              <div>
+                <p className="text-sm text-slate-700 dark:text-slate-200">Where is your firm based?</p>
+                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Clients search by state &amp; city on the Find-Barrister directory.</p>
+                <div className="mt-2">
+                  <LocationPicker value={location} onChange={setLocation} required />
+                </div>
+              </div>
               {requestError && <Banner kind="error">{requestError}</Banner>}
               <button type="submit" disabled={pending} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
                 {pending ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
