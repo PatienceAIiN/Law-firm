@@ -1,0 +1,111 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { clientAuthOptions } from '@/lib/client-auth'
+import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
+import { tenantLawyerAuthOptions } from '@/lib/tenant-lawyer-auth'
+import { prisma } from '@/lib/prisma'
+import { sendEmail } from '@/lib/email'
+
+export const dynamic = 'force-dynamic'
+
+async function resolveActor() {
+  const client = await getServerSession(clientAuthOptions)
+  if (client?.user?.email) return { kind: 'client' as const, email: (client.user.email as string).toLowerCase(), name: client.user.name || null }
+  const admin = await getServerSession(tenantAdminAuthOptions)
+  if (admin?.user) return { kind: 'admin' as const, id: (admin.user as any).id, tenantId: (admin.user as any).tenantId, name: admin.user.name || (admin.user as any).email }
+  const lawyer = await getServerSession(tenantLawyerAuthOptions)
+  if (lawyer?.user) return { kind: 'lawyer' as const, id: (lawyer.user as any).id, tenantId: (lawyer.user as any).tenantId, name: lawyer.user.name || (lawyer.user as any).email }
+  return null
+}
+
+// GET ?threadId=… returns messages in a thread, or
+// GET ?tenantId=…&advocateId=… returns the current client's thread for that target.
+export async function GET(req: NextRequest) {
+  const actor = await resolveActor()
+  if (!actor) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  const sp = req.nextUrl.searchParams
+  const threadId = sp.get('threadId')
+
+  if (threadId) {
+    const thread = await prisma.directThread.findUnique({ where: { id: threadId } })
+    if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    // Scope check.
+    if (actor.kind === 'client' && thread.clientEmail !== actor.email) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    if (actor.kind !== 'client' && thread.tenantId !== (actor as any).tenantId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    if (actor.kind === 'lawyer' && thread.advocateId && thread.advocateId !== (actor as any).id) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const messages = await prisma.directMessage.findMany({ where: { threadId }, orderBy: { createdAt: 'asc' }, take: 200 })
+    return NextResponse.json({ thread, messages })
+  }
+
+  // List threads for the actor.
+  let threads: any[] = []
+  if (actor.kind === 'client') {
+    threads = await prisma.directThread.findMany({ where: { clientEmail: actor.email }, orderBy: { lastMessageAt: 'desc' }, take: 50 })
+  } else {
+    const where: any = { tenantId: (actor as any).tenantId }
+    if (actor.kind === 'lawyer') where.advocateId = (actor as any).id
+    threads = await prisma.directThread.findMany({ where, orderBy: { lastMessageAt: 'desc' }, take: 100 })
+  }
+  return NextResponse.json({ threads })
+}
+
+// POST { tenantId, advocateId?, body, subject? } — clients open / continue a thread.
+// POST { threadId, body } — anyone in the thread replies.
+export async function POST(req: NextRequest) {
+  const actor = await resolveActor()
+  if (!actor) return NextResponse.json({ error: 'Unauthorized — sign in to send a message.' }, { status: 401 })
+  let body: any
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }
+  const text = (body?.body || '').toString().trim()
+  if (!text) return NextResponse.json({ error: 'Empty message' }, { status: 400 })
+
+  let thread = body?.threadId ? await prisma.directThread.findUnique({ where: { id: body.threadId } }) : null
+
+  if (!thread) {
+    if (actor.kind !== 'client') return NextResponse.json({ error: 'Only clients can start a new thread.' }, { status: 400 })
+    const tenantId = body?.tenantId as string
+    if (!tenantId) return NextResponse.json({ error: 'tenantId required' }, { status: 400 })
+    const existing = await prisma.directThread.findFirst({
+      where: { tenantId, clientEmail: actor.email, advocateId: body?.advocateId || null },
+    })
+    thread = existing || await prisma.directThread.create({
+      data: {
+        tenantId,
+        advocateId: body?.advocateId || null,
+        clientEmail: actor.email,
+        clientName: actor.name || null,
+        subject: body?.subject || null,
+        lastMessageAt: new Date(),
+      },
+    })
+  }
+
+  // Scope check again for replies.
+  if (actor.kind === 'client' && thread.clientEmail !== actor.email) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  if (actor.kind !== 'client' && thread.tenantId !== (actor as any).tenantId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+
+  const message = await prisma.directMessage.create({
+    data: {
+      threadId: thread.id,
+      senderType: actor.kind,
+      senderId: actor.kind === 'client' ? null : (actor as any).id,
+      senderName: actor.name || null,
+      body: text,
+    },
+  })
+  await prisma.directThread.update({ where: { id: thread.id }, data: { lastMessageAt: new Date() } })
+
+  // Outgoing notification on the recipient side.
+  try {
+    if (actor.kind === 'client') {
+      const tenant = await prisma.tenant.findUnique({ where: { id: thread.tenantId } })
+      const advocate = thread.advocateId ? await prisma.advocate.findUnique({ where: { id: thread.advocateId } }) : null
+      const to = advocate?.email || tenant?.ownerEmail
+      if (to) sendEmail({ to, subject: `New chat from ${actor.email}`, htmlContent: `<p>${text.replace(/</g, '&lt;')}</p><p>Open the inquiries panel to reply.</p>`, textContent: text }).catch(() => {})
+    } else {
+      sendEmail({ to: thread.clientEmail, subject: `Reply from your law firm`, htmlContent: `<p>${text.replace(/</g, '&lt;')}</p><p>Open the chat to continue.</p>`, textContent: text }).catch(() => {})
+    }
+  } catch {}
+
+  return NextResponse.json({ thread, message })
+}

@@ -18,6 +18,26 @@ export default function SignupPage() {
   const params = useSearchParams()
   const [prefillCode, setPrefillCode] = useState('')
   const [location, setLocation] = useState<Location>({ state: '', city: '' })
+  const [logoUrl, setLogoUrl] = useState('')
+  const [logoUploading, setLogoUploading] = useState(false)
+
+  const uploadLogo = async (file: File) => {
+    if (!['image/png', 'image/jpeg', 'image/jpg', 'image/webp'].includes(file.type.toLowerCase())) {
+      setRequestError('Logo must be PNG / JPEG / WebP'); return
+    }
+    if (file.size > 5 * 1024 * 1024) { setRequestError('Logo over 5 MB'); return }
+    setLogoUploading(true)
+    try {
+      const fd = new FormData(); fd.set('file', file)
+      // Signup is unauthenticated — use the unprotected pay-proof uploader
+      // which also caps at 5 MB and routes to Cloudinary/R2.
+      const r = await fetch('/api/pay-proof', { method: 'POST', body: fd })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Upload failed')
+      setLogoUrl(data.url)
+    } catch (e: any) { setRequestError(e?.message || 'Logo upload failed') }
+    finally { setLogoUploading(false) }
+  }
   useEffect(() => {
     const q = params?.get('code')?.toUpperCase() || ''
     if (q) { setPrefillCode(q); return }
@@ -41,9 +61,14 @@ export default function SignupPage() {
         setRequestError('Please select your state and city.')
         setPending(false); return
       }
+      if (!location.locality) {
+        setRequestError('Please pick your locality / area.')
+        setPending(false); return
+      }
       fd.set('state', location.state)
       fd.set('city', location.city)
-      if (location.locality) fd.set('locality', location.locality)
+      fd.set('locality', location.locality)
+      if (logoUrl) fd.set('logoUrl', logoUrl)
       const r: RequestOtpResult = await requestSignupOtp(fd)
       if (!r.ok) { setRequestError(r.error); return }
       setEmail(r.email)
@@ -126,6 +151,17 @@ export default function SignupPage() {
                 <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">Clients search by state &amp; city on the Find-Barrister directory.</p>
                 <div className="mt-2">
                   <LocationPicker value={location} onChange={setLocation} required />
+                </div>
+              </div>
+              <div>
+                <p className="text-sm text-slate-700 dark:text-slate-200">Firm logo (optional)</p>
+                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">PNG / JPEG / WebP up to 5 MB. You can replace it later in Branding.</p>
+                <div className="mt-2 flex items-center gap-3">
+                  <input id="logo-input" type="file" accept="image/png,image/jpeg,image/jpg,image/webp" onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadLogo(f) }} className="hidden" />
+                  <label htmlFor="logo-input" className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700 hover:border-primary hover:text-primary dark:border-white/15 dark:bg-white/5 dark:text-slate-200">
+                    {logoUploading ? 'Uploading…' : logoUrl ? 'Replace logo' : 'Upload logo'}
+                  </label>
+                  {logoUrl && <img src={logoUrl} alt="logo" className="h-10 w-10 rounded-lg object-cover ring-1 ring-slate-200 dark:ring-white/15" />}
                 </div>
               </div>
               {requestError && <Banner kind="error">{requestError}</Banner>}

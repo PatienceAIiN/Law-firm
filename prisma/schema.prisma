@@ -121,6 +121,48 @@ model PaymentLog {
   @@map("payment_logs")
 }
 
+model ClientUser {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  googleId  String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("client_users")
+}
+
+model DirectThread {
+  id           String   @id @default(cuid())
+  tenantId     String
+  advocateId   String?
+  clientEmail  String
+  clientName   String?
+  subject      String?
+  lastMessageAt DateTime @default(now())
+  createdAt    DateTime @default(now())
+  messages     DirectMessage[]
+
+  @@index([tenantId, clientEmail])
+  @@index([tenantId, advocateId])
+  @@map("direct_threads")
+}
+
+model DirectMessage {
+  id         String   @id @default(cuid())
+  threadId   String
+  thread     DirectThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderType String   // 'client' | 'lawyer' | 'admin'
+  senderId   String?
+  senderName String?
+  body       String
+  createdAt  DateTime @default(now())
+
+  @@index([threadId, createdAt])
+  @@map("direct_messages")
+}
+
 model AppSumoCode {
   id          String    @id @default(cuid())
   code        String    @unique

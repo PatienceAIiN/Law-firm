@@ -1,8 +1,10 @@
 'use client'
 
-import { useEffect, useMemo, useState, useTransition } from 'react'
+import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, User, MapPin, Search, X, Send, Loader2, Crosshair, CheckCircle2, Sparkles, MessageSquare, Camera, ChevronLeft, ChevronRight, Scale } from 'lucide-react'
+import Link from 'next/link'
+import { signIn, useSession } from 'next-auth/react'
+import { Building2, User, MapPin, Search, X, Send, Loader2, Crosshair, CheckCircle2, Sparkles, MessageSquare, Camera, ChevronLeft, ChevronRight, Scale, Video, Calendar, LogIn } from 'lucide-react'
 import { INDIA_STATES, citiesFor, nearestCity } from '@/lib/india-locations'
 import { sendDirectoryMessage } from './actions'
 
@@ -169,13 +171,26 @@ export function FindBarristerClient({
 }
 
 function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: any; onClose: () => void }) {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
+  const { data: session } = useSession()
+  const isSignedIn = !!session?.user?.email
+  const [name, setName] = useState((session?.user?.name as string) || '')
+  const [email, setEmail] = useState((session?.user?.email as string) || '')
   const [phone, setPhone] = useState('')
   const [message, setMessage] = useState('')
   const [pending, start] = useTransition()
   const [done, setDone] = useState(false)
   const [error, setError] = useState('')
+  const [tab, setTab] = useState<'message' | 'chat' | 'video'>('message')
+
+  useEffect(() => {
+    if (session?.user?.email && !email) setEmail(session.user.email as string)
+    if (session?.user?.name && !name) setName(session.user.name as string)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [session?.user?.email])
+
+  const tenantId = kind === 'firm' ? data.id : null
+  const firmTenantId = kind === 'firm' ? data.id : (data.firmTenantId || null)
+  const advocateId = kind === 'lawyer' ? data.id : null
 
   const send = (e: React.FormEvent) => {
     e.preventDefault()
@@ -223,7 +238,27 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
           </div>
         )}
 
-        {done ? (
+        {/* Action shortcuts */}
+        <div className="mt-4 flex flex-wrap gap-2">
+          {(data.firmSlug || (kind === 'firm' && data.slug)) && (
+            <Link
+              href={`/team/${data.firmSlug || data.slug}/book`}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-200"
+            >
+              <Calendar className="h-3.5 w-3.5" /> Book consultation
+            </Link>
+          )}
+        </div>
+
+        <div className="mt-5 inline-flex gap-1 rounded-xl bg-slate-100 p-1 dark:bg-white/5">
+          {([['message', Send, 'Message'], ['chat', MessageSquare, 'Live chat'], ['video', Video, 'Video call']] as const).map(([id, Ic, label]) => (
+            <button key={id} onClick={() => setTab(id as any)} className={`inline-flex items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${tab === id ? 'bg-white text-primary shadow dark:bg-[#11151f] dark:text-white' : 'text-slate-600 hover:text-primary dark:text-slate-300'}`}>
+              <Ic className="h-3 w-3" /> {label}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'message' && (done ? (
           <div className="mt-5 rounded-xl border border-emerald-200 bg-emerald-50 p-5 text-center dark:border-emerald-500/30 dark:bg-emerald-900/20">
             <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-500" />
             <p className="mt-2 font-semibold text-emerald-800 dark:text-emerald-100">Message sent</p>
@@ -231,7 +266,7 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
           </div>
         ) : (
           <form onSubmit={send} className="mt-5 space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Send a message</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-slate-500">Send a one-off message</p>
             <input value={name} onChange={(e) => setName(e.target.value)} required placeholder="Your name *" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
             <div className="grid gap-2 sm:grid-cols-2">
               <input value={email} onChange={(e) => setEmail(e.target.value)} required type="email" placeholder="Email *" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
@@ -244,8 +279,151 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
               {pending ? 'Sending…' : 'Send message'}
             </button>
           </form>
+        ))}
+
+        {tab === 'chat' && (
+          isSignedIn
+            ? <ChatPanel tenantId={firmTenantId} advocateId={advocateId} targetName={data.name} />
+            : <SignInPrompt label="Sign in with Google to start a live chat with this lawyer" />
+        )}
+
+        {tab === 'video' && (
+          isSignedIn
+            ? <VideoRequestPanel tenantId={firmTenantId} advocateId={advocateId} targetName={data.name} />
+            : <SignInPrompt label="Sign in with Google to request an instant video consultation" />
         )}
       </div>
+    </div>
+  )
+}
+
+function SignInPrompt({ label }: { label: string }) {
+  return (
+    <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5 text-center dark:border-white/10 dark:bg-white/5">
+      <LogIn className="mx-auto h-8 w-8 text-primary dark:text-amber-300" />
+      <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</p>
+      <button
+        onClick={() => signIn('google', { callbackUrl: window.location.href })}
+        className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent"
+      >
+        <svg viewBox="0 0 48 48" className="h-4 w-4" aria-hidden><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3a12 12 0 1 1-3.3-13.1l5.7-5.7A20 20 0 1 0 44 24a20 20 0 0 0-.4-4z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7A20 20 0 0 0 6.3 14.7z" /><path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.5-5.2l-6.2-5.3A12 12 0 0 1 12.6 28l-6.6 5A20 20 0 0 0 24 44z" /><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.3A20 20 0 0 0 44 24a20 20 0 0 0-.4-4z" /></svg>
+        Continue with Google
+      </button>
+    </div>
+  )
+}
+
+function ChatPanel({ tenantId, advocateId, targetName }: { tenantId: string; advocateId: string | null; targetName: string }) {
+  const [thread, setThread] = useState<any>(null)
+  const [messages, setMessages] = useState<any[]>([])
+  const [body, setBody] = useState('')
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  const load = async () => {
+    try {
+      if (!thread?.id) return
+      const r = await fetch(`/api/dm?threadId=${thread.id}`, { cache: 'no-store' })
+      if (!r.ok) return
+      const data = await r.json()
+      setMessages(data.messages || [])
+    } catch {}
+  }
+
+  useEffect(() => {
+    if (!thread?.id) return
+    load()
+    const i = window.setInterval(load, 4000)
+    return () => window.clearInterval(i)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [thread?.id])
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  const send = async () => {
+    if (!body.trim() || sending) return
+    setError(''); setSending(true)
+    try {
+      const payload: any = { body: body.trim() }
+      if (thread?.id) payload.threadId = thread.id
+      else { payload.tenantId = tenantId; payload.advocateId = advocateId; payload.subject = `Chat with ${targetName}` }
+      const r = await fetch('/api/dm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Failed')
+      if (!thread?.id) setThread(data.thread)
+      setMessages((m) => [...m, data.message])
+      setBody('')
+    } catch (e: any) { setError(e?.message || 'Send failed') }
+    finally { setSending(false) }
+  }
+
+  return (
+    <div className="mt-5 flex h-80 flex-col rounded-xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e1219]">
+      <div className="flex-1 space-y-2 overflow-y-auto p-3">
+        {messages.length === 0 && <p className="py-8 text-center text-xs text-slate-500 dark:text-slate-400">No messages yet. Say hi.</p>}
+        {messages.map((m) => (
+          <div key={m.id} className={`flex ${m.senderType === 'client' ? 'justify-end' : 'justify-start'}`}>
+            <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.senderType === 'client' ? 'bg-primary text-white' : 'bg-slate-100 text-slate-800 dark:bg-white/10 dark:text-slate-100'}`}>
+              <p className="whitespace-pre-wrap">{m.body}</p>
+              <p className="mt-1 text-[10px] opacity-70">{new Date(m.createdAt).toLocaleTimeString()}</p>
+            </div>
+          </div>
+        ))}
+        <div ref={bottomRef} />
+      </div>
+      <div className="border-t border-slate-200 p-2 dark:border-white/10">
+        {error && <p className="mb-1 text-xs text-rose-600">{error}</p>}
+        <div className="flex items-end gap-2">
+          <textarea
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+            placeholder={`Message ${targetName}…`}
+            rows={1}
+            className="max-h-20 flex-1 resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
+          />
+          <button onClick={send} disabled={sending || !body.trim()} className="rounded-lg bg-primary p-2 text-white disabled:opacity-60">
+            {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function VideoRequestPanel({ tenantId, advocateId, targetName }: { tenantId: string; advocateId: string | null; targetName: string }) {
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  const [joinUrl, setJoinUrl] = useState('')
+
+  const request = async () => {
+    setError(''); setBusy(true)
+    try {
+      const r = await fetch('/api/livekit/instant', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ tenantId, advocateId }) })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Failed')
+      setJoinUrl(data.joinUrl)
+    } catch (e: any) { setError(e?.message || 'Could not start the call') }
+    finally { setBusy(false) }
+  }
+
+  return (
+    <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5 text-center dark:border-white/10 dark:bg-white/5">
+      <Video className="mx-auto h-8 w-8 text-primary dark:text-amber-300" />
+      <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">Instant video consultation</p>
+      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">We'll email {targetName} a join link. Open your end first and they'll connect when they accept.</p>
+      {!joinUrl ? (
+        <button onClick={request} disabled={busy} className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
+          {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Video className="h-4 w-4" />}
+          {busy ? 'Starting…' : 'Request video call'}
+        </button>
+      ) : (
+        <a href={joinUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+          <Video className="h-4 w-4" /> Open my video room
+        </a>
+      )}
+      {error && <p className="mt-2 text-xs text-rose-600 dark:text-rose-300">{error}</p>}
     </div>
   )
 }
