@@ -136,6 +136,13 @@ export function FindBarristerClient({
             <button onClick={apply} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent">
               <Search className="h-3.5 w-3.5" /> Search
             </button>
+            <button
+              onClick={() => { setState(''); setCity(''); setPincode(''); setQ(''); router.push('/find-barrister') }}
+              disabled={!state && !city && !pincode && !q}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200"
+            >
+              <X className="h-3.5 w-3.5" /> Clear
+            </button>
           </div>
           {geoErr && <p className="mt-2 text-xs text-amber-700 dark:text-amber-300">{geoErr}</p>}
 

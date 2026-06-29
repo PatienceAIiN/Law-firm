@@ -94,26 +94,55 @@ export default function SaasLandingPage() {
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How it works — split: workspace flow + find barrister flow */}
       <section className="bg-[#11151f] py-20 text-white">
-        <div className="mx-auto max-w-4xl px-6">
-          <h2 className="text-center text-3xl font-bold md:text-4xl">From signup to live site in 60 seconds</h2>
-          <ol className="mt-10 space-y-6">
-            {[
-              { n: '1', title: 'Sign up', body: 'Pick a workspace URL like /team/your-firm. Tell us your firm name and email.' },
-              { n: '2', title: 'Get credentials', body: 'We email you an admin login. Your workspace is created with a blank canvas.' },
-              { n: '3', title: 'Customize', body: 'Add practice areas, articles, lawyers, branding. Everything updates the public site instantly.' },
-              { n: '4', title: 'Go live', body: 'Share your site URL. Clients book consultations, submit inquiries, meet over video.' },
-            ].map((s) => (
-              <li key={s.n} className="flex gap-5">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 text-sm font-bold">{s.n}</div>
-                <div>
-                  <h3 className="text-lg font-semibold">{s.title}</h3>
-                  <p className="mt-1 text-sm text-white/70">{s.body}</p>
-                </div>
-              </li>
-            ))}
-          </ol>
+        <div className="mx-auto grid max-w-6xl gap-12 px-6 lg:grid-cols-2">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-300">For law firms</p>
+            <h2 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">From signup to live site in 60 seconds</h2>
+            <ol className="mt-8 space-y-5">
+              {[
+                { n: '1', title: 'Sign up', body: 'Pick a workspace URL like /team/your-firm. Tell us your firm name and email.' },
+                { n: '2', title: 'Get credentials', body: 'We email you an admin login. Your workspace is created with a blank canvas.' },
+                { n: '3', title: 'Customize', body: 'Add practice areas, articles, lawyers, branding. Everything updates the public site instantly.' },
+                { n: '4', title: 'Go live', body: 'Share your site URL. Clients book consultations, submit inquiries, meet over video.' },
+              ].map((s) => (
+                <li key={s.n} className="flex gap-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 text-sm font-bold">{s.n}</div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{s.title}</h3>
+                    <p className="mt-1 text-sm text-white/70">{s.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div className="border-l-0 border-t border-white/10 pt-10 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-300">For clients</p>
+            <h2 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">Find a Barrister in seconds</h2>
+            <ol className="mt-8 space-y-5">
+              {[
+                { n: '1', title: 'Tell us where', body: 'Pick a state and city — or hit "Use my location" and we snap to your nearest metro.' },
+                { n: '2', title: 'Browse profiles', body: 'See lawyers and firms with photos, expertise, location and PIN-code coverage.' },
+                { n: '3', title: 'Chat or video call', body: 'Sign in with Google or email-OTP, message any lawyer or request an instant video call.' },
+                { n: '4', title: 'Book a slot', body: 'When the firm has availability, book a consultation in one click — auto-confirmed.' },
+              ].map((s) => (
+                <li key={s.n} className="flex gap-5">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300/40 bg-amber-300/10 text-sm font-bold text-amber-300">{s.n}</div>
+                  <div>
+                    <h3 className="text-lg font-semibold">{s.title}</h3>
+                    <p className="mt-1 text-sm text-white/70">{s.body}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+            <Link
+              href="/find-barrister"
+              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-2.5 text-sm font-semibold text-[#14203E] hover:bg-amber-200"
+            >
+              Open Find a Barrister <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
         </div>
       </section>
 

@@ -29,12 +29,9 @@ export function FloatingBackButton() {
   return (
     <button
       type="button"
-      onClick={() => {
-        if (typeof window !== 'undefined' && window.history.length > 1) router.back()
-        else router.push('/')
-      }}
-      aria-label="Go back"
-      title="Go back"
+      onClick={() => router.push('/')}
+      aria-label="Back to home"
+      title="Back to home"
       className="fixed left-4 top-4 z-40 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-600 shadow-lg backdrop-blur transition hover:bg-white hover:text-primary active:scale-95 md:left-6 md:top-6 dark:border-white/15 dark:bg-[#11151f]/90 dark:text-slate-300 dark:hover:bg-[#11151f] dark:hover:text-white"
     >
       <ArrowLeft className="h-4 w-4" />
