@@ -8,6 +8,10 @@ const SENTENCES = [
   'Each workspace is isolated. Your firm\'s clients, cases, and articles never see another tenant\'s data.',
   'Generate receipts as PDFs, email them automatically, and keep a clean ledger by client.',
   'Run secure video consultations from the lawyer portal. The booking link goes to both sides.',
+  'Find a Barrister — search lawyers and firms by state, city, locality and PIN code.',
+  'Chat live with any lawyer. Sign in with Google or email-OTP — your history syncs across devices.',
+  'Instant video consultations from a lawyer\'s profile — a private room, minted in one click.',
+  'Auto-detect your nearest metro with one tap. Or pick the city manually — your choice.',
 ]
 
 const HEADINGS = [
@@ -16,6 +20,10 @@ const HEADINGS = [
   'Your firm. Online. In sixty seconds.',
   'Video consults, receipts, branded site — built in.',
   'LawAI that knows your workspace only.',
+  'Find a Barrister, anywhere in India.',
+  'Chat live with any lawyer — instantly.',
+  'Instant video consultation in one click.',
+  'State, city, locality, PIN — find your lawyer.',
 ]
 
 export function AnimatedHeading({ text }: { text?: string }) {
