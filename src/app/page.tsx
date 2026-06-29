@@ -118,7 +118,7 @@ export default function SaasLandingPage() {
             </ol>
           </div>
           <div className="border-l-0 border-t border-white/10 pt-10 lg:border-l lg:border-t-0 lg:pl-12 lg:pt-0">
-            <p className="text-xs font-bold uppercase tracking-widest text-amber-300">For clients</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-300">For us</p>
             <h2 className="mt-2 text-2xl font-bold sm:text-3xl md:text-4xl">Find a Barrister in seconds</h2>
             <ol className="mt-8 space-y-5">
               {[
@@ -128,7 +128,7 @@ export default function SaasLandingPage() {
                 { n: '4', title: 'Book a slot', body: 'When the firm has availability, book a consultation in one click — auto-confirmed.' },
               ].map((s) => (
                 <li key={s.n} className="flex gap-5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-amber-300/40 bg-amber-300/10 text-sm font-bold text-amber-300">{s.n}</div>
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 text-sm font-bold">{s.n}</div>
                   <div>
                     <h3 className="text-lg font-semibold">{s.title}</h3>
                     <p className="mt-1 text-sm text-white/70">{s.body}</p>
@@ -136,12 +136,6 @@ export default function SaasLandingPage() {
                 </li>
               ))}
             </ol>
-            <Link
-              href="/find-barrister"
-              className="mt-8 inline-flex items-center gap-2 rounded-xl bg-amber-300 px-5 py-2.5 text-sm font-semibold text-[#14203E] hover:bg-amber-200"
-            >
-              Open Find a Barrister <ArrowRight className="h-4 w-4" />
-            </Link>
           </div>
         </div>
       </section>
