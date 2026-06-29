@@ -65,6 +65,7 @@ export async function createAdvocate(slug: string, formData: FormData) {
   const state = (formData.get('state') as string)?.trim() || ''
   const city = (formData.get('city') as string)?.trim() || ''
   const locality = (formData.get('locality') as string)?.trim() || ''
+  const pincode = (formData.get('pincode') as string)?.trim() || ''
   const profileImage = (formData.get('profileImage') as string)?.trim() || ''
   if (!name || !email) throw new Error('Name and email are required')
   if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) throw new Error('Valid email required')
@@ -76,12 +77,12 @@ export async function createAdvocate(slug: string, formData: FormData) {
   }
 
   const placeholder = await bcrypt.hash(crypto.randomBytes(24).toString('hex'), 10)
-  const advData: any = { name, email, password: placeholder, title, isActive: false, tenantId, state, city, locality: locality || null, profileImage: profileImage || null }
+  const advData: any = { name, email, password: placeholder, title, isActive: false, tenantId, state, city, locality: locality || null, pincode: pincode || null, profileImage: profileImage || null }
   let advocate
   try { advocate = await prisma.advocate.create({ data: advData }) }
   catch (e: any) {
-    if (/state|city|locality/i.test(String(e?.message))) {
-      delete advData.state; delete advData.city; delete advData.locality
+    if (/state|city|locality|pincode/i.test(String(e?.message))) {
+      delete advData.state; delete advData.city; delete advData.locality; delete advData.pincode
       advocate = await prisma.advocate.create({ data: advData })
     } else throw e
   }

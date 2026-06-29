@@ -22,7 +22,8 @@ export async function GET() {
   // Latest item timestamps per category — the client compares these with
   // the per-route lastSeen marker in localStorage and shows the chip only
   // when there's something genuinely newer than the last visit.
-  out.latest = { inquiries: null as string | null, payments: null as string | null }
+  out.latest = { inquiries: null as string | null, payments: null as string | null, chats: null as string | null }
+  out.chats = 0
 
   // Chips are personal: each user sees only the counts for items THEY
   // raised. Lawyers count their own (advocateId = u.id). Admins count only
@@ -57,6 +58,24 @@ export async function GET() {
     out.latest.payments = latestPayment?.createdAt?.toISOString() || null
   } catch {}
   out.receipts = 0
+
+  // Direct-message threads: count threads with at least one message from
+  // the client that was created after the user's lastSeen. The client
+  // does the lastSeen comparison; here we surface the latest createdAt.
+  try {
+    const where: any = { tenantId }
+    if (isLawyer) where.advocateId = u.id
+    const latestMsg = await (prisma as any).directMessage.findFirst({
+      where: { thread: where, senderType: 'client' },
+      orderBy: { createdAt: 'desc' },
+      select: { createdAt: true, threadId: true },
+    })
+    out.latest.chats = latestMsg?.createdAt?.toISOString() || null
+    // For the count, return distinct threads with any client message —
+    // the seenAt comparison on the client zeroes it once they open.
+    const total = await (prisma as any).directMessage.count({ where: { thread: where, senderType: 'client' } })
+    out.chats = total
+  } catch {}
 
   return NextResponse.json(out)
 }

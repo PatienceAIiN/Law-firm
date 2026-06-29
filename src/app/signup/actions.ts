@@ -84,6 +84,7 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   const state = (formData.get('state') as string)?.trim() || ''
   const city = (formData.get('city') as string)?.trim() || ''
   const locality = (formData.get('locality') as string)?.trim() || ''
+  const pincode = (formData.get('pincode') as string)?.trim() || ''
   if (!state || !city) return { ok: false, error: 'State and city are required so clients can find you.' }
   if (!locality) return { ok: false, error: 'Locality / area is required so clients can find you on the directory.' }
   const logoUrl = (formData.get('logoUrl') as string)?.trim() || ''
@@ -104,7 +105,7 @@ export async function requestSignupOtp(formData: FormData): Promise<RequestOtpRe
   if (existing) return { ok: false, error: 'That workspace URL is already taken.' }
 
   const otp = sixDigitOtp()
-  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw, appsumoCode: appsumoRequired ? appsumoCode : '', state, city, locality, logoUrl })
+  const payload = JSON.stringify({ name, firmName, slug, email: emailRaw, appsumoCode: appsumoRequired ? appsumoCode : '', state, city, locality, pincode, logoUrl })
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000)
 
   // Clear any previous pending OTPs for this email; only one valid at a time.
@@ -157,7 +158,7 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
     return { ok: false, error: 'Incorrect code. Try again.' }
   }
 
-  let payload: { name: string; firmName: string; slug: string; email: string; appsumoCode?: string; state?: string; city?: string; locality?: string; logoUrl?: string }
+  let payload: { name: string; firmName: string; slug: string; email: string; appsumoCode?: string; state?: string; city?: string; locality?: string; pincode?: string; logoUrl?: string }
   try { payload = JSON.parse(row.payload) } catch { return { ok: false, error: 'Corrupt signup data. Start over.' } }
 
   // Re-validate the AppSumo code right before tenant creation — race-safe.
@@ -185,13 +186,14 @@ export async function verifySignupOtp(email: string, code: string): Promise<Veri
     state: payload.state || null,
     city: payload.city || null,
     locality: payload.locality || null,
+    pincode: payload.pincode || null,
     adminUsers: { create: [{ email: payload.email, name: payload.name, password: hashed, role: 'owner' }] },
   }
   let tenant
   try { tenant = await prisma.tenant.create({ data: tenantData }) }
   catch (e: any) {
-    if (/state|city|locality/i.test(String(e?.message))) {
-      delete tenantData.state; delete tenantData.city; delete tenantData.locality
+    if (/state|city|locality|pincode/i.test(String(e?.message))) {
+      delete tenantData.state; delete tenantData.city; delete tenantData.locality; delete tenantData.pincode
       tenant = await prisma.tenant.create({ data: tenantData })
     } else throw e
   }

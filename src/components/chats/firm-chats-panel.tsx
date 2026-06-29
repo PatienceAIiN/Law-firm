@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { MessageSquare, Send, Loader2, Trash2, StickyNote } from 'lucide-react'
 import { confirmDialog } from '@/components/ui/confirm-dialog'
+import { markSeen } from '@/hooks/use-unread-counts'
 
 type Thread = {
   id: string
@@ -44,6 +45,7 @@ export function FirmChatsPanel({ role }: { role: 'admin' | 'lawyer' }) {
   }
 
   useEffect(() => {
+    markSeen('chats')
     // Aggressive 2-second poll for the threads list — feels near-real-time.
     loadThreads()
     const t = window.setInterval(loadThreads, 2000)
@@ -55,10 +57,17 @@ export function FirmChatsPanel({ role }: { role: 'admin' | 'lawyer' }) {
   useEffect(() => {
     if (!open?.id) return
     loadMessages(open.id); loadNote(open.id)
-    const t = window.setInterval(() => loadMessages(open.id), 1500)
+    const es = new EventSource(`/api/dm/${open.id}/stream`)
+    es.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data)
+        if (data?.message) setMessages((m) => (m.some((x) => x.id === data.message.id) ? m : [...m, data.message]))
+      } catch {}
+    }
+    const t = window.setInterval(() => loadMessages(open.id), 5000) // safety net
     const onFocus = () => loadMessages(open.id)
     window.addEventListener('focus', onFocus)
-    return () => { clearInterval(t); window.removeEventListener('focus', onFocus) }
+    return () => { es.close(); clearInterval(t); window.removeEventListener('focus', onFocus) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open?.id])
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])

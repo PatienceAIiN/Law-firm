@@ -65,6 +65,7 @@ export function TenantAdminShell({
     if (href.endsWith('/inquiries')) return unread.inquiries
     if (href.endsWith('/receipts')) return unread.payments + unread.receipts
     if (href.endsWith('/mail')) return unread.mail
+    if (href.endsWith('/chats')) return unread.chats
     return 0
   }
 

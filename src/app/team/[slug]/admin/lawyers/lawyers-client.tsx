@@ -40,6 +40,7 @@ export function LawyersClient({ slug, items, seatLimit }: { slug: string; items:
     fd.set('state', location.state)
     fd.set('city', location.city)
     if (location.locality) fd.set('locality', location.locality)
+    if (location.pincode) fd.set('pincode', location.pincode)
     if (profileImage) fd.set('profileImage', profileImage)
     setError(null)
     start(async () => {

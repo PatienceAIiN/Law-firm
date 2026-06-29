@@ -1,14 +1,13 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ChevronLeft, ChevronRight, X, Sparkles, Search, MessageSquare, Video, ReceiptText, Scale } from 'lucide-react'
+import { ChevronLeft, ChevronRight, X, Sparkles, Search, MessageSquare, Video, MapPin, Scale } from 'lucide-react'
 
 const SLIDES = [
-  { icon: Search, color: 'from-[#14203E] via-[#1c2c52] to-[#B7913D]', title: 'Find a Barrister', body: 'Search lawyers and firms across every Indian state, city and locality. Auto-detect your location.', chip: 'NEW' },
-  { icon: MessageSquare, color: 'from-emerald-600 via-emerald-500 to-amber-400', title: 'Live chat with lawyers', body: 'Direct 1-to-1 chat with any firm. Sign in with Google, send a message, get a reply in real time.', chip: 'NEW' },
+  { icon: Search, color: 'from-[#14203E] via-[#1c2c52] to-[#B7913D]', title: 'Find a Barrister', body: 'Search lawyers and law firms across every Indian state, city and locality.', chip: 'NEW' },
+  { icon: MapPin, color: 'from-emerald-600 via-emerald-500 to-amber-400', title: 'Auto-detect your city', body: 'Tap once and we snap to the closest metro using your browser GPS. Pick manually anytime.', chip: 'NEW' },
+  { icon: MessageSquare, color: 'from-sky-600 via-cyan-500 to-emerald-400', title: 'Live chat with lawyers', body: 'Sign in with Google or email-OTP and message any firm or lawyer in real time.', chip: 'NEW' },
   { icon: Video, color: 'from-fuchsia-600 via-rose-500 to-amber-400', title: 'Instant video consultation', body: 'Request a video call right from a lawyer\'s profile. We mint a private room and email them to join.', chip: 'NEW' },
-  { icon: ReceiptText, color: 'from-sky-600 via-cyan-500 to-emerald-400', title: 'Per-tenant Razorpay & UPI QR', body: 'Send receipts with a scan-to-pay QR. Auto-confirmed payments + manual UTR review by admin.', chip: 'NEW' },
-  { icon: Sparkles, color: 'from-amber-500 via-orange-500 to-rose-500', title: 'And much more', body: 'AppSumo redemption · law-firm directory · workspace SSO · live chat in admin and lawyer portals.', chip: 'NEW' },
 ]
 
 const STORAGE_KEY = 'whats-new:v1'

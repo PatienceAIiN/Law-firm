@@ -7,9 +7,10 @@ export type UnreadCounts = {
   receipts: number
   payments: number
   mail: number
+  chats: number
 }
 
-const ZERO: UnreadCounts = { inquiries: 0, receipts: 0, payments: 0, mail: 0 }
+const ZERO: UnreadCounts = { inquiries: 0, receipts: 0, payments: 0, mail: 0, chats: 0 }
 
 // localStorage keys for "last seen" timestamps — per browser session.
 // Keep them simple so any tab visit to the matching route can write the
@@ -17,6 +18,7 @@ const ZERO: UnreadCounts = { inquiries: 0, receipts: 0, payments: 0, mail: 0 }
 export const SEEN_KEYS = {
   inquiries: 'unread:inquiries:seenAt',
   payments: 'unread:payments:seenAt',
+  chats: 'unread:chats:seenAt',
 }
 
 // Polls /api/unread-counts every 20 s, refetches on tab focus.
@@ -53,6 +55,7 @@ export function useUnreadCounts(enabled: boolean = true) {
           receipts: 0,
           payments: compare(latest.payments, SEEN_KEYS.payments, data.payments || 0),
           mail: data.mail || 0,
+          chats: compare(latest.chats, SEEN_KEYS.chats, data.chats || 0),
         })
       } catch {}
     }
@@ -65,7 +68,7 @@ export function useUnreadCounts(enabled: boolean = true) {
     // React to storage updates from other tabs / pages so visiting the
     // receipts tab clears the chip on the dashboard tab immediately.
     const onStorage = (e: StorageEvent) => {
-      if (e.key === SEEN_KEYS.inquiries || e.key === SEEN_KEYS.payments) load()
+      if (e.key === SEEN_KEYS.inquiries || e.key === SEEN_KEYS.payments || e.key === SEEN_KEYS.chats) load()
     }
     window.addEventListener('storage', onStorage)
     return () => {

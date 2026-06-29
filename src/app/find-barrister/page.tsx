@@ -4,10 +4,10 @@ import { FindBarristerClient } from './find-barrister-client'
 export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Find a Barrister — Patience AI' }
 
-type SP = { state?: string; city?: string; q?: string; tab?: string }
+type SP = { state?: string; city?: string; q?: string; tab?: string; pincode?: string }
 
 export default async function FindBarristerPage({ searchParams }: { searchParams: Promise<SP> }) {
-  const { state, city, q, tab } = await searchParams
+  const { state, city, q, tab, pincode } = await searchParams
   const activeTab = (tab === 'firms' ? 'firms' : 'lawyers') as 'firms' | 'lawyers'
 
   let firms: any[] = []
@@ -19,10 +19,11 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
     const where: any = { status: 'active' }
     if (state) where.state = state
     if (city) where.city = city
+    if (pincode) where.pincode = pincode
     if (q) where.name = { contains: q, mode: 'insensitive' }
     firms = await prisma.tenant.findMany({
       where, take: 60, orderBy: { name: 'asc' },
-      select: { id: true, slug: true, name: true, state: true, city: true, locality: true, ownerEmail: true },
+      select: { id: true, slug: true, name: true, state: true, city: true, locality: true, pincode: true, ownerEmail: true } as any,
     })
   } catch (e) { console.warn('[find-barrister] firms query skipped:', (e as any)?.message) }
 
@@ -30,11 +31,12 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
     const where: any = { isActive: true, tenantId: { not: null } }
     if (state) where.state = state
     if (city) where.city = city
+    if (pincode) where.pincode = pincode
     if (q) where.name = { contains: q, mode: 'insensitive' }
     lawyers = await prisma.advocate.findMany({
       where, take: 60, orderBy: { name: 'asc' },
-      select: { id: true, name: true, title: true, profileImage: true, expertise: true, bio: true, state: true, city: true, locality: true, tenantId: true,
-        tenant: { select: { slug: true, name: true } } },
+      select: { id: true, name: true, title: true, profileImage: true, expertise: true, bio: true, state: true, city: true, locality: true, pincode: true, tenantId: true,
+        tenant: { select: { slug: true, name: true } } } as any,
     })
   } catch (e) { console.warn('[find-barrister] lawyers query skipped:', (e as any)?.message) }
 
@@ -64,6 +66,7 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
       initialTab={activeTab}
       initialState={state || ''}
       initialCity={city || ''}
+      initialPincode={pincode || ''}
       initialQ={q || ''}
       firms={firms.map((f) => ({ id: f.id, slug: f.slug, name: f.name, state: f.state, city: f.city, locality: f.locality, hasSlots: tenantsWithSlots.has(f.id) }))}
       lawyers={lawyers.map((l) => ({

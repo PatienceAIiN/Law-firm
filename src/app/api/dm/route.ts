@@ -5,6 +5,7 @@ import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { tenantLawyerAuthOptions } from '@/lib/tenant-lawyer-auth'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { publish } from '@/lib/dm-bus'
 
 export const dynamic = 'force-dynamic'
 
@@ -94,16 +95,33 @@ export async function POST(req: NextRequest) {
     },
   })
   await prisma.directThread.update({ where: { id: thread.id }, data: { lastMessageAt: new Date() } })
+  // SSE push — every subscriber on this thread receives the new message
+  // in <100ms. Polling stays as a fallback when EventSource isn't open.
+  publish(thread.id, { type: 'message', message })
 
-  // Outgoing notification on the recipient side.
+  // Outgoing notification on the recipient side with a one-click
+  // "Reply in app" deep-link CTA.
   try {
-    if (actor.kind === 'client') {
-      const tenant = await prisma.tenant.findUnique({ where: { id: thread.tenantId } })
+    const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
+    const tenant = await prisma.tenant.findUnique({ where: { id: thread.tenantId } })
+    if (actor.kind === 'client' && tenant) {
       const advocate = thread.advocateId ? await prisma.advocate.findUnique({ where: { id: thread.advocateId } }) : null
-      const to = advocate?.email || tenant?.ownerEmail
-      if (to) sendEmail({ to, subject: `New chat from ${actor.email}`, htmlContent: `<p>${text.replace(/</g, '&lt;')}</p><p>Open the inquiries panel to reply.</p>`, textContent: text }).catch(() => {})
-    } else {
-      sendEmail({ to: thread.clientEmail, subject: `Reply from your law firm`, htmlContent: `<p>${text.replace(/</g, '&lt;')}</p><p>Open the chat to continue.</p>`, textContent: text }).catch(() => {})
+      const to = advocate?.email || tenant.ownerEmail
+      const replyUrl = `${base}/team/${tenant.slug}/${advocate ? 'lawyer' : 'admin'}/chats`
+      if (to) sendEmail({
+        to,
+        subject: `New chat from ${actor.email}`,
+        htmlContent: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#14203E;"><h2 style="margin:0 0 12px">New message</h2><p style="background:#FFFCF8;border-left:3px solid #B7913D;padding:10px 14px;">${text.replace(/</g, '&lt;')}</p><p style="margin:18px 0;"><a href="${replyUrl}" style="display:inline-block;background:#14203E;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Reply in app</a></p></div>`,
+        textContent: `${text}\n\nReply: ${replyUrl}`,
+      }).catch(() => {})
+    } else if (tenant) {
+      const replyUrl = `${base}/find-barrister/me`
+      sendEmail({
+        to: thread.clientEmail,
+        subject: `Reply from ${tenant.name}`,
+        htmlContent: `<div style="font-family:Arial,sans-serif;max-width:520px;margin:0 auto;padding:24px;color:#14203E;"><h2 style="margin:0 0 12px">${tenant.name} replied</h2><p style="background:#FFFCF8;border-left:3px solid #B7913D;padding:10px 14px;">${text.replace(/</g, '&lt;')}</p><p style="margin:18px 0;"><a href="${replyUrl}" style="display:inline-block;background:#14203E;color:#fff;padding:10px 18px;border-radius:8px;text-decoration:none;font-weight:600;">Open chat</a></p></div>`,
+        textContent: `${text}\n\nOpen chat: ${replyUrl}`,
+      }).catch(() => {})
     }
   } catch {}
 

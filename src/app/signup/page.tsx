@@ -68,6 +68,7 @@ export default function SignupPage() {
       fd.set('state', location.state)
       fd.set('city', location.city)
       fd.set('locality', location.locality)
+      if (location.pincode) fd.set('pincode', location.pincode)
       if (logoUrl) fd.set('logoUrl', logoUrl)
       const r: RequestOtpResult = await requestSignupOtp(fd)
       if (!r.ok) { setRequestError(r.error); return }

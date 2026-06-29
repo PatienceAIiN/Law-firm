@@ -63,6 +63,20 @@ export async function sendDirectoryMessage(args: {
       } as any,
     })
 
+    // Also start a DirectThread so the lawyer's Chats tab surfaces this
+    // immediately — plus seed the first message so the conversation is
+    // already alive when they open it.
+    try {
+      const existing = await prisma.directThread.findFirst({
+        where: { tenantId, clientEmail: email, advocateId: advocateId || null },
+      })
+      const thread = existing || await prisma.directThread.create({
+        data: { tenantId, advocateId: advocateId || null, clientEmail: email, clientName: fullName, subject: args.subject || 'Find-Barrister inquiry', lastMessageAt: new Date() },
+      })
+      await prisma.directMessage.create({ data: { threadId: thread.id, senderType: 'client', senderName: fullName, body: message } })
+      await prisma.directThread.update({ where: { id: thread.id }, data: { lastMessageAt: new Date() } })
+    } catch (e) { console.warn('[sendDirectoryMessage] DM thread seed skipped:', (e as any)?.message) }
+
     // Notify the firm + (when applicable) the assigned lawyer via email.
     const recipients = [firmEmail]
     if (advocateId) {

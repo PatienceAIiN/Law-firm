@@ -215,10 +215,12 @@ model Tenant {
   state      String?
   city       String?
   locality   String?
+  pincode    String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 
   @@index([state, city])
+  @@index([pincode])
 
   adminUsers       AdminUser[]
   advocates        Advocate[]
@@ -267,6 +269,7 @@ model Advocate {
   state            String?
   city             String?
   locality         String?
+  pincode          String?
   tenantId         String?
   tenant           Tenant?   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   createdAt        DateTime  @default(now())

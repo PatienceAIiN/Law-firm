@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { Shield, X } from 'lucide-react'
+import { Shield, X, Loader2 } from 'lucide-react'
 
 // Simple browser fingerprint (no external library needed)
 function getBrowserFingerprint(): string {
@@ -35,7 +35,7 @@ function getBrowserFingerprint(): string {
 
 export function DpdpConsentBanner() {
   const [visible, setVisible] = useState(false)
-  const [saving, setSaving] = useState(false)
+  const [saving, setSaving] = useState<null | 'accept' | 'deny'>(null)
 
   useEffect(() => {
     // Don't show on admin/lawyer portals
@@ -53,7 +53,7 @@ export function DpdpConsentBanner() {
   }, [])
 
   const respond = useCallback(async (accepted: boolean) => {
-    setSaving(true)
+    setSaving(accepted ? 'accept' : 'deny')
     const fp = getBrowserFingerprint()
 
     try {
@@ -76,7 +76,7 @@ export function DpdpConsentBanner() {
     localStorage.setItem('dpdp_consent', accepted ? 'accepted' : 'denied')
     localStorage.setItem('dpdp_consent_at', new Date().toISOString())
     setVisible(false)
-    setSaving(false)
+    setSaving(null)
   }, [])
 
   if (!visible) return null
@@ -120,17 +120,19 @@ export function DpdpConsentBanner() {
         <div className="flex items-center justify-end gap-3 border-t border-[#F4E8D8] bg-[#FFFCF8]/60 px-5 py-3.5 dark:border-white/10 dark:bg-[#1a2033]/60">
           <button
             onClick={() => respond(false)}
-            disabled={saving}
-            className="rounded-xl border border-primary/15 px-5 py-2 text-[13px] font-semibold text-primary/70 transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-white/15 dark:text-white/60 dark:hover:bg-white/5"
+            disabled={saving !== null}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-primary/15 px-5 py-2 text-[13px] font-semibold text-primary/70 transition-colors hover:bg-primary/5 disabled:opacity-50 dark:border-white/15 dark:text-white/60 dark:hover:bg-white/5"
           >
-            Deny
+            {saving === 'deny' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {saving === 'deny' ? 'Denying…' : 'Deny'}
           </button>
           <button
             onClick={() => respond(true)}
-            disabled={saving}
-            className="rounded-xl bg-primary px-5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-accent disabled:opacity-50 dark:bg-white dark:text-primary dark:hover:bg-white/90"
+            disabled={saving !== null}
+            className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2 text-[13px] font-semibold text-white transition-colors hover:bg-accent disabled:opacity-50 dark:bg-white dark:text-primary dark:hover:bg-white/90"
           >
-            {saving ? 'Saving…' : 'Accept'}
+            {saving === 'accept' && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
+            {saving === 'accept' ? 'Accepting…' : 'Accept'}
           </button>
         </div>
       </div>
