@@ -12,6 +12,7 @@ const SECTIONS = [
   { h: '4. Third-Party Services', p: 'We integrate with third-party providers such as LiveKit for video meetings and Resend for emails. These services receive only the minimal data required to execute their functions.' },
   { h: '5. Cookies and Tracking', p: 'We use necessary cookies to maintain your login session and preferences. We do not use cross-site tracking cookies.' },
   { h: '6. Your Rights', p: 'You have the right to request access, correction, or deletion of your personal data. Contact our support team to exercise these rights.' },
+  { h: '7. Firm Verification & Workspace Deletion', p: 'Every workspace created via /signup is intended for genuine law firms and registered advocates. We manually verify each firm against bar-council records, business registration, and the contact information provided. If we are unable to verify the workspace within a reasonable window — or if we determine the signup is impersonating a firm, fraudulent, or otherwise misuses the platform — we will permanently delete the workspace and every byte of data associated with it (admin profile, lawyer accounts, cases, receipts, chat threads, uploaded files). Where possible we notify the registered owner email before deletion. End-client data submitted through forms is also removed in that cascade. By creating a workspace you agree to this verification policy.' },
 ]
 
 export default function PlatformPrivacyPage() {

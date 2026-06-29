@@ -112,9 +112,15 @@ export default function SignupPage() {
       <div className="w-full max-w-md rounded-2xl border border-[#F4E8D8] bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#11151f]">
         {step === 'form' && (
           <>
-            <h1 className="text-2xl font-bold text-primary dark:text-white">Create your workspace</h1>
+            <h1 className="text-2xl font-bold text-primary dark:text-white">Create your firm workspace</h1>
             <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+              This page is for <strong>law firms and advocates</strong> setting up a workspace — not for regular users looking to consult a lawyer. If that's you, please use <a href="/find-barrister" className="underline">Find a Barrister</a> instead.
+            </p>
+            <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">
               We'll email you a 6-digit code to verify, then send your admin credentials. Your data stays isolated — new workspaces start empty.
+            </p>
+            <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[12px] leading-snug text-amber-900 dark:border-amber-500/30 dark:bg-amber-900/20 dark:text-amber-100">
+              <strong>Verification note:</strong> we manually verify every firm signup. If we cannot verify your firm within a reasonable window the workspace and all its data are deleted as per our policy. See the Privacy page for details.
             </p>
             <form onSubmit={submitForm} className="mt-6 space-y-4">
               {process.env.NEXT_PUBLIC_APPSUMO_REQUIRED === 'true' && (

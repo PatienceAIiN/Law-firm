@@ -40,14 +40,14 @@ export function WhatsNewPopup() {
           <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-12 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
           <Scale className="pointer-events-none absolute right-6 top-6 h-7 w-7 text-white/40" />
-          <div className="relative px-8 pb-14 pt-12 text-center text-white">
+          <div className="relative px-5 pb-10 pt-8 text-center text-white sm:px-8 sm:pb-14 sm:pt-12">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
               <Sparkles className="h-3 w-3" /> {s.chip}
             </span>
             <div className="mx-auto mt-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 backdrop-blur">
               <Ic className="h-8 w-8 text-white" />
             </div>
-            <h2 className="mt-5 text-3xl font-bold leading-tight tracking-tight md:text-4xl">{s.title}</h2>
+            <h2 className="mt-5 text-2xl font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl">{s.title}</h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/85 md:text-base">{s.body}</p>
           </div>
           <button onClick={() => setIdx((n) => (n - 1 + SLIDES.length) % SLIDES.length)} aria-label="Previous" className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-1.5 text-white hover:bg-white/25">

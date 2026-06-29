@@ -117,7 +117,7 @@ export function DpdpConsentBanner() {
         </div>
 
         {/* Actions */}
-        <div className="flex items-center justify-end gap-3 border-t border-[#F4E8D8] bg-[#FFFCF8]/60 px-5 py-3.5 dark:border-white/10 dark:bg-[#1a2033]/60">
+        <div className="flex flex-col items-stretch justify-end gap-2 border-t border-[#F4E8D8] bg-[#FFFCF8]/60 px-4 py-3 sm:flex-row sm:items-center sm:gap-3 sm:px-5 sm:py-3.5 dark:border-white/10 dark:bg-[#1a2033]/60">
           <button
             onClick={() => respond(false)}
             disabled={saving !== null}

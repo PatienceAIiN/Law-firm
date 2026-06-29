@@ -112,8 +112,8 @@ export function FindBarristerClient({
             <AccountChip />
           </div>
 
-          <div className="mt-4 grid gap-2 sm:grid-cols-[1fr_1fr_120px_2fr_auto_auto]">
-            <select value={state} onChange={(e) => { setState(e.target.value); setCity('') }} className={cls}>
+          <div className="mt-4 grid gap-2 grid-cols-2 sm:grid-cols-[1fr_1fr_120px_2fr_auto_auto]">
+            <select value={state} onChange={(e) => { setState(e.target.value); setCity('') }} className={`${cls} col-span-2 sm:col-span-1`}>
               <option value="">All states</option>
               {INDIA_STATES.map((s) => <option key={s} value={s} className="bg-white text-slate-900 dark:bg-[#1a2030] dark:text-white">{s}</option>)}
             </select>
@@ -129,7 +129,7 @@ export function FindBarristerClient({
               placeholder="PIN code"
               className={cls}
             />
-            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name…" className={cls} />
+            <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search by name…" className={`${cls} col-span-2 sm:col-span-1`} />
             <button onClick={detectLocation} disabled={geoBusy} title="Use my location" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-60 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200">
               {geoBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-3.5 w-3.5" />} My location
             </button>
@@ -160,7 +160,7 @@ export function FindBarristerClient({
             No matches. Try clearing filters or picking a different state.
           </div>
         ) : (
-          <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {list.map((item: any) => (
               <li key={item.id}>
                 <button
@@ -243,7 +243,7 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 p-4 animate-fade-in" onClick={onClose}>
-      <div className="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-2xl dark:bg-[#11151f] animate-pop-in" onClick={(e) => e.stopPropagation()}>
+      <div className="max-h-[92vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-4 shadow-2xl sm:p-6 dark:bg-[#11151f] animate-pop-in" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-start gap-3">
           {kind === 'lawyer' && data.profileImage ? (
             <img src={data.profileImage} alt="" className="h-20 w-20 flex-shrink-0 rounded-full object-cover ring-2 ring-amber-200" />
@@ -629,14 +629,14 @@ function IntroPoster({ onClose, onDetect }: { onClose: () => void; onDetect: () 
           <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-12 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
           <Scale className="pointer-events-none absolute right-6 top-6 h-7 w-7 text-white/40" />
-          <div className="relative px-8 pb-14 pt-12 text-center text-white">
+          <div className="relative px-5 pb-10 pt-8 text-center text-white sm:px-8 sm:pb-14 sm:pt-12">
             <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
               <Sparkles className="h-3 w-3" /> New feature
             </span>
             <div className="mx-auto mt-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 backdrop-blur">
               <Icon className="h-8 w-8 text-white" />
             </div>
-            <h2 className="mt-5 text-3xl font-bold leading-tight tracking-tight md:text-4xl">{slide.title}</h2>
+            <h2 className="mt-5 text-2xl font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl">{slide.title}</h2>
             <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/85 md:text-base">{slide.body}</p>
             <p className="mt-4 inline-block rounded-full bg-black/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
               {slide.chip}

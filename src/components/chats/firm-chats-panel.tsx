@@ -104,7 +104,7 @@ export function FirmChatsPanel({ role }: { role: 'admin' | 'lawyer' }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
-      <aside className="rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f]">
+      <aside className={`rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f] ${open ? 'hidden lg:block' : ''}`}>
         <div className="flex items-center justify-between border-b border-slate-200 px-3 py-2 dark:border-white/10">
           <p className="text-xs font-bold uppercase tracking-widest text-slate-500">{role === 'admin' ? 'All firm chats' : 'Your chats'}</p>
           <span className="text-[10px] text-slate-400">{threads.length}</span>
@@ -128,7 +128,7 @@ export function FirmChatsPanel({ role }: { role: 'admin' | 'lawyer' }) {
         )}
       </aside>
 
-      <section className="rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f]">
+      <section className={`rounded-2xl border border-slate-200 bg-white dark:border-white/10 dark:bg-[#11151f] ${open ? '' : 'hidden lg:block'}`}>
         {!open ? (
           <div className="flex h-[60vh] items-center justify-center text-center text-sm text-slate-500">
             <div>
@@ -138,12 +138,18 @@ export function FirmChatsPanel({ role }: { role: 'admin' | 'lawyer' }) {
           </div>
         ) : (
           <div className="flex h-[70vh] flex-col">
-            <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-white/10">
-              <div>
-                <p className="text-sm font-bold text-primary dark:text-white">{open.clientName || open.clientEmail}</p>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">{open.clientEmail}</p>
+            <div className="flex items-center justify-between gap-2 border-b border-slate-200 px-4 py-3 dark:border-white/10">
+              <button
+                onClick={() => setOpen(null)}
+                className="rounded-lg border border-slate-200 px-2 py-1 text-[11px] font-semibold text-slate-600 hover:bg-slate-100 lg:hidden dark:border-white/15 dark:text-slate-300 dark:hover:bg-white/10"
+              >
+                ← Chats
+              </button>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold text-primary dark:text-white">{open.clientName || open.clientEmail}</p>
+                <p className="truncate text-[11px] text-slate-500 dark:text-slate-400">{open.clientEmail}</p>
               </div>
-              <button onClick={deleteThread} className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20" title="Delete chat">
+              <button onClick={deleteThread} className="flex-shrink-0 rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20" title="Delete chat">
                 <Trash2 className="h-4 w-4" />
               </button>
             </div>
