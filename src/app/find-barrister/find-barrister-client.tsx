@@ -341,25 +341,74 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
 
 function AccountChip() {
   const { data: session } = useSession()
+  const [signInOpen, setSignInOpen] = useState(false)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onDoc = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false) }
+    document.addEventListener('mousedown', onDoc)
+    return () => document.removeEventListener('mousedown', onDoc)
+  }, [menuOpen])
+
   if (!session?.user?.email) {
     return (
-      <button
-        onClick={() => signIn('google', { callbackUrl: '/find-barrister/me' })}
-        className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200"
-      >
-        <LogIn className="h-3.5 w-3.5" /> Sign in
-      </button>
+      <>
+        <button
+          onClick={() => setSignInOpen(true)}
+          className="inline-flex items-center gap-1.5 rounded-full border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200"
+        >
+          <LogIn className="h-3.5 w-3.5" /> Sign in
+        </button>
+        {signInOpen && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 p-4 animate-fade-in" onClick={() => setSignInOpen(false)}>
+            <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-2xl dark:bg-[#11151f] animate-pop-in" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-primary dark:text-white">Sign in</h3>
+                <button onClick={() => setSignInOpen(false)} className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10" aria-label="Close">
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <SignInPrompt label="Sign in to chat, video-call, and book lawyers across India." />
+            </div>
+          </div>
+        )}
+      </>
     )
   }
   return (
-    <Link href="/find-barrister/me" className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 dark:border-white/10 dark:bg-[#1a2030]">
-      {(session.user as any).image ? (
-        <img src={(session.user as any).image} alt="" className="h-6 w-6 rounded-full object-cover" />
-      ) : (
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">{(session.user.name || session.user.email || '?').slice(0, 1).toUpperCase()}</span>
+    <div ref={menuRef} className="relative">
+      <button
+        onClick={() => setMenuOpen((v) => !v)}
+        className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 dark:border-white/10 dark:bg-[#1a2030]"
+      >
+        {(session.user as any).image ? (
+          <img src={(session.user as any).image} alt="" className="h-6 w-6 rounded-full object-cover" />
+        ) : (
+          <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-white">{(session.user.name || session.user.email || '?').slice(0, 1).toUpperCase()}</span>
+        )}
+        <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">{session.user.name || 'My account'}</span>
+      </button>
+      {menuOpen && (
+        <div className="absolute right-0 z-30 mt-2 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white text-sm shadow-lg dark:border-white/10 dark:bg-[#11151f]">
+          <Link href="/find-barrister/me" className="block px-3 py-2 text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/5">
+            My account
+          </Link>
+          <button
+            onClick={async () => {
+              const { confirmDialog } = await import('@/components/ui/confirm-dialog')
+              if (await confirmDialog({ title: 'Sign out?', message: 'Your chat history stays — sign back in to continue.', confirmLabel: 'Sign out' })) {
+                ;(await import('next-auth/react')).signOut({ callbackUrl: '/find-barrister' })
+              }
+            }}
+            className="block w-full px-3 py-2 text-left text-rose-600 hover:bg-rose-50 dark:text-rose-300 dark:hover:bg-rose-900/20"
+          >
+            Sign out
+          </button>
+        </div>
       )}
-      <span className="text-xs font-semibold text-slate-700 dark:text-slate-200">My account</span>
-    </Link>
+    </div>
   )
 }
 

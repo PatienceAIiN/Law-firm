@@ -4,8 +4,9 @@ import { useState } from 'react'
 import { signOut } from 'next-auth/react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { Trash2, LogOut, MessageSquare, Search, User2, Loader2 } from 'lucide-react'
+import { Trash2, LogOut, MessageSquare, Search, User2, Loader2, X, Send } from 'lucide-react'
 import { confirmDialog } from '@/components/ui/confirm-dialog'
+import { useEffect, useRef } from 'react'
 
 type Thread = {
   id: string; subject: string | null; lastMessageAt: string
@@ -17,13 +18,18 @@ export function MeClient({ user, threads }: { user: { email: string; name: strin
   const router = useRouter()
   const [list, setList] = useState(threads)
   const [busy, setBusy] = useState(false)
+  const [deleting, setDeleting] = useState<string | null>(null)
+  const [openId, setOpenId] = useState<string | null>(null)
 
   const deleteThread = async (id: string) => {
     const ok = await confirmDialog({ title: 'Delete chat?', message: 'The lawyer will lose this thread on their end too.', confirmLabel: 'Delete', tone: 'danger' })
     if (!ok) return
-    const r = await fetch(`/api/dm/${id}`, { method: 'DELETE' })
-    if (r.ok) setList((l) => l.filter((t) => t.id !== id))
-    else alert((await r.json()).error || 'Failed')
+    setDeleting(id)
+    try {
+      const r = await fetch(`/api/dm/${id}`, { method: 'DELETE' })
+      if (r.ok) setList((l) => l.filter((t) => t.id !== id))
+      else alert((await r.json()).error || 'Failed')
+    } finally { setDeleting(null) }
   }
 
   const deleteAccount = async () => {
@@ -88,13 +94,19 @@ export function MeClient({ user, threads }: { user: { email: string; name: strin
                     <p className="mt-0.5 text-[10px] text-slate-400">{new Date(t.lastMessageAt).toLocaleString()}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    {t.firmSlug && (
-                      <Link href={`/team/${t.firmSlug}`} className="rounded-lg border border-slate-300 px-2 py-1 text-[10px] font-semibold text-slate-600 hover:bg-slate-100 dark:border-white/15 dark:text-slate-300 dark:hover:bg-white/10">
-                        Open firm
-                      </Link>
-                    )}
-                    <button onClick={() => deleteThread(t.id)} className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20" aria-label="Delete chat">
-                      <Trash2 className="h-4 w-4" />
+                    <button
+                      onClick={() => setOpenId(t.id)}
+                      className="rounded-lg bg-primary px-3 py-1 text-[10px] font-semibold text-white hover:bg-accent"
+                    >
+                      Continue chat
+                    </button>
+                    <button
+                      onClick={() => deleteThread(t.id)}
+                      disabled={deleting === t.id}
+                      className="rounded-lg p-1.5 text-rose-500 hover:bg-rose-50 disabled:opacity-50 dark:hover:bg-rose-900/20"
+                      aria-label="Delete chat"
+                    >
+                      {deleting === t.id ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
                     </button>
                   </div>
                 </li>
@@ -112,6 +124,81 @@ export function MeClient({ user, threads }: { user: { email: string; name: strin
           </button>
         </section>
       </main>
+
+      {openId && <ThreadChatModal threadId={openId} onClose={() => setOpenId(null)} />}
+    </div>
+  )
+}
+
+function ThreadChatModal({ threadId, onClose }: { threadId: string; onClose: () => void }) {
+  const [messages, setMessages] = useState<any[]>([])
+  const [body, setBody] = useState('')
+  const [sending, setSending] = useState(false)
+  const bottomRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let alive = true
+    const load = async () => {
+      const r = await fetch(`/api/dm?threadId=${threadId}`, { cache: 'no-store' })
+      if (r.ok && alive) setMessages((await r.json()).messages || [])
+    }
+    load()
+    const es = new EventSource(`/api/dm/${threadId}/stream`)
+    es.onmessage = (ev) => {
+      try {
+        const data = JSON.parse(ev.data)
+        if (data?.message) setMessages((m) => (m.some((x) => x.id === data.message.id) ? m : [...m, data.message]))
+      } catch {}
+    }
+    return () => { alive = false; es.close() }
+  }, [threadId])
+
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }) }, [messages])
+
+  const send = async () => {
+    if (!body.trim() || sending) return
+    setSending(true)
+    try {
+      const r = await fetch('/api/dm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ threadId, body: body.trim() }) })
+      const data = await r.json()
+      if (r.ok) { setMessages((m) => [...m, data.message]); setBody('') }
+    } finally { setSending(false) }
+  }
+
+  return (
+    <div className="fixed inset-0 z-[150] flex items-center justify-center bg-black/60 p-4 animate-fade-in" onClick={onClose}>
+      <div className="flex h-[80vh] w-full max-w-md flex-col rounded-2xl bg-white shadow-2xl dark:bg-[#11151f] animate-pop-in" onClick={(e) => e.stopPropagation()}>
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 dark:border-white/10">
+          <p className="text-sm font-bold text-primary dark:text-white">Conversation</p>
+          <button onClick={onClose} aria-label="Close" className="rounded-lg p-1 text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10"><X className="h-4 w-4" /></button>
+        </div>
+        <div className="flex-1 space-y-2 overflow-y-auto p-3">
+          {messages.map((m) => (
+            <div key={m.id} className={`flex ${m.senderType === 'client' ? 'justify-end' : 'justify-start'}`}>
+              <div className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${m.senderType === 'client' ? 'bg-primary text-white' : 'bg-slate-100 text-slate-800 dark:bg-white/10 dark:text-slate-100'}`}>
+                <p className="whitespace-pre-wrap">{m.body}</p>
+                <p className="mt-1 text-[10px] opacity-70">{new Date(m.createdAt).toLocaleTimeString()}</p>
+              </div>
+            </div>
+          ))}
+          <div ref={bottomRef} />
+        </div>
+        <div className="border-t border-slate-200 p-2 dark:border-white/10">
+          <div className="flex items-end gap-2">
+            <textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send() } }}
+              rows={1}
+              placeholder="Type a reply…"
+              className="max-h-20 flex-1 resize-none rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none dark:border-white/15 dark:bg-[#1a2030] dark:text-white"
+            />
+            <button onClick={send} disabled={sending || !body.trim()} className="rounded-lg bg-primary p-2 text-white disabled:opacity-60">
+              {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

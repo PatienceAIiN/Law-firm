@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Loader2, CheckCircle2, ArrowRight, Mail } from 'lucide-react'
+import { Loader2, CheckCircle2, ArrowRight, Mail, ArrowLeft } from 'lucide-react'
 import { requestSignupOtp, verifySignupOtp, type RequestOtpResult, type VerifyOtpResult } from './actions'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { LocationPicker, type Location } from '@/components/ui/location-picker'
@@ -107,6 +107,13 @@ export default function SignupPage() {
 
   return (
     <div className="relative flex min-h-screen items-center justify-center bg-[#FFFCF8] px-4 py-12 dark:bg-[#0b0f17]">
+      <Link
+        href="/"
+        aria-label="Back to home"
+        className="fixed left-4 top-4 z-30 inline-flex h-9 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 shadow-sm hover:bg-slate-100 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200 dark:hover:bg-white/10"
+      >
+        <ArrowLeft className="h-4 w-4" /> Home
+      </Link>
       <div className="fixed right-4 top-4 z-30"><ThemeToggle /></div>
 
       <div className="w-full max-w-md rounded-2xl border border-[#F4E8D8] bg-white p-8 shadow-xl dark:border-white/10 dark:bg-[#11151f]">
