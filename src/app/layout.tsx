@@ -137,7 +137,7 @@ export default async function RootLayout({
         <DpdpConsentBanner />
         <ThemeAuto />
         <PwaRegister />
-        <AnimatedTabTitle />
+        {/* AnimatedTabTitle removed — static per-page titles are clearer. */}
         <ConfirmHost />
         <FloatingBackButton />
       </body>

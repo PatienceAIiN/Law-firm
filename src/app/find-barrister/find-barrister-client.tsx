@@ -326,13 +326,13 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
         {tab === 'chat' && (
           isSignedIn
             ? <ChatPanel tenantId={firmTenantId} advocateId={advocateId} targetName={data.name} />
-            : <SignInPrompt label="Sign in with Google to start a live chat with this lawyer" />
+            : <SignInPrompt label="Sign in to start a live chat" />
         )}
 
         {tab === 'video' && (
           isSignedIn
             ? <VideoRequestPanel tenantId={firmTenantId} advocateId={advocateId} targetName={data.name} />
-            : <SignInPrompt label="Sign in with Google to request an instant video consultation" />
+            : <SignInPrompt label="Sign in to request an instant video consultation" />
         )}
       </div>
     </div>
@@ -595,126 +595,49 @@ function VideoRequestPanel({ tenantId, advocateId, targetName }: { tenantId: str
   )
 }
 
-const SLIDES = [
-  {
-    icon: Search,
-    title: 'Find a barrister near you',
-    body: 'Filter Indian lawyers and law firms by state, city, and locality. Every PIN-code locality is searchable via India Post.',
-    color: 'from-[#14203E] via-[#1c2c52] to-[#B7913D]',
-    chip: '28 states · UTs · 700+ cities',
-  },
-  {
-    icon: Crosshair,
-    title: 'Auto-detect your location',
-    body: 'One tap and we snap to the closest metro using your browser GPS. Permission-denied? Pick manually in two clicks.',
-    color: 'from-emerald-600 via-emerald-500 to-amber-400',
-    chip: 'Browser geolocation · no tracking',
-  },
-  {
-    icon: User,
-    title: 'Profiles with photos',
-    body: 'Each lawyer / firm card shows a portrait, title, expertise, location, and bio — uploaded by the firm itself.',
-    color: 'from-fuchsia-600 via-rose-500 to-amber-400',
-    chip: 'PNG / JPEG / WebP · 5 MB',
-  },
-  {
-    icon: MessageSquare,
-    title: 'Send a direct message',
-    body: 'Open any profile, fill out a short form, and your inquiry lands in their inquiries tab — with email notification.',
-    color: 'from-sky-600 via-cyan-500 to-emerald-400',
-    chip: 'Routes straight to their inbox',
-  },
-  {
-    icon: Sparkles,
-    title: 'More on the way',
-    body: 'Live chat, video calls and Google sign-in are next. Today, you have the full directory — keep an eye out for updates.',
-    color: 'from-amber-500 via-orange-500 to-rose-500',
-    chip: 'Live chat · video · Google SSO',
-  },
+const INTRO_FEATURES = [
+  { icon: Search, label: 'Search lawyers and firms by state, city, locality and PIN.' },
+  { icon: Crosshair, label: 'Auto-detect your city with one tap — manual override anytime.' },
+  { icon: User, label: 'Profiles with photos, expertise, bio — uploaded by the firm itself.' },
+  { icon: MessageSquare, label: 'Live 1:1 chat with any lawyer — sign in with Google or email-OTP.' },
+  { icon: Video, label: 'Instant video consultation — we mint a private room in one click.' },
 ]
 
 function IntroPoster({ onClose, onDetect }: { onClose: () => void; onDetect: () => void }) {
-  const [idx, setIdx] = useState(0)
-  useEffect(() => {
-    const t = window.setInterval(() => setIdx((n) => (n + 1) % SLIDES.length), 4500)
-    return () => window.clearInterval(t)
-  }, [])
-  const slide = SLIDES[idx]
-  const Icon = slide.icon
-
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 p-4 animate-fade-in" onClick={onClose}>
-      <div
-        className="relative w-full max-w-2xl overflow-hidden rounded-[2rem] bg-white shadow-2xl dark:bg-[#0e1219] animate-pop-in"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Animated gradient hero */}
-        <div className={`relative overflow-hidden bg-gradient-to-br ${slide.color} transition-colors duration-700`}>
-          {/* decorative glyphs */}
+      <div className="relative w-full max-w-lg overflow-hidden rounded-[2rem] bg-white shadow-2xl dark:bg-[#0e1219] animate-pop-in" onClick={(e) => e.stopPropagation()}>
+        <div className="relative overflow-hidden bg-gradient-to-br from-[#14203E] via-[#1c2c52] to-[#B7913D]">
           <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
           <div className="pointer-events-none absolute -bottom-16 -left-12 h-64 w-64 rounded-full bg-white/10 blur-2xl" />
           <Scale className="pointer-events-none absolute right-6 top-6 h-7 w-7 text-white/40" />
-          <div className="relative px-5 pb-10 pt-8 text-center text-white sm:px-8 sm:pb-14 sm:pt-12">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
-              <Sparkles className="h-3 w-3" /> New feature
-            </span>
-            <div className="mx-auto mt-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/30 backdrop-blur">
-              <Icon className="h-8 w-8 text-white" />
-            </div>
-            <h2 className="mt-5 text-2xl font-bold leading-tight tracking-tight sm:text-3xl md:text-4xl">{slide.title}</h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/85 md:text-base">{slide.body}</p>
-            <p className="mt-4 inline-block rounded-full bg-black/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-widest text-white">
-              {slide.chip}
-            </p>
-          </div>
-
-          {/* Pager controls */}
-          <button
-            onClick={() => setIdx((n) => (n - 1 + SLIDES.length) % SLIDES.length)}
-            aria-label="Previous"
-            className="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-1.5 text-white hover:bg-white/25"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </button>
-          <button
-            onClick={() => setIdx((n) => (n + 1) % SLIDES.length)}
-            aria-label="Next"
-            className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white/15 p-1.5 text-white hover:bg-white/25"
-          >
-            <ChevronRight className="h-5 w-5" />
-          </button>
-          <button
-            onClick={onClose}
-            aria-label="Close"
-            className="absolute right-4 top-4 rounded-full bg-black/20 p-1.5 text-white hover:bg-black/30"
-          >
+          <button onClick={onClose} aria-label="Close" className="absolute right-4 top-4 rounded-full bg-black/20 p-1.5 text-white hover:bg-black/30">
             <X className="h-4 w-4" />
           </button>
-        </div>
-
-        {/* Footer with dots + CTAs */}
-        <div className="border-t border-slate-200 bg-white px-6 py-4 dark:border-white/10 dark:bg-[#0e1219]">
-          <div className="flex items-center justify-center gap-1.5">
-            {SLIDES.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => setIdx(i)}
-                aria-label={`Slide ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all ${i === idx ? 'w-6 bg-primary' : 'w-1.5 bg-slate-300 dark:bg-white/20'}`}
-              />
-            ))}
+          <div className="relative px-6 pb-10 pt-10 text-center text-white sm:px-10 sm:pb-12 sm:pt-12">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-white/20 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white">
+              <Sparkles className="h-3 w-3" /> Introducing
+            </span>
+            <h2 className="mt-5 text-3xl font-bold leading-tight tracking-tight sm:text-4xl">Find a Barrister</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-white/85 sm:text-base">
+              The fastest way to find a lawyer in India. Chat, call, and book — all from one place.
+            </p>
           </div>
-          <div className="mt-4 flex flex-col items-stretch justify-center gap-2 sm:flex-row">
-            <button
-              onClick={onDetect}
-              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-primary/20 hover:bg-accent"
-            >
+        </div>
+        <div className="space-y-3 bg-white p-6 dark:bg-[#0e1219]">
+          {INTRO_FEATURES.map(({ icon: Ic, label }) => (
+            <div key={label} className="flex items-start gap-3">
+              <span className="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300">
+                <Ic className="h-4 w-4" />
+              </span>
+              <p className="text-sm text-slate-700 dark:text-slate-200">{label}</p>
+            </div>
+          ))}
+          <div className="mt-5 flex flex-col items-stretch justify-center gap-2 sm:flex-row">
+            <button onClick={onDetect} className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white hover:bg-accent">
               <Crosshair className="h-4 w-4" /> Use my location
             </button>
-            <button
-              onClick={onClose}
-              className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200 dark:hover:bg-white/10"
-            >
+            <button onClick={onClose} className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-[#11151f] dark:text-slate-200 dark:hover:bg-white/10">
               Browse manually
             </button>
           </div>
