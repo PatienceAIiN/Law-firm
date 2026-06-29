@@ -121,6 +121,18 @@ model PaymentLog {
   @@map("payment_logs")
 }
 
+model ClientLoginOtp {
+  id        String   @id @default(cuid())
+  email     String
+  otp       String
+  attempts  Int      @default(0)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+  @@map("client_login_otps")
+}
+
 model ClientUser {
   id        String   @id @default(cuid())
   email     String   @unique

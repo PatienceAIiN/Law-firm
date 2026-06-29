@@ -12,6 +12,9 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
 
   let firms: any[] = []
   let lawyers: any[] = []
+  // Set of tenantIds that currently have at least one active future slot
+  // with capacity > bookedCount. Used to gate the Book Consultation CTA.
+  const tenantsWithSlots = new Set<string>()
   try {
     const where: any = { status: 'active' }
     if (state) where.state = state
@@ -35,17 +38,40 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
     })
   } catch (e) { console.warn('[find-barrister] lawyers query skipped:', (e as any)?.message) }
 
+  try {
+    const tenantIds = Array.from(new Set([
+      ...firms.map((f) => f.id),
+      ...lawyers.map((l) => l.tenantId).filter(Boolean),
+    ]))
+    if (tenantIds.length) {
+      const today = new Date(); today.setHours(0, 0, 0, 0)
+      const rows = await prisma.availabilitySlot.findMany({
+        where: {
+          isActive: true,
+          day: { tenantId: { in: tenantIds }, isActive: true, date: { gte: today } },
+        },
+        select: { capacity: true, bookedCount: true, day: { select: { tenantId: true } } },
+        take: 1000,
+      })
+      for (const s of rows) {
+        if (s.day?.tenantId && (s.capacity || 0) > (s.bookedCount || 0)) tenantsWithSlots.add(s.day.tenantId)
+      }
+    }
+  } catch (e) { console.warn('[find-barrister] slots query skipped:', (e as any)?.message) }
+
   return (
     <FindBarristerClient
       initialTab={activeTab}
       initialState={state || ''}
       initialCity={city || ''}
       initialQ={q || ''}
-      firms={firms.map((f) => ({ id: f.id, slug: f.slug, name: f.name, state: f.state, city: f.city, locality: f.locality }))}
+      firms={firms.map((f) => ({ id: f.id, slug: f.slug, name: f.name, state: f.state, city: f.city, locality: f.locality, hasSlots: tenantsWithSlots.has(f.id) }))}
       lawyers={lawyers.map((l) => ({
         id: l.id, name: l.name, title: l.title, profileImage: l.profileImage,
         expertise: l.expertise, bio: l.bio, state: l.state, city: l.city, locality: l.locality,
+        firmTenantId: l.tenantId || null,
         firmSlug: l.tenant?.slug || null, firmName: l.tenant?.name || null,
+        hasSlots: l.tenantId ? tenantsWithSlots.has(l.tenantId) : false,
       }))}
     />
   )

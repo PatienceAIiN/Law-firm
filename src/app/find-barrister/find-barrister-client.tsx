@@ -254,15 +254,24 @@ function DetailsModal({ kind, data, onClose }: { kind: 'firm' | 'lawyer'; data: 
           </div>
         )}
 
-        {/* Action shortcuts */}
+        {/* Action shortcuts — Book button only when slots are available */}
         <div className="mt-4 flex flex-wrap gap-2">
           {(data.firmSlug || (kind === 'firm' && data.slug)) && (
-            <Link
-              href={`/team/${data.firmSlug || data.slug}/book`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-200"
-            >
-              <Calendar className="h-3.5 w-3.5" /> Book consultation
-            </Link>
+            data.hasSlots ? (
+              <Link
+                href={`/team/${data.firmSlug || data.slug}/book`}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-300 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 dark:border-emerald-500/30 dark:bg-emerald-900/20 dark:text-emerald-200"
+              >
+                <Calendar className="h-3.5 w-3.5" /> Book consultation
+              </Link>
+            ) : (
+              <span
+                title="No upcoming slots available — use the message or live chat below."
+                className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-slate-300 bg-slate-100 px-3 py-1.5 text-xs font-semibold text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-slate-400"
+              >
+                <Calendar className="h-3.5 w-3.5" /> No slots available
+              </span>
+            )
           )}
         </div>
 
@@ -338,17 +347,82 @@ function AccountChip() {
 }
 
 function SignInPrompt({ label }: { label: string }) {
+  const [mode, setMode] = useState<'pick' | 'email' | 'otp'>('pick')
+  const [email, setEmail] = useState('')
+  const [name, setName] = useState('')
+  const [otp, setOtp] = useState('')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+
+  const requestOtp = async () => {
+    setError('')
+    if (!email.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { setError('Enter a valid email'); return }
+    setBusy(true)
+    try {
+      const r = await fetch('/api/auth/email-otp/request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email }) })
+      const data = await r.json()
+      if (!r.ok) throw new Error(data.error || 'Could not send code')
+      setMode('otp')
+    } catch (e: any) { setError(e?.message || 'Failed') }
+    finally { setBusy(false) }
+  }
+
+  const verifyOtp = async () => {
+    setError('')
+    if (otp.length !== 6) { setError('Enter the 6-digit code'); return }
+    setBusy(true)
+    const r = await signIn('email-otp', { redirect: false, email, otp, name, callbackUrl: '/find-barrister/me' })
+    setBusy(false)
+    if (r?.error || !r?.ok) { setError('Invalid or expired code'); return }
+    window.location.href = '/find-barrister/me'
+  }
+
   return (
     <div className="mt-5 rounded-xl border border-slate-200 bg-slate-50 p-5 text-center dark:border-white/10 dark:bg-white/5">
       <LogIn className="mx-auto h-8 w-8 text-primary dark:text-amber-300" />
       <p className="mt-2 text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</p>
-      <button
-        onClick={() => signIn('google', { callbackUrl: '/find-barrister/me' })}
-        className="mt-3 inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent"
-      >
-        <svg viewBox="0 0 48 48" className="h-4 w-4" aria-hidden><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3a12 12 0 1 1-3.3-13.1l5.7-5.7A20 20 0 1 0 44 24a20 20 0 0 0-.4-4z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7A20 20 0 0 0 6.3 14.7z" /><path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.5-5.2l-6.2-5.3A12 12 0 0 1 12.6 28l-6.6 5A20 20 0 0 0 24 44z" /><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.3A20 20 0 0 0 44 24a20 20 0 0 0-.4-4z" /></svg>
-        Continue with Google
-      </button>
+
+      {mode === 'pick' && (
+        <div className="mt-3 space-y-2">
+          <button
+            onClick={() => signIn('google', { callbackUrl: '/find-barrister/me' })}
+            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent"
+          >
+            <svg viewBox="0 0 48 48" className="h-4 w-4" aria-hidden><path fill="#FFC107" d="M43.6 20H42V20H24v8h11.3a12 12 0 1 1-3.3-13.1l5.7-5.7A20 20 0 1 0 44 24a20 20 0 0 0-.4-4z" /><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8A12 12 0 0 1 24 12c3 0 5.7 1.1 7.8 3l5.7-5.7A20 20 0 0 0 6.3 14.7z" /><path fill="#4CAF50" d="M24 44a20 20 0 0 0 13.5-5.2l-6.2-5.3A12 12 0 0 1 12.6 28l-6.6 5A20 20 0 0 0 24 44z" /><path fill="#1976D2" d="M43.6 20H42V20H24v8h11.3a12 12 0 0 1-4 5.5l6.2 5.3A20 20 0 0 0 44 24a20 20 0 0 0-.4-4z" /></svg>
+            Continue with Google
+          </button>
+          <div className="flex items-center gap-2 text-[11px] text-slate-400">
+            <span className="flex-1 border-t border-slate-200 dark:border-white/10" /> or <span className="flex-1 border-t border-slate-200 dark:border-white/10" />
+          </div>
+          <button onClick={() => setMode('email')} className="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/10">
+            Continue with email
+          </button>
+        </div>
+      )}
+
+      {mode === 'email' && (
+        <div className="mt-3 space-y-2 text-left">
+          <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name (optional)" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
+          <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required placeholder="Email *" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
+          {error && <p className="text-xs text-rose-600">{error}</p>}
+          <button onClick={requestOtp} disabled={busy} className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{busy ? 'Sending…' : 'Send verification code'}
+          </button>
+          <button onClick={() => setMode('pick')} className="block w-full text-center text-[11px] text-slate-500 hover:underline">Back</button>
+        </div>
+      )}
+
+      {mode === 'otp' && (
+        <div className="mt-3 space-y-2 text-left">
+          <p className="text-xs text-slate-500 dark:text-slate-400">Code sent to <strong>{email}</strong>. Expires in 10 minutes.</p>
+          <input value={otp} onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" maxLength={6} required placeholder="123456" className="w-full rounded-lg border border-slate-300 px-3 py-2 text-center font-mono text-lg tracking-[0.4em] dark:border-white/15 dark:bg-[#1a2030] dark:text-white" />
+          {error && <p className="text-xs text-rose-600">{error}</p>}
+          <button onClick={verifyOtp} disabled={busy || otp.length !== 6} className="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-60">
+            {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}{busy ? 'Verifying…' : 'Verify & sign in'}
+          </button>
+          <button onClick={() => setMode('email')} className="block w-full text-center text-[11px] text-slate-500 hover:underline">Wrong email?</button>
+        </div>
+      )}
     </div>
   )
 }
