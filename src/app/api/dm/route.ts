@@ -27,6 +27,20 @@ export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams
   const threadId = sp.get('threadId')
 
+  // Client lookup by (tenantId, advocateId) — used by ChatPanel on mount
+  // so an existing conversation appears immediately instead of "blank
+  // until first send".
+  const lookupTenant = sp.get('tenantId')
+  const lookupAdvocate = sp.get('advocateId')
+  if (!threadId && lookupTenant && actor.kind === 'client') {
+    const thread = await prisma.directThread.findFirst({
+      where: { tenantId: lookupTenant, clientEmail: actor.email, advocateId: lookupAdvocate || null },
+    })
+    if (!thread) return NextResponse.json({ thread: null, messages: [] })
+    const messages = await prisma.directMessage.findMany({ where: { threadId: thread.id }, orderBy: { createdAt: 'asc' }, take: 200 })
+    return NextResponse.json({ thread, messages })
+  }
+
   if (threadId) {
     const thread = await prisma.directThread.findUnique({ where: { id: threadId } })
     if (!thread) return NextResponse.json({ error: 'Not found' }, { status: 404 })

@@ -462,6 +462,23 @@ function ChatPanel({ tenantId, advocateId, targetName }: { tenantId: string; adv
     } catch {}
   }
 
+  // On mount, look up an existing thread for this (tenant, advocate)
+  // pair so the conversation history shows up immediately. Without this
+  // older messages only reappeared after a new send.
+  useEffect(() => {
+    if (thread?.id || !tenantId) return
+    ;(async () => {
+      try {
+        const sp = new URLSearchParams({ tenantId, ...(advocateId ? { advocateId } : {}) })
+        const r = await fetch(`/api/dm?${sp.toString()}`, { cache: 'no-store' })
+        if (!r.ok) return
+        const data = await r.json()
+        if (data?.thread) { setThread(data.thread); setMessages(data.messages || []) }
+      } catch {}
+    })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tenantId, advocateId])
+
   useEffect(() => {
     if (!thread?.id) return
     load()
@@ -561,9 +578,17 @@ function VideoRequestPanel({ tenantId, advocateId, targetName }: { tenantId: str
           {busy ? 'Starting…' : 'Request video call'}
         </button>
       ) : (
-        <a href={joinUrl} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
-          <Video className="h-4 w-4" /> Open my video room
-        </a>
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+          <a href={joinUrl} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700">
+            <Video className="h-4 w-4" /> Open my video room
+          </a>
+          <button
+            onClick={() => setJoinUrl('')}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200 dark:hover:bg-white/10"
+          >
+            Cancel call
+          </button>
+        </div>
       )}
       {error && <p className="mt-2 text-xs text-rose-600 dark:text-rose-300">{error}</p>}
     </div>

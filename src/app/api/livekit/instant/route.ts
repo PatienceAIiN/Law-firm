@@ -44,8 +44,8 @@ export async function POST(req: NextRequest) {
   const lawyerJwt = await lawyerTok.toJwt()
 
   const base = (process.env.NEXTAUTH_URL || 'http://localhost:3000').replace(/\/$/, '')
-  const lawyerJoin = `${base}/meeting/${roomId}?lk=${encodeURIComponent(String(lawyerJwt))}`
-  const clientJoin = `${base}/meeting/${roomId}?lk=${encodeURIComponent(String(clientJwt))}`
+  const lawyerJoin = `${base}/meeting/instant/${roomId}?token=${encodeURIComponent(String(lawyerJwt))}&url=${encodeURIComponent(lkUrl)}&name=${encodeURIComponent(advocate?.name || tenant.name)}`
+  const clientJoin = `${base}/meeting/instant/${roomId}?token=${encodeURIComponent(String(clientJwt))}&url=${encodeURIComponent(lkUrl)}&name=${encodeURIComponent(u.name || u.email)}`
 
   const to = advocate?.email || tenant.ownerEmail
   sendEmail({
