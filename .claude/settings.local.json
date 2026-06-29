@@ -155,7 +155,8 @@
       "Bash(DATABASE_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' DIRECT_URL='postgresql://postgres.vafxccxstpgwshfxpiwr:Admin%401104202@aws-1-ap-south-1.pooler.supabase.com:5432/postgres' npx prisma db push --skip-generate)",
       "Bash(git commit -m 'fix: allow geolocation \\(self\\) in Permissions-Policy *)",
       "Bash(echo \"$\\(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3002/meeting/instant/room-test\\) /meeting/instant/room-test\")",
-      "Bash(node -e \"const L=require\\('./src/lib/india-locations.ts'.replace\\('.ts',''\\)\\); \")"
+      "Bash(node -e \"const L=require\\('./src/lib/india-locations.ts'.replace\\('.ts',''\\)\\); \")",
+      "Bash(node /home/harsh/Downloads/Law-firm/scripts/generate-ads-with-gemini.mjs)"
     ]
   }
 }

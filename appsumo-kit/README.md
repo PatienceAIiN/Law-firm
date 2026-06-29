@@ -2,6 +2,14 @@
 
 Everything you need to submit PatienceAI as a lifetime deal on AppSumo lives in this folder. Treat it as the source of truth for the listing: every asset, copy block, and code batch references this kit.
 
+> **Regenerating creatives:** run
+> `GEMINI_API_KEY=… node scripts/generate-ads-with-gemini.mjs`
+> from the project root. The script mints fresh pastel Google-style ads
+> for Instagram (square + story), LinkedIn (landscape), Google Display,
+> and a newsletter banner using Imagen 3 via the Gemini API, then
+> overwrites the placeholders under `appsumo-kit/social-ads/`. Without a
+> key it prints the prompts so you can use Midjourney / Ideogram by hand.
+
 ## Contents
 
 | Path | Purpose |
