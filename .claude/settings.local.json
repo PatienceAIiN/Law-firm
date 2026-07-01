@@ -159,7 +159,9 @@
       "Bash(node /home/harsh/Downloads/Law-firm/scripts/generate-ads-with-gemini.mjs)",
       "Bash(git commit -m 'fix: matched right-column styling — '\\\\''For us'\\\\'' label, neutral step badges, no CTA *)",
       "Bash(git commit -m 'feat: cycle Find-Barrister sentences in the hero AnimatedHeading + tagline *)",
-      "Bash(git commit -m 'security: hide suspended firms'\\\\'' lawyers from Find-Barrister + block DM/video to inactive tenants; perf: useTransition nav feedback + instant tab switch *)"
+      "Bash(git commit -m 'security: hide suspended firms'\\\\'' lawyers from Find-Barrister + block DM/video to inactive tenants; perf: useTransition nav feedback + instant tab switch *)",
+      "Bash(git commit -m 'security: auth+tenant-scope admin cases API; rate-limit OTP, pay-proof and recording uploads *)",
+      "Bash(git commit -m 'security: rate-limit all public + email-triggering endpoints \\(chat LLM, OTP flows, contact, lookups, payments, DM, instant video\\) *)"
     ]
   }
 }

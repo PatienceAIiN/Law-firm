@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export async function POST(req: NextRequest) {
   try {
+    const rl = await rateLimit(`consent:${clientIp(req)}`, 20, 3600)
+    if (!rl.ok) return NextResponse.json({ error: 'Too many requests.' }, { status: 429 })
     const body = await req.json()
     const { fingerprint, consentGiven, purposes } = body
 

@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { clientAuthOptions } from '@/lib/client-auth'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { rateLimit } from '@/lib/rate-limit'
 import crypto from 'crypto'
 
 export const dynamic = 'force-dynamic'
@@ -16,6 +17,10 @@ export async function POST(req: NextRequest) {
   const session = await getServerSession(clientAuthOptions)
   const u: any = session?.user
   if (!u?.email) return NextResponse.json({ error: 'Sign in first' }, { status: 401 })
+
+  // Each request emails the lawyer — cap per client so it can't be abused.
+  const rl = await rateLimit(`lk-instant:${u.email}`, 5, 600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many call requests. Try again in a few minutes.' }, { status: 429 })
 
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }

@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { normalizeSlug } from '@/lib/tenant'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 // Resolves either a slug or a firm name → tenant slug. Used by the landing
 // page's "Open workspace" widget so users don't need to know URL syntax.
 export async function POST(req: NextRequest) {
+  // Throttled — this resolves firm names to slugs and could be scraped
+  // to enumerate every workspace on the platform.
+  const rl = await rateLimit(`ws-lookup:${clientIp(req)}`, 30, 600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many lookups. Try again shortly.' }, { status: 429 })
   const body = await req.json().catch(() => ({}))
   const raw = (body.q || '').toString().trim()
   if (!raw) return NextResponse.json({ error: 'Enter your firm name or workspace URL' }, { status: 400 })

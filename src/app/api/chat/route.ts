@@ -3,6 +3,7 @@ import Groq from 'groq-sdk'
 import type { ChatCompletionMessageParam } from 'groq-sdk/resources/chat/completions'
 import { prisma } from '@/lib/prisma'
 import { buildFallbackReply, buildSystemPrompt, retrieveRelevantDocs } from '@/lib/rag'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 let groqClient: Groq | null = null
 let groqClientKey: string | null = null
@@ -171,6 +172,9 @@ async function generateAssistantReply(
 
 export async function POST(req: NextRequest) {
   try {
+    // LLM calls cost real money — cap anonymous usage per IP.
+    const rl = await rateLimit(`chat:${clientIp(req)}`, 30, 600)
+    if (!rl.ok) return NextResponse.json({ error: 'Too many messages. Please slow down.' }, { status: 429 })
     const { message, conversationId, action, tenantSlug } = await req.json()
 
     if (action === 'deleteConversation') {

@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { sendEmail, generateContactEmailTemplate } from '@/lib/email'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST(req: NextRequest) {
+  const rl = await rateLimit(`saas-contact:${clientIp(req)}`, 5, 3600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many messages. Try again later.' }, { status: 429 })
   const body = await req.json().catch(() => ({}))
   const fullName = (body.fullName || '').toString().trim()
   const email = (body.email || '').toString().trim()

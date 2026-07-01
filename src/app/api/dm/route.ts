@@ -6,6 +6,7 @@ import { tenantLawyerAuthOptions } from '@/lib/tenant-lawyer-auth'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { publish } from '@/lib/dm-bus'
+import { rateLimit } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -73,6 +74,9 @@ export async function POST(req: NextRequest) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }
   const text = (body?.body || '').toString().trim()
   if (!text) return NextResponse.json({ error: 'Empty message' }, { status: 400 })
+  if (text.length > 5000) return NextResponse.json({ error: 'Message too long (max 5000 chars).' }, { status: 400 })
+  const rl = await rateLimit(`dm-send:${actor.kind}:${(actor as any).email || (actor as any).id}`, 60, 600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many messages. Please slow down.' }, { status: 429 })
 
   let thread = body?.threadId ? await prisma.directThread.findUnique({ where: { id: body.threadId } }) : null
 

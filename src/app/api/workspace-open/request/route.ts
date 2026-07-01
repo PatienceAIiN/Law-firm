@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +13,13 @@ export async function POST(req: NextRequest) {
   const emailRaw = (body.email || '').toString().trim().toLowerCase()
   if (!emailRaw || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(emailRaw)) {
     return NextResponse.json({ error: 'Enter a valid email' }, { status: 400 })
+  }
+  const [byIp, byEmail] = await Promise.all([
+    rateLimit(`wo-req:ip:${clientIp(req)}`, 10, 600),
+    rateLimit(`wo-req:email:${emailRaw}`, 3, 600),
+  ])
+  if (!byIp.ok || !byEmail.ok) {
+    return NextResponse.json({ error: 'Too many codes requested. Try again in a few minutes.' }, { status: 429 })
   }
 
   // The user explicitly wants existence to be reported back: if no active

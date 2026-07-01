@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { encode } from 'next-auth/jwt'
 import { prisma } from '@/lib/prisma'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 const COOKIE_NAME = 'tenant-admin-session-token'
 
 export async function POST(req: NextRequest) {
+  const rl = await rateLimit(`wo-verify:${clientIp(req)}`, 20, 600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many attempts. Try again in a few minutes.' }, { status: 429 })
   const body = await req.json().catch(() => ({}))
   const email = (body.email || '').toString().trim().toLowerCase()
   const code = (body.code || '').toString().replace(/\D/g, '')

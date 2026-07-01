@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { rateLimit } from '@/lib/rate-limit'
 
 export async function sendDirectoryMessage(args: {
   kind: 'firm' | 'lawyer'
@@ -19,6 +20,9 @@ export async function sendDirectoryMessage(args: {
     const message = (args.message || '').trim()
     if (!fullName || !email || !message) return { ok: false, error: 'Name, email, and message are required.' }
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return { ok: false, error: 'Enter a valid email.' }
+    if (message.length > 5000) return { ok: false, error: 'Message too long (max 5000 chars).' }
+    const rl = await rateLimit(`dir-msg:${email}`, 10, 3600)
+    if (!rl.ok) return { ok: false, error: 'Too many inquiries. Try again later.' }
 
     // Resolve the tenant for the message. For lawyer inquiries the message
     // goes to the lawyer's firm (tenant) AND gets assigned to that lawyer.

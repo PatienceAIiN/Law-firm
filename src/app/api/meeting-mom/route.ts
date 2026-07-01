@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
 import { getBookingWithSlot } from '@/lib/meeting-workspace'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -78,6 +79,8 @@ async function deliver(to: string, subject: string, html: string) {
 }
 
 export async function POST(req: NextRequest) {
+  const rl = await rateLimit(`meeting-mom:${clientIp(req)}`, 10, 3600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429 })
   let body: { bookingId?: string; notes?: string; recipients?: string[] }
   try {
     body = await req.json()

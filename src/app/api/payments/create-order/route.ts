@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getPaymentConfig, razorpayClientFor, recordPayment } from '@/lib/payments'
 import { getTenantBySlug } from '@/lib/tenant'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,6 +10,8 @@ export const dynamic = 'force-dynamic'
 // Razorpay keys are used, so the money lands in their bank account — never
 // in a shared platform account.
 export async function POST(req: NextRequest) {
+  const rl = await rateLimit(`create-order:${clientIp(req)}`, 20, 3600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many payment attempts. Try again later.' }, { status: 429 })
   let body: any
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }
 
