@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
 import { prisma } from '@/lib/prisma'
 import { sendEmail } from '@/lib/email'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,6 +11,16 @@ export async function POST(req: NextRequest) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Invalid body' }, { status: 400 }) }
   const email = (body?.email || '').toString().trim().toLowerCase()
   if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return NextResponse.json({ error: 'Valid email required' }, { status: 400 })
+
+  // Throttle both the requesting IP and the target inbox so this endpoint
+  // can't be scripted into an OTP-spam cannon.
+  const [byIp, byEmail] = await Promise.all([
+    rateLimit(`otp-req:ip:${clientIp(req)}`, 10, 600),
+    rateLimit(`otp-req:email:${email}`, 3, 600),
+  ])
+  if (!byIp.ok || !byEmail.ok) {
+    return NextResponse.json({ error: 'Too many codes requested. Try again in a few minutes.' }, { status: 429 })
+  }
 
   const otp = String(crypto.randomInt(100000, 1000000))
   const expiresAt = new Date(Date.now() + 10 * 60 * 1000)

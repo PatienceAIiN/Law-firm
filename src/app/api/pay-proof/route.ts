@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { uploadFile } from '@/lib/upload'
+import { rateLimit, clientIp } from '@/lib/rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 // Public endpoint for clients to upload a payment proof image while
 // confirming a UTR. Only accepts png / jpg / jpeg under 5 MB.
 export async function POST(req: NextRequest) {
+  const rl = await rateLimit(`pay-proof:${clientIp(req)}`, 10, 3600)
+  if (!rl.ok) return NextResponse.json({ error: 'Too many uploads. Try again later.' }, { status: 429 })
   const form = await req.formData()
   const file = form.get('file') as File | null
   if (!file) return NextResponse.json({ error: 'No file' }, { status: 400 })

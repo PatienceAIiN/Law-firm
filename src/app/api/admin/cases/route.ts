@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth/next'
+import { tenantAdminAuthOptions } from '@/lib/tenant-admin-auth'
 import { prisma } from '@/lib/prisma'
+
+// Cases are tenant-private. Every handler requires a tenant-admin session
+// and scopes queries to that admin's tenantId.
+async function requireAdmin() {
+  const session = await getServerSession(tenantAdminAuthOptions)
+  const u: any = session?.user
+  return u?.tenantId ? { tenantId: u.tenantId as string } : null
+}
 
 export async function GET(req: NextRequest) {
   try {
+    const admin = await requireAdmin()
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const { searchParams } = new URL(req.url)
     const search = searchParams.get('search') || ''
     const status = searchParams.get('status') || ''
@@ -10,6 +22,7 @@ export async function GET(req: NextRequest) {
 
     const cases = await prisma.courtCase.findMany({
       where: {
+        tenantId: admin.tenantId,
         AND: [
           search ? {
             OR: [
@@ -39,6 +52,8 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const admin = await requireAdmin()
+    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     const body = await req.json()
     const {
       caseNumber, title, caseType, status, court, judge,
@@ -52,13 +67,14 @@ export async function POST(req: NextRequest) {
     }
 
     // Case numbers must be unique so a single number resolves one case (used by Track Case).
-    const dupe = await prisma.courtCase.findFirst({ where: { caseNumber: { equals: caseNumber, mode: 'insensitive' } }, select: { id: true } })
+    const dupe = await prisma.courtCase.findFirst({ where: { tenantId: admin.tenantId, caseNumber: { equals: caseNumber, mode: 'insensitive' } }, select: { id: true } })
     if (dupe) {
       return NextResponse.json({ error: 'A case with this case number already exists' }, { status: 409 })
     }
 
     const courtCase = await prisma.courtCase.create({
       data: {
+        tenantId: admin.tenantId,
         caseNumber,
         title,
         caseType,
