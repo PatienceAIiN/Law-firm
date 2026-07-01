@@ -37,7 +37,7 @@ export async function sendDirectoryMessage(args: {
       targetName = tenant.name
     } else {
       const adv = await prisma.advocate.findFirst({
-        where: { id: args.targetId, isActive: true },
+        where: { id: args.targetId, isActive: true, tenant: { status: 'active' } },
         include: { tenant: true },
       })
       if (!adv || !adv.tenant) return { ok: false, error: 'Lawyer not found.' }

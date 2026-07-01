@@ -23,6 +23,7 @@ export function FindBarristerClient({
   firms: Firm[]; lawyers: Lawyer[]
 }) {
   const router = useRouter()
+  const [navPending, startNav] = useTransition()
   const [tab, setTab] = useState<'firms' | 'lawyers'>(initialTab)
   const [state, setState] = useState(initialState)
   const [city, setCity] = useState(initialCity)
@@ -54,7 +55,9 @@ export function FindBarristerClient({
     if (pincode) params.set('pincode', pincode)
     if (q) params.set('q', q)
     if (tab) params.set('tab', tab)
-    router.push(`/find-barrister?${params.toString()}`)
+    // startTransition keeps the current UI interactive while the server
+    // re-renders, and gives us a pending flag for instant button feedback.
+    startNav(() => router.push(`/find-barrister?${params.toString()}`))
   }
 
   // Auto-apply filters as soon as state / city change so clearing them
@@ -86,7 +89,7 @@ export function FindBarristerClient({
       if (near) {
         setState(near.state); setCity(near.city)
         const params = new URLSearchParams({ state: near.state, city: near.city, tab })
-        router.push(`/find-barrister?${params.toString()}`)
+        startNav(() => router.push(`/find-barrister?${params.toString()}`))
       } else {
         setGeoErr('Could not match your location. Please pick state + city manually.')
       }
@@ -133,11 +136,11 @@ export function FindBarristerClient({
             <button onClick={detectLocation} disabled={geoBusy} title="Use my location" className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-60 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200">
               {geoBusy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Crosshair className="h-3.5 w-3.5" />} My location
             </button>
-            <button onClick={apply} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent">
-              <Search className="h-3.5 w-3.5" /> Search
+            <button onClick={apply} disabled={navPending} className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white hover:bg-accent disabled:opacity-70">
+              {navPending ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Search className="h-3.5 w-3.5" />} Search
             </button>
             <button
-              onClick={() => { setState(''); setCity(''); setPincode(''); setQ(''); router.push('/find-barrister') }}
+              onClick={() => { setState(''); setCity(''); setPincode(''); setQ(''); startNav(() => router.push('/find-barrister')) }}
               disabled={!state && !city && !pincode && !q}
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-100 disabled:opacity-40 dark:border-white/15 dark:bg-[#1a2030] dark:text-slate-200"
             >
@@ -150,7 +153,13 @@ export function FindBarristerClient({
             {(['lawyers', 'firms'] as const).map((id) => (
               <button
                 key={id}
-                onClick={() => { setTab(id); const p = new URLSearchParams(window.location.search); p.set('tab', id); router.push(`/find-barrister?${p.toString()}`) }}
+                onClick={() => {
+                  // Both lists are already in memory — switch instantly and
+                  // sync the URL without a server round-trip.
+                  setTab(id)
+                  const p = new URLSearchParams(window.location.search); p.set('tab', id)
+                  window.history.replaceState(null, '', `/find-barrister?${p.toString()}`)
+                }}
                 className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-1.5 text-xs font-semibold transition ${tab === id ? 'bg-white text-primary shadow dark:bg-[#11151f] dark:text-white' : 'text-slate-600 hover:text-primary dark:text-slate-300'}`}
               >
                 {id === 'lawyers' ? <User className="h-3.5 w-3.5" /> : <Building2 className="h-3.5 w-3.5" />}

@@ -21,6 +21,7 @@ export async function setTenantStatus(tenantId: string, status: 'active' | 'susp
   await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath('/super-admin')
   revalidatePath(`/team/${tenant.slug}`, 'layout')
+  revalidatePath('/find-barrister')
 }
 
 export async function deleteTenant(tenantId: string) {
@@ -33,6 +34,7 @@ export async function deleteTenant(tenantId: string) {
     await invalidateCache(`tenant_shell_v2:${tenantId}`)
   }
   revalidatePath('/super-admin')
+  revalidatePath('/find-barrister')
 }
 
 export async function restoreTenant(tenantId: string) {
@@ -42,4 +44,5 @@ export async function restoreTenant(tenantId: string) {
   await invalidateCache(`tenant_shell_v2:${tenantId}`)
   revalidatePath('/super-admin')
   revalidatePath(`/team/${tenant.slug}`, 'layout')
+  revalidatePath('/find-barrister')
 }

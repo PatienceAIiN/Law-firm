@@ -158,7 +158,8 @@
       "Bash(node -e \"const L=require\\('./src/lib/india-locations.ts'.replace\\('.ts',''\\)\\); \")",
       "Bash(node /home/harsh/Downloads/Law-firm/scripts/generate-ads-with-gemini.mjs)",
       "Bash(git commit -m 'fix: matched right-column styling — '\\\\''For us'\\\\'' label, neutral step badges, no CTA *)",
-      "Bash(git commit -m 'feat: cycle Find-Barrister sentences in the hero AnimatedHeading + tagline *)"
+      "Bash(git commit -m 'feat: cycle Find-Barrister sentences in the hero AnimatedHeading + tagline *)",
+      "Bash(git commit -m 'security: hide suspended firms'\\\\'' lawyers from Find-Barrister + block DM/video to inactive tenants; perf: useTransition nav feedback + instant tab switch *)"
     ]
   }
 }

@@ -80,6 +80,8 @@ export async function POST(req: NextRequest) {
     if (actor.kind !== 'client') return NextResponse.json({ error: 'Only clients can start a new thread.' }, { status: 400 })
     const tenantId = body?.tenantId as string
     if (!tenantId) return NextResponse.json({ error: 'tenantId required' }, { status: 400 })
+    const tenant = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { status: true } })
+    if (!tenant || tenant.status !== 'active') return NextResponse.json({ error: 'This firm is not accepting messages.' }, { status: 404 })
     const existing = await prisma.directThread.findFirst({
       where: { tenantId, clientEmail: actor.email, advocateId: body?.advocateId || null },
     })
@@ -98,6 +100,11 @@ export async function POST(req: NextRequest) {
   // Scope check again for replies.
   if (actor.kind === 'client' && thread.clientEmail !== actor.email) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   if (actor.kind !== 'client' && thread.tenantId !== (actor as any).tenantId) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  if (actor.kind === 'client') {
+    // Suspended/deleted firms stop receiving client messages immediately.
+    const tenant = await prisma.tenant.findUnique({ where: { id: thread.tenantId }, select: { status: true } })
+    if (!tenant || tenant.status !== 'active') return NextResponse.json({ error: 'This firm is not accepting messages.' }, { status: 404 })
+  }
 
   const message = await prisma.directMessage.create({
     data: {

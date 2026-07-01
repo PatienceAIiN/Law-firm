@@ -28,7 +28,9 @@ export default async function FindBarristerPage({ searchParams }: { searchParams
   } catch (e) { console.warn('[find-barrister] firms query skipped:', (e as any)?.message) }
 
   try {
-    const where: any = { isActive: true, tenantId: { not: null } }
+    // Lawyers must belong to a tenant whose status is 'active'. Suspended
+    // or deleted tenants drop their lawyers from the directory instantly.
+    const where: any = { isActive: true, tenantId: { not: null }, tenant: { status: 'active' } }
     if (state) where.state = state
     if (city) where.city = city
     if (pincode) where.pincode = pincode

@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
   if (!tenantId) return NextResponse.json({ error: 'tenantId required' }, { status: 400 })
 
   const tenant = await prisma.tenant.findUnique({ where: { id: tenantId } })
-  if (!tenant) return NextResponse.json({ error: 'Firm not found' }, { status: 404 })
+  if (!tenant || tenant.status !== 'active') return NextResponse.json({ error: 'Firm not found' }, { status: 404 })
   const advocate = advocateId ? await prisma.advocate.findFirst({ where: { id: advocateId, tenantId } }) : null
 
   const apiKey = process.env.LIVEKIT_API_KEY
